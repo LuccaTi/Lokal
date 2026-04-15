@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+html {
+  font-size: 100%;
+}
+
+/* Mobile first, apenas uma coluna é criada, 
+  o conteúdo fica empilhado,
+  as linhas se adaptam para que o header e o footer
+  preencham espaços relativos a seu conteúdo, o que 
+  sobra (1fr) fica para o conteúdo principal.*/
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  text-align: center;
+  min-height: 100vh;
+  color: white;
+}
+
+/*O z-index: 1 garante que o header e sua sombra sempre
+  fiquem acima do restante do conteúdo.*/
+.header {
+  grid-column: 1 / -1;
+  background-color: #1992d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr;
+  color: #333;
+}
+
+.content-sidebar-menu ul {
+  list-style-type: none;
+  padding: 1em;
+}
+
+.content-sidebar-menu,
+.content-sidebar-advertisement {
+  background-color: rebeccapurple;
+  padding: 1em;
+  color: white;
+}
+
+.content-main {
+  background-color: #f4f4f4;
+  padding: 1em;
+  color: #333;
+  height: 100%;
+}
+
+.content-main p {
+  text-align: left;
+  margin-bottom: 1em;
+}
+
+.footer {
+  grid-column: 1 / -1;
+  background-color: #1992d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Aplica o CSS em telas maiores que 768px, 
+  telas de tables ou desktop, 
+  o layout fica com 3 colunas.
+  
+  O uso do 'auto 1fr auto' garante que o conteúdo
+  principal ocupe a tela toda depois que o header e o 
+  footer já estão em seus lugares.*/
+@media (min-width: 768px) {
+  .container {
+    grid-template-columns: 1fr 4fr 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .header,
+  .footer {
+    grid-column: 1 / -1;
+  }
+
+  .content {
+    grid-column: 2 / 3;
+  }
+
+  .content-sidebar-menu {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+  }
+
+  .content-sidebar-advertisement {
+    grid-column: 3 / 4;
+    grid-row: 2 / 3;
+  }
+}

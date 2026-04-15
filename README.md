@@ -1,96 +1,193 @@
-# Webpack Template
+# Lokal - Todo App
 
-Template base para projetos Front-End com Webpack.
+## 1) Definição do projeto
 
-O objetivo deste repositório é servir como ponto de partida reutilizável para novos projetos, com uma estrutura limpa, suporte a módulos JavaScript, processamento de CSS/HTML e layout responsivo no formato Holy Grail.
+O Lokal será uma aplicação web para gerenciamento de projetos pessoais e suas tarefas.
 
-## Descrição
+A arquitetura de entrega será uma **MPA (Multi-Page Application)** com duas páginas principais:
 
-Este projeto usa Webpack com configuração separada para desenvolvimento e produção, com:
+1. Home
+2. Dashboard
 
-- Entrada JS modular em `src/index.js`.
-- Injeção automática do bundle no HTML via HtmlWebpackPlugin.
-- Suporte a importação de CSS, HTML e imagens.
-- Servidor de desenvolvimento com hot reload e abertura automática do navegador.
-- Build de produção com source map separado.
+Cada página pode ter comportamento de SPA internamente (renderização dinâmica sem reload interno), mas tecnicamente o projeto será entregue como MPA com múltiplas entradas.
 
-## Tecnologias e Conceitos
+Os projetos registrados no app podem ser de qualquer tipo, por exemplo: "Projeto corpo sarado 2027", com tarefas como "jejum todo dia pela manha", "salada no almoço e na janta" etc.
 
-- JavaScript modular (ES Modules)
-- Webpack 5 + webpack-cli + webpack-dev-server
-- webpack-merge
-- html-webpack-plugin
-- css-loader + style-loader
-- html-loader
-- Asset Modules do Webpack para imagens
-- HTML5 semântico
-- CSS Grid + Flexbox
-- Layout responsivo (mobile first)
+Persistência de dados: **localStorage**.
 
-## Estrutura do Projeto
+## 2) Estrutura geral da aplicação
+
+### Home (página de entrada)
+
+Responsável por apresentar o app e iniciar o fluxo.
+
+Elementos iniciais:
+
+- Nome do aplicativo
+- Descrição
+- Botao "Get Started"
+
+Fluxo inicial:
+
+1. Usuário acessa Home
+2. Clica em "Get Started"
+3. Formulário solicita nome, sobrenome, data de nascimento e identificador
+4. Sistema verifica o localStorage:
+5. Se existir estado para o identificador: carrega
+6. Se não existir: cria estado inicial
+7. Usuário é redirecionado para Dashboard
+
+### Dashboard (página principal)
+
+Responsável por gerenciamento de projetos e tarefas.
+
+Layout inicial:
+
+- Sidebar fixa para navegação
+- Área principal de conteúdo
+- Sem rodapé
+- Cabeçalho opcional
+
+Funcionalidades iniciais:
+
+- Estado inicial vazio
+- Botão para criar projeto
+- Listar projetos
+- Acessar tarefas de um projeto
+
+Cada tarefa terá inicialmente:
+
+- Titulo
+- Descrição
+- Radio buttons (Em andamento/concluída)
+
+Fora do escopo inicial: prioridade, lembretes e outras features avançadas.
+
+Navegação prevista na sidebar:
+
+- Lista de projetos
+- Tarefas para hoje
+- Tarefas futuras
+- Projetos e tarefas concluidos
+
+## 3) Arquitetura de codigo recomendada
+
+Estrutura de pastas sugerida:
 
 ```text
-webpack-template/
-|- src/
-|  |- greeting.js
-|  |- index.js
-|  |- styles.css
-|  |- template.html
-|- package.json
-|- webpack.common.js
-|- webpack.dev.js
-|- webpack.prod.js
-|- .gitignore
+src/
+	pages/
+		home/
+			home.entry.js
+			home.template.html
+			home.css
+			home.page.js
+		dashboard/
+			dashboard.entry.js
+			dashboard.template.html
+			dashboard.css
+			dashboard.page.js
+
+	core/
+		storage/
+			keys.js
+			userStorage.js
+			projectStorage.js
+		domain/
+			user.js
+			project.js
+			task.js
+		state/
+			appState.js
+
+	shared/
+		ui/
+			createButton.js
+			createEmptyState.js
+			createInput.js
+		utils/
+			generateId.js
+			formatDate.js
+			validations.js
 ```
 
-## Como Executar
+### Responsabilidades por camada
 
-### Pré-requisitos
+`pages/`
 
-- Node.js 18+ (recomendado)
-- npm
+- Montagem de tela
+- Eventos de UI
+- Fluxo de navegação da página
 
-### Passos
+`core/storage/`
 
-1. Instale as dependencias:
+- Leitura e escrita no localStorage
+- Chaves de armazenamento
+- Serialização e desserialização
 
-```bash
-npm install
-```
+`core/domain/`
 
-2. Rode o servidor de desenvolvimento:
+- Modelos e regras de negócio (Projeto, Tarefa, Usuário)
+- Validações e funções de domínio
 
-```bash
-npm run start
-```
+`core/state/`
 
-3. Gere o build de produção em `dist/`:
+- Estado em memória da aplicação durante uso
+- Sincronização com storage quando necessário
 
-```bash
-npm run build
-```
+`shared/ui/`
 
-4. Abra no navegador:
+- Componentes reutilizáveis entre Home e Dashboard
 
-```text
-http://localhost:8080
-```
+`shared/utils/`
 
-## Scripts Disponíveis
+- Funções utilitárias gerais (id, data, validações, helpers)
 
-- `npm run start`: inicia o webpack-dev-server com `webpack.dev.js` e abre o navegador.
-- `npm run build`: gera o bundle de produção usando `webpack.prod.js`.
-- `npm run deploy`: publica a pasta `dist/` na branch `gh-pages` via `git subtree`.
+## 4) Persistência de dados
 
-## Observações
+O estado será salvo em localStorage e atualizado a cada alteração relevante.
 
-- A configuração base compartilhada está em `webpack.common.js`.
-- O ambiente de desenvolvimento está em `webpack.dev.js` (`mode: development` + `eval-source-map`).
-- O ambiente de produção está em `webpack.prod.js` (`mode: production` + `source-map`).
-- O bundle de saída é gerado em `dist/` com limpeza automática a cada build.
-- O layout base segue o padrão Holy Grail com sidebar esquerda, conteúdo central e sidebar direita em telas maiores.
+Dados persistidos inicialmente:
 
+- Usuário atual (identificador)
+- Projetos
+- Tarefas
 
+Regra de inicialização:
 
+1. Ao entrar no app, verificar se existe estado salvo para o identificador informado
+2. Se existir, carregar
+3. Se não existir, criar estado inicial padrão
 
+## 5) Estratégia de build e webpack
 
+Será mantido **um único conjunto de configurações webpack**:
+
+- `webpack.common.js`
+- `webpack.dev.js`
+- `webpack.prod.js`
+
+Não será criado um webpack para cada página.
+
+O `webpack.common.js` será evoluido para:
+
+- Suportar múltiplos entry points (home e dashboard)
+- Gerar múltiplos HTMLs (um por página)
+- Compartilhar código comum entre bundles
+
+## 6) Escopo do projeto
+
+- Aplicação individual
+- Foco em funcionalidades essenciais
+- Persistência local via localStorage
+- Entrega como MPA com duas páginas principais (Home e Dashboard)
+
+## 7) Roadmap incremental
+
+1. Definir estrutura de pastas base
+2. Separar Home e Dashboard em entradas independentes
+3. Configurar webpack para múltiplas páginas
+4. Implementar fluxo de identificação e redirecionamento
+5. Implementar criação e listagem de projetos
+6. Implementar criação e listagem de tarefas
+7. Implementar filtros da sidebar
