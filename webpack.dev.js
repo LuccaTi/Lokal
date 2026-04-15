@@ -6,7 +6,7 @@ export default merge(common, {
     devtool: 'eval-source-map',
     devServer: {
         static: './dist',
-        watchFiles: ['./src/template.html'],
+        watchFiles: ['./src/pages/**/*.html'],
         client: {
             reconnect: false,
         },

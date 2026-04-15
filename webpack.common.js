@@ -6,14 +6,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default {
-    entry: './src/index.js',
+    entry: {
+        home: './src/pages/home/home.entry.js',
+        dashboard: './src/pages/dashboard/dashboard.entry.js'
+    },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/template.html',
+            template: './src/pages/home/home.template.html',
+            filename: 'index.html',
+            chunks: ['home'],
         }),
+        new HtmlWebpackPlugin({
+            template: './src/pages/dashboard/dashboard.template.html',
+            filename: 'dashboard.html',
+            chunks: ['dashboard'],
+        })
     ],
     output: {
-        filename: 'main.js',
+        filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
         clean: true,
     },
