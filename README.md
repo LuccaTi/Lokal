@@ -4,10 +4,11 @@
 
 O Lokal será uma aplicação web para gerenciamento de projetos pessoais e suas tarefas.
 
-A arquitetura de entrega será uma **MPA (Multi-Page Application)** com duas páginas principais:
+A arquitetura de entrega será uma **MPA (Multi-Page Application)** com três páginas principais:
 
 1. Home
-2. Dashboard
+2. Login
+3. Dashboard
 
 Cada página pode ter comportamento de SPA internamente (renderização dinâmica sem reload interno), mas tecnicamente o projeto será entregue como MPA com múltiplas entradas.
 
