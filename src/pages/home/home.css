@@ -12,6 +12,7 @@ body {
 
 html {
   font-size: 100%;
+  overflow-y: scroll;
 }
 
 .container {
@@ -29,9 +30,9 @@ html {
   grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
-  padding: 2rem 5rem;
+  justify-content: space-between;
+  flex-direction: row;
+  padding: 2rem 2rem;
   z-index: 1;
   gap: 1rem;
 }
@@ -51,34 +52,207 @@ html {
   color: #2ecc97;
 }
 
-#get-started-button {
+#header-get-started-button {
   padding: 0.5rem 1.5rem;
   color: white;
-  border-radius: 0.5rem;
-  background-color: #2ecc97;
-  border: none;
+  background: linear-gradient(180deg, #35d79f 0%, #1dbb7f 100%);
+  border: 0;
+  border-radius: 999px;
   font-size: 1rem;
   font-weight: bold;
 }
 
-#get-started-button:hover {
+#header-get-started-button:hover {
   background-color: #2abd8c;
+  filter: brightness(1.07);
   cursor: pointer;
 }
 
-#get-started-button:active {
+#header-get-started-button:active {
   background-color: #2ecc97;
   cursor: pointer;
-} 
+}
+
+.home-main-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
+  align-items: stretch;
+}
+
+.details {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  color: black;
+  padding: 3rem;
+  padding-left: 4rem;
+  text-align: left;
+}
+
+.details h2 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.details p {
+  line-height: 1.5;
+  font-size: 1.5rem;
+  color: #666666;
+}
+
+#details-get-started-button {
+  margin-top: 1.5rem;
+  padding: 1.4rem 2.4rem;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(180deg, #35d79f 0%, #1dbb7f 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 10px 22px rgba(29, 187, 127, 0.28);
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
+}
+
+#details-get-started-button:hover {
+  cursor: pointer;
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 14px 26px rgba(29, 187, 127, 0.34);
+}
+
+#details-get-started-button:active {
+  transform: translateY(0);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.12),
+    0 8px 18px rgba(29, 187, 127, 0.24);
+}
+
+#details-get-started-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 45%,
+    rgba(255, 255, 255, 0.18) 46%,
+    rgba(255, 255, 255, 0.08) 58%,
+    transparent 59%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+#foreground-wrapper {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+#foreground-wrapper img {
+  width: 100%;
+  height: 80%;
+}
+
+#figure-quotes-background {
+  grid-column: 1 / -1;
+  grid-row: 2 / 3;
+  position: relative;
+  width: 100%;
+  font-size: 0.6rem;
+}
+
+#figure-quotes-background::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10rem;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(251, 184, 168, 0.55) 55%,
+    #fbb8a8 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+
+  /*
+  Continuar com:;
+  - Ajustar a legenda da imagem do figure (conversa do copilot tem a solução).
+  - Checar a cor de transição entre a figure e o rodapé.
+  - Aumentar a distância entre o rodapé e a figure.
+  - Ver o funcionamento da home page no mobile e ajustar.
+  - Passar um pente fino e refinar os detalhes da home page.
+  */
+}
+
+#figure-quotes-background img {
+  display: block;
+  width: 100%;
+  height: 300px;
+}
+
+.all-quotes {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  z-index: 2;
+}
+
+.quote {
+  color: #666666;;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.quote-author {
+  font-weight: bold;
+}
+
+a {
+  color: #666666;
+  text-decoration: none;
+}
+
+a:hover {
+  cursor: pointer;
+}
+
+a:visited {
+  color: #666666;
+}
+
+figcaption {
+  color: #666666;
+}
 
 .home-footer {
   grid-column: 1 / -1;
-  background-color: #fda48e;
+  background-color: #fbb8a8;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 4rem;
   color: black;
   gap: 1rem;
 }
@@ -104,9 +278,7 @@ html {
   gap: 0.5rem;
 }
 
-a:hover {
-  cursor:pointer;
-}
+
 
 @media (min-width: 768px) {
   .header,
@@ -115,13 +287,13 @@ a:hover {
   }
 
   .home-header {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  padding: 2rem 5rem;
-  z-index: 1;
-  gap: auto;
-}
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    padding: 0rem 1.5rem;
+    z-index: 1;
+    gap: auto;
+  }
 }

@@ -1,4 +1,8 @@
 import "./home.css";
-import { greeting } from './home.page.js';
+import { homePage } from './home.page.js';
 
-console.log(greeting);
+const main = document.querySelector('.home-main');
+const home = homePage.createHomePage();
+
+main.append(home);
+
