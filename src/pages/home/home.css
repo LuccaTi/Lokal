@@ -24,13 +24,11 @@ html {
   color: white;
 }
 
-/*O z-index: 1 garante que o header e sua sombra sempre
-  fiquem acima do restante do conteúdo.*/
 .home-header {
   grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-direction: row;
   padding: 2rem 2rem;
   z-index: 1;
@@ -74,10 +72,11 @@ html {
 }
 
 .home-main-content {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, auto);
-  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
 }
 
 .details {
@@ -96,7 +95,7 @@ html {
 
 .details p {
   line-height: 1.5;
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: #666666;
 }
 
@@ -157,13 +156,14 @@ html {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
+  height: 30rem;
 }
 
 #foreground-wrapper img {
   width: 100%;
-  height: 80%;
+  height: 100%;
 }
 
 #figure-quotes-background {
@@ -172,38 +172,13 @@ html {
   position: relative;
   width: 100%;
   font-size: 0.6rem;
-}
-
-#figure-quotes-background::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 10rem;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(251, 184, 168, 0.55) 55%,
-    #fbb8a8 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-
-  /*
-  Continuar com:;
-  - Ajustar a legenda da imagem do figure (conversa do copilot tem a solução).
-  - Checar a cor de transição entre a figure e o rodapé.
-  - Aumentar a distância entre o rodapé e a figure.
-  - Ver o funcionamento da home page no mobile e ajustar.
-  - Passar um pente fino e refinar os detalhes da home page.
-  */
+  margin-bottom: 10rem;
 }
 
 #figure-quotes-background img {
   display: block;
   width: 100%;
-  height: 300px;
+  height: 200px;
 }
 
 .all-quotes {
@@ -218,7 +193,7 @@ html {
 }
 
 .quote {
-  color: #666666;;
+  color: #666666;
   font-size: 1rem;
   line-height: 1.4;
   text-align: center;
@@ -243,16 +218,37 @@ a:visited {
 
 figcaption {
   color: #666666;
+  position: relative;
+  margin-top: 0.5rem;
+  z-index: 3;
+}
+
+/*Gradiente de cores do rodapé.*/
+.home-footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6rem;
+  height: 6rem;
+  background: linear-gradient(
+    180deg,
+    rgba(248, 201, 191, 0) 0%,
+    rgba(248, 201, 191, 0.35) 60%,
+    #f8c9bf 100%
+  );
+  pointer-events: none;
 }
 
 .home-footer {
   grid-column: 1 / -1;
-  background-color: #fbb8a8;
+  position: relative;
+  background-color: #f8c9bf;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem;
+  padding: 7rem 4rem 4rem;
   color: black;
   gap: 1rem;
 }
@@ -278,8 +274,6 @@ figcaption {
   gap: 0.5rem;
 }
 
-
-
 @media (min-width: 768px) {
   .header,
   .footer {
@@ -296,4 +290,33 @@ figcaption {
     z-index: 1;
     gap: auto;
   }
+
+  .home-main-content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .details p {
+    line-height: 1.5;
+    font-size: 1.5rem;
+    color: #666666;
+  }
+
+  #foreground-wrapper {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    height: 30rem;
+  }
+
+  #figure-quotes-background img {
+  display: block;
+  width: 100%;
+  height: 300px;
+}
 }
