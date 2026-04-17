@@ -8,7 +8,8 @@ const __dirname = path.dirname(__filename);
 export default {
     entry: {
         home: './src/pages/home/home.entry.js',
-        dashboard: './src/pages/dashboard/dashboard.entry.js'
+        dashboard: './src/pages/dashboard/dashboard.entry.js',
+        login: './src/pages/login/login.entry.js'
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -20,6 +21,11 @@ export default {
             template: './src/pages/dashboard/dashboard.template.html',
             filename: 'dashboard.html',
             chunks: ['dashboard'],
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/pages/login/login.template.html',
+            filename: 'login.html',
+            chunks: ['login'],
         })
     ],
     output: {

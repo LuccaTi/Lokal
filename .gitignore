@@ -28,4 +28,9 @@ Thumbs.db
 
 # IDE/editor
 .idea/
+.vscode/
 *.swp
+
+# Test and coverage outputs
+coverage/
+*.lcov
