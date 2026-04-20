@@ -43,11 +43,7 @@ html {
 }
 
 .home-header-logo-title img {
-  height: 2rem;
-}
-
-.home-header-logo-title h1 {
-  color: #2ecc97;
+  height: 3rem;
 }
 
 #header-get-started-button {
@@ -88,7 +84,7 @@ html {
   text-align: left;
 }
 
-.details h2 {
+.details h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
 }

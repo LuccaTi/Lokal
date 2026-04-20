@@ -9,7 +9,8 @@ export default {
     entry: {
         home: './src/pages/home/home.entry.js',
         dashboard: './src/pages/dashboard/dashboard.entry.js',
-        login: './src/pages/login/login.entry.js'
+        login: './src/pages/login/login.entry.js',
+        signup: './src/pages/signup/signup.entry.js'
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -26,6 +27,11 @@ export default {
             template: './src/pages/login/login.template.html',
             filename: 'login.html',
             chunks: ['login'],
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/pages/signup/signup.template.html',
+            filename: 'signup.html',
+            chunks: ['signup'],
         })
     ],
     output: {
