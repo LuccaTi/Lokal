@@ -5,46 +5,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="assets/icons/record-svgrepo-com.svg">
-    <title>Signup</title>
+    <title>Registre-se para uma conta Lokal gratuita</title>
 </head>
 
 <body>
     <div class="container">
-        <main class="content">
-            <form action="" id="signup-form">
-                <div class="form-field">
-                    <label for="full-name">Nome completo</label>
-                    <input type="text" id="full-name" name="full-name" placeholder="Insira seu nome completo..."
-                        required minlength="3" maxlength="40">
-                </div>
-
+        <main class="content-main">
+            <div class="logo-wrapper">
+                <img src="assets/images/Lokal-no-background.png" alt="Lokal logo">
+            </div>
+            <h1>
+                Inscreva-se
+            </h1>
+            <form action="" id="signup-form" novalidate>
                 <div class="form-field">
                     <label for="email">E-mail</label>
                     <input type="email" id="email" name="email" placeholder="Insira seu email..." required
-                        pattern="^[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.com(?:\.br)?$"
-                        title="Use um e-mail terminado em .com ou .com.br" autocomplete="email">
+                        autocomplete="email">
                 </div>
 
-                <div class="form-field">
+                <div class="form-field" id="password-field">
                     <label for="password">Senha</label>
                     <input type="password" id="password" name="password" placeholder="Insira sua senha..." minlength="6"
                         required autocomplete="new-password">
                 </div>
-                <button type="submit" id="signup-form-button">Login</button>
+                <div class="password-checklist-container">
+                    <label for="">Sua senha deve ter:</label>
+                    <ul id="password-checklist" class="password-checklist">
+                        <li data-rule="minlength" class="invalid">No mínimo 6 caracteres</li>
+                        <li data-rule="uppercase" class="invalid">Pelo menos uma letra maiúscula</li>
+                        <li data-rule="number" class="invalid">Pelo menos dois números</li>
+                        <li data-rule="special" class="invalid">Pelo menos um caractere especial</li>
+                    </ul>
+                </div>
+                <button type="submit" id="signup-form-button">Cadastrar</button>
+                <p>Já se cadastrou? <a href="login.html" id="login-link">Vá para o login</a></p>
             </form>
 
-            <div class="password-checklist-container">
-                <label for="">Sua senha deve ter:</label>
-                <ul id="password-checklist" class="password-checklist">
-                    <li data-rule="minlength" class="invalid">No mínimo 6 caracteres</li>
-                    <li data-rule="uppercase" class="invalid">Pelo menos uma letra maiúscula</li>
-                    <li data-rule="number" class="invalid">Pelo menos dois números</li>
-                    <li data-rule="special" class="invalid">Pelo menos um caractere especial</li>
-                </ul>
-            </div>
+
         </main>
 
-        <aside class="content-sidebar">
+        <aside class="content-image-wrapper">
+            <figure>
+                <img src="assets/images/login.png" alt="Login">
+                <figcaption>
+                    Image by <a href="https://www.flaticon.com/authors/vectorsmarket15" target="_blank"
+                        id="img-author-link">vectorsmarket15</a>
+                </figcaption>
+            </figure>
         </aside>
     </div>
 </body>
