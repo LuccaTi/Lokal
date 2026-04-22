@@ -1,3 +1,4 @@
+import "../../shared/styles/global.css"
 import "./signup.css";
 import { validator } from '../../shared/utils/validations.js';
 import { greeting } from './signup.page.js';
@@ -7,6 +8,7 @@ console.log(greeting);
 /* const form = document.getElementById('sign-form');
 const passwordInput = document.getElementById('password');
 const checklist = document.getElementById('password-checklist');
+
 
 // Validação em tempo real
 passwordInput.addEventListener('input', () => {
