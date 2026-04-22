@@ -49,6 +49,11 @@ figure {
   width: 100%;;
 }
 
+.warning {
+  color:red;
+  font-size: 0.8rem;
+}
+
 .form-field {
   display: flex;
   flex-direction: column;

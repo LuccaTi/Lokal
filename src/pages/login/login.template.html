@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="assets/icons/record-svgrepo-com.svg">
-    <title>Login</title>
+    <title>Fazer login no Lokal</title>
 </head>
 
 <body>
@@ -17,18 +17,10 @@
             <h1>
                 Bem vindo(a) de volta!
             </h1>
-            <form action="" id="login-form">
-                <div class="form-field">
-                    <label for="full-name">Nome completo</label>
-                    <input type="text" id="full-name" name="full-name" placeholder="Insira seu nome completo..."
-                        required minlength="3" maxlength="40">
-                </div>
-
+            <form action="" id="login-form" novalidate>
                 <div class="form-field">
                     <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" placeholder="Insira seu email..." required
-                        pattern="^[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.com(?:\.br)?$"
-                        title="Use um e-mail terminado em .com ou .com.br" autocomplete="email">
+                    <input type="email" id="email" name="email" placeholder="Insira seu email..." required autocomplete="email">
                 </div>
 
                 <div class="form-field">
@@ -37,7 +29,7 @@
                         required autocomplete="current-password">
                 </div>
                 <button type="submit" id="login-form-button">Login</button>
-                <p>Não tem uma conta ainda? <a href="" id="signup-link">Cadastre-se</a></p>
+                <p>Não tem uma conta ainda? <a href="signup.html" id="signup-link">Cadastre-se</a></p>
             </form>
         </main>
 

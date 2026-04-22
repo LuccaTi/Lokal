@@ -1,13 +1,62 @@
 import "../../shared/styles/global.css"
 import "./login.css";
 import { validator } from '../../shared/utils/validations.js';
+import bcrypt from "bcryptjs";
 
 const form = document.getElementById('login-form');
-const passwordInput = document.getElementById('password');
-const checklist = document.getElementById('password-checklist');
+const email = document.getElementById('email');
+const password = document.getElementById('password');
+email.addEventListener('input', clearWarning);
+password.addEventListener('input', clearWarning);
 
-form.addEventListener('submit', (event) => {
+async function logIn(email, password) {
+
+    const registeredUser = localStorage.getItem(email);
+
+    if (!registeredUser) {
+        console.log(`User with email: ${email} is not registered!`);
+        return false;
+    }
+
+    const user = JSON.parse(registeredUser);
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    if (validPassword) {
+        console.log(`Senha válida para usuário: ${user.email}`);
+        return true;
+
+    } else {
+        console.log(`Senha inválida para usuário: ${user.email}`);
+        return false;
+    }
+}
+
+form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    const existingWarning = form.querySelector('.warning');
+    if(existingWarning){
+        existingWarning.remove();
+    }
+
+    const errorMessage = validator.validateEmail(email.value);
+    if(errorMessage){
+        const warning = document.createElement('p');
+        warning.textContent = errorMessage;
+        warning.classList.add('warning');
+        form.prepend(warning);
+        return;
+    }
+
+    const success = await logIn(email.value.trim(), password.value);
+    if (success) {
+        window.location.replace("dashboard.html");
+    } else {
+        const warning = document.createElement('p');
+        warning.textContent = 'E-mail ou senha incorreto.'
+        warning.classList.add('warning');
+        form.prepend(warning);
+    }
 });
 
 const container = document.querySelector('.container');
@@ -32,13 +81,11 @@ mediaQuery.addEventListener('change', handleResponsiveContent);
 
 handleResponsiveContent();
 
-//Ordem do que fazer agora:
+function clearWarning() {
+    const warning = form.querySelector('.warning');
+    if(warning){
+        warning.remove();
+    }
+}
 
-/*
-- Implementar lógica que pega os dados do formulário.
-- Criar um objeto com os dados do formulário.
-- Pegar esse objeto e consultar o local storage.
-- Se tiver registro, ir para a página da dashboard.
-- Se não tiver registro, informar no formulário e continuar na página de login.
-*/
 
