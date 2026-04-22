@@ -54,6 +54,20 @@ figure {
   font-size: 0.8rem;
 }
 
+.confirmation {
+  color: #2ecc97;
+  font-size: 0.8rem;
+}
+
+#confirmation-link {
+  color: #2ecc97;
+  font-size: 0.8rem;
+}
+
+#confirmation-link:visited {
+  color: #2ecc97;
+}
+
 .form-field {
   display: flex;
   flex-direction: column;

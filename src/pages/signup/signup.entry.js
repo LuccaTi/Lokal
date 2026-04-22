@@ -1,13 +1,20 @@
 import "../../shared/styles/global.css"
 import "./signup.css";
 import { validator } from '../../shared/utils/validations.js';
+import bcrypt from "bcryptjs";
 
 const form = document.getElementById('signup-form');
 const email = document.getElementById('email');
 const password = document.getElementById('password');
 const checklist = document.getElementById('password-checklist');
-email.addEventListener('input', clearWarning);
-password.addEventListener('input', clearWarning);
+email.addEventListener('input', (event) => {
+    clearWarning();
+    clearConfirmation();
+});
+password.addEventListener('input', (event) => {
+    clearWarning();
+    clearConfirmation();
+});
 
 // Validação em tempo real
 password.addEventListener('input', () => {
@@ -33,7 +40,42 @@ const updateChecklistUI = (status) => {
 };
 
 async function register(email, password) {
-   //Função que vai usar o local storage pra registrar o usuário.
+
+    const registration = {
+        registered: false,
+        error: '',
+    }
+
+    const userExists = localStorage.getItem(email);
+    if (userExists) {
+        registration.registered = false;
+        registration.error = 'Usuário já registrado!';
+        return registration;
+    }
+
+    try {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const newUser = {
+            email: email,
+            password: hashedPassword,
+        }
+
+        const json = JSON.stringify(newUser);
+        localStorage.setItem(email, json);
+
+        registration.registered = true;
+        registration.error = '';
+    } catch (error) {
+        registration.registered = false;
+        registration.error = `Falha ao cadastrar usuário, erro: ${error}`;
+        console.error("Falha ao cadastrar usuário, erro:", error);
+        return registration;
+    }
+
+    return registration;
+
 };
 
 form.addEventListener('submit', async (event) => {
@@ -68,14 +110,31 @@ form.addEventListener('submit', async (event) => {
     }
 
     console.log('Formulário de cadastro válido');
+
     const success = await register(email.value.trim(), password.value);
-    if (success) {
-        // Colocar mensagem verde no formulário de que usuário foi registrado com sucesso mais um link para página de login.
+    if (success.registered) {
+        console.log(`Usuário: ${email.value} cadastrado com sucesso`);
+
+        const loginLink = document.createElement('a');
+        loginLink.href = 'login.html';
+        loginLink.textContent = 'Fazer login?';
+        loginLink.setAttribute('id', 'confirmation-link');
+
+        const confirmation = document.createElement('p');
+        confirmation.append('Usuário cadastrado com sucesso, ', loginLink)
+        confirmation.classList.add('confirmation');
+        form.prepend(confirmation);
+
     } else {
-        // Tentar retornar múltiplos valores pra saber qual erro deu e logar ele no console.
         const warning = document.createElement('p');
-        warning.textContent = 'Não foi possível registrar o usuário!'
-        console.log(`Não foi possível registrar o usuário! Erro: `);
+
+        if (success.error.includes('registrado')) {
+            warning.textContent = 'Usuário já cadastrado!';
+        } else {
+            warning.textContent = 'Não foi possível registrar o usuário, erro interno.';
+        }
+
+        console.log(`Não foi possível registrar o usuário, erro: ${success.error}`);
         warning.classList.add('warning');
         form.prepend(warning);
     }
@@ -109,6 +168,14 @@ function clearWarning() {
         warning.remove();
     }
 }
+
+function clearConfirmation() {
+    const confirmation = form.querySelector('.confirmation');
+    if (confirmation) {
+        confirmation.remove();
+    }
+}
+
 
 
 
