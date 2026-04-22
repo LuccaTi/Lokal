@@ -8,23 +8,11 @@
   padding: 1rem;
 }
 
-.content {
-  display: grid;
-  grid-template-columns: 1fr;
-  color: #333;
-}
-
-.content-sidebar {
-  background-color: rebeccapurple;
-  padding: 1em;
-  color: white;
-}
-
 .content-main {
   background-color: white;
   padding: 1rem;
-  padding-left: 8rem;
-  padding-right: 12rem;
+  padding-left: 0;
+  padding-right: 0;
   color: #333;
   height: 100%;
   width: 100%;
@@ -36,7 +24,103 @@
 
 .content-main p {
   text-align: left;
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
+}
+
+.logo-wrapper {
+  width: 9.4rem;
+  height: 3.13rem;
+}
+
+.logo-wrapper img {
+  height: 100%;
+  width: 100%;
+}
+
+figure {
+  margin: 0;
+  text-align: center;
+}
+
+#signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;;
+}
+
+.warning {
+  color:red;
+  font-size: 0.8rem;
+}
+
+.confirmation {
+  color: #2ecc97;
+  font-size: 0.8rem;
+}
+
+#confirmation-link {
+  color: #2ecc97;
+  font-size: 0.8rem;
+}
+
+#confirmation-link:visited {
+  color: #2ecc97;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  border: 1px solid gray;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+#signup-form-button {
+  margin-top: 0.5rem;
+  padding: 1rem 1.5rem;
+  color: white;
+  background: linear-gradient(180deg, #35d79f 0%, #1dbb7f 100%);
+  border: 0;
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 100%;
+}
+
+#signup-form-button:hover {
+  filter: brightness(1.05);
+  cursor: pointer;
+}
+
+#signup-form-button:active {
+  background-color: #2ecc97;
+  cursor: pointer;
+}
+
+input {
+  border: none;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+input:focus {
+  outline: none;
+}
+
+label {
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+#login-link {
+  color: #2ecc97;
+}
+
+#login-link:visited {
+  color: #2ecc97;
 }
 
 .password-checklist-container {
@@ -91,9 +175,61 @@
 
   .content-main {
     grid-column: 1 / 2;
+    background-color: white;
+    padding: 1rem;
+    padding-left: 8rem;
+    padding-right: 12rem;
+    color: #333;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
   }
 
-  .content-sidebar {
+  .content-image-wrapper {
     grid-column: 2 / -1;
+    background: linear-gradient(
+      180deg,
+      rgba(53, 215, 159, 0.1) 0%,
+      rgba(29, 187, 127, 0.1) 100%
+    );
+    padding: 1rem;
+    color: white;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content-image-wrapper img {
+    width: 60%;
+    height: 60%;
+  }
+
+  figure {
+    margin: 0;
+    text-align: center;
+  }
+
+  figcaption {
+    color: #666666;
+    margin-top: 0.5rem;
+    z-index: 3;
+    font-size: 0.55rem;
+  }
+
+  #img-author-link {
+    color: #666666;
+    text-decoration: none;
+  }
+
+  #img-author-link:hover {
+    cursor: pointer;
+  }
+
+  #img-author-link:visited {
+    color: #666666;
   }
 }
