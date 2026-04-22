@@ -1,3 +1,4 @@
+import "../../shared/styles/global.css"
 import "./home.css";
 import { homePage } from './home.page.js';
 

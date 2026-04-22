@@ -1,69 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: "Roboto", sans-serif;
-}
-
-html {
-  font-size: 100%;
-}
-
-/* Mobile first, apenas uma coluna é criada, 
-  o conteúdo fica empilhado,
-  as linhas se adaptam para que o header e o footer
-  preencham espaços relativos a seu conteúdo, o que 
-  sobra (1fr) fica para o conteúdo principal.*/
 .container {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto;
   text-align: center;
   min-height: 100vh;
   color: white;
-}
-
-/*O z-index: 1 garante que o header e sua sombra sempre
-  fiquem acima do restante do conteúdo.*/
-.header {
-  grid-column: 1 / -1;
-  background-color: #1992d4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1;
-}
-
-.content {
-  display: grid;
-  grid-template-columns: 1fr;
-  color: #333;
-}
-
-.content-sidebar-menu ul {
-  list-style-type: none;
-  padding: 1em;
-}
-
-.content-sidebar-menu,
-.content-sidebar-advertisement {
-  background-color: rebeccapurple;
-  padding: 1em;
-  color: white;
 }
 
 .content-main {
-  background-color: #f4f4f4;
-  padding: 1em;
+  background-color: white;
+  padding: 1rem;
+  padding-left: 0;
+  padding-right: 0;
   color: #333;
   height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
 }
 
 .content-main p {
@@ -71,45 +27,152 @@ html {
   margin-bottom: 1em;
 }
 
-.footer {
-  grid-column: 1 / -1;
-  background-color: #1992d4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+.logo-wrapper {
+  width: 9.4rem;
+  height: 3.13rem;
 }
 
-/* Aplica o CSS em telas maiores que 768px, 
-  telas de tables ou desktop, 
-  o layout fica com 3 colunas.
-  
-  O uso do 'auto 1fr auto' garante que o conteúdo
-  principal ocupe a tela toda depois que o header e o 
-  footer já estão em seus lugares.*/
+.logo-wrapper img {
+  height: 100%;
+  width: 100%;
+}
+
+figure {
+  margin: 0;
+  text-align: center;
+}
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;;
+}
+
+.warning {
+  color:red;
+  font-size: 0.8rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  border: 1px solid gray;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+#login-form-button {
+  margin-top: 0.5rem;
+  padding: 1rem 1.5rem;
+  color: white;
+  background: linear-gradient(180deg, #35d79f 0%, #1dbb7f 100%);
+  border: 0;
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 100%;
+}
+
+#login-form-button:hover {
+  filter: brightness(1.05);
+  cursor: pointer;
+}
+
+#login-form-button:active {
+  background-color: #2ecc97;
+  cursor: pointer;
+}
+
+input {
+  border: none;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+input:focus {
+  outline: none;
+}
+
+label {
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+#signup-link {
+  color: #2ecc97;
+}
+
+#signup-link:visited {
+  color: #2ecc97;
+}
+
 @media (min-width: 768px) {
   .container {
-    grid-template-columns: 1fr 4fr 1fr;
-    grid-template-rows: auto 1fr auto;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    padding: 1rem;
   }
 
-  .header,
-  .footer {
-    grid-column: 1 / -1;
-  }
-
-  .content {
-    grid-column: 2 / 3;
-  }
-
-  .content-sidebar-menu {
+  .content-main {
     grid-column: 1 / 2;
-    grid-row: 2 / 3;
+    background-color: white;
+    padding: 1rem;
+    padding-left: 8rem;
+    padding-right: 12rem;
+    color: #333;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
   }
 
-  .content-sidebar-advertisement {
-    grid-column: 3 / 4;
-    grid-row: 2 / 3;
+  .content-image-wrapper {
+    grid-column: 2 / -1;
+    background: linear-gradient(
+      180deg,
+      rgba(53, 215, 159, 0.1) 0%,
+      rgba(29, 187, 127, 0.1) 100%
+    );
+    padding: 1rem;
+    color: white;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content-image-wrapper img {
+    width: 60%;
+    height: 60%;
+  }
+
+  figure {
+    margin: 0;
+    text-align: center;
+  }
+
+  figcaption {
+    color: #666666;
+    margin-top: 0.5rem;
+    z-index: 3;
+    font-size: 0.55rem;
+  }
+
+  #img-author-link {
+    color: #666666;
+    text-decoration: none;
+  }
+
+  #img-author-link:hover {
+    cursor: pointer;
+  }
+
+  #img-author-link:visited {
+    color: #666666;
   }
 }

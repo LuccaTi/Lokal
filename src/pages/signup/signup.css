@@ -1,0 +1,99 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  text-align: center;
+  min-height: 100vh;
+  color: white;
+  padding: 1rem;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr;
+  color: #333;
+}
+
+.content-sidebar {
+  background-color: rebeccapurple;
+  padding: 1em;
+  color: white;
+}
+
+.content-main {
+  background-color: white;
+  padding: 1rem;
+  padding-left: 8rem;
+  padding-right: 12rem;
+  color: #333;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.content-main p {
+  text-align: left;
+  margin-bottom: 1em;
+}
+
+.password-checklist-container {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.password-checklist-container label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.password-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.password-checklist li {
+  padding-left: 20px;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.password-checklist li::before {
+  position: absolute;
+  left: 0;
+}
+
+.password-checklist li.invalid {
+  color: #cc0000;
+}
+.password-checklist li.invalid::before {
+  content: "✖";
+}
+
+.password-checklist li.valid {
+  color: #28a745;
+}
+.password-checklist li.valid::before {
+  content: "✔";
+}
+
+@media (min-width: 768px) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    padding: 1rem;
+  }
+
+  .content-main {
+    grid-column: 1 / 2;
+  }
+
+  .content-sidebar {
+    grid-column: 2 / -1;
+  }
+}

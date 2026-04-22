@@ -12,8 +12,8 @@ const homePage = {
             const details = document.createElement('div');
             details.classList.add('details');
 
-            const detailsH2 = document.createElement('h2');
-            detailsH2.textContent = 'Organização.'
+            const detailsH1 = document.createElement('h1');
+            detailsH1.textContent = 'Organização.'
 
             const detailsP1 = document.createElement('p');
             detailsP1.textContent = 'Bem vindo ao Lokal, o web app de organização de tarefas mais usado na galáxia.'
@@ -22,13 +22,13 @@ const homePage = {
             detailsP2.textContent = 'Utilizando local storage, todos os projetos e tarefas ficam armazenados no navegador para sempre estarem disponíveis.'
 
             const detailsP3 = document.createElement('p');
-            detailsP3.textContent = 'Faça login e aproveite as funcionalidades da dashboard e organize todos os seus trabalhos.'
+            detailsP3.textContent = 'Faça login e aproveite as funcionalidades da dashboard, organize todos os seus trabalhos.'
 
             const getStartedButton = document.createElement('button');
             getStartedButton.setAttribute('id', 'details-get-started-button');
             getStartedButton.textContent = 'Get Started';
 
-            details.append(detailsH2, detailsP1, detailsP2, detailsP3, getStartedButton);
+            details.append(detailsH1, detailsP1, detailsP2, detailsP3, getStartedButton);
             return details;
         }
 
@@ -72,7 +72,7 @@ const homePage = {
         
         const quotes = document.createElement('div');
         quotes.classList.add('all-quotes');
-        const firstQuote = createQuoteDiv('Simples, e super poderoso', 'Gill Bates');
+        const firstQuote = createQuoteDiv('Simples e super poderoso', 'Gill Bates');
         const secondQuote = createQuoteDiv('O melhor app que já vi!', 'Tinus Lorvalds');
         const thirdQuote = createQuoteDiv('Sério, não sabem o que estão perdendo!', 'Zark Muckerberg');
         quotes.append(firstQuote, secondQuote, thirdQuote);

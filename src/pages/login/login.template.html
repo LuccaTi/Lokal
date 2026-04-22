@@ -1,53 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="assets/icons/record-svgrepo-com.svg">
-    <title>Login</title>
+    <title>Fazer login no Lokal</title>
 </head>
 
 <body>
     <div class="container">
-        <header class="header">
-            <h1>HEADER</h1>
-        </header>
-
-        <aside class="content-sidebar-menu">
-            <h3>NAV MENU</h3>
-            <ul>
-                <li>ITEM 1</li>
-                <li>ITEM 2</li>
-                <li>ITEM 3</li>
-                <li>ITEM 4</li>
-                <li>ITEM 5</li>
-            </ul>
-        </aside>
-
-        <main class="content">
-            <div class="content-main">
-                <h2>CONTENT</h2>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maxime quaerat, in illo doloribus ex libero
-                    laudantium, sit asperiores voluptatum quos architecto quo? Expedita rerum est exercitationem
-                    tempora! Consectetur, expedita sequi.</p>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maxime quaerat, in illo doloribus ex libero
-                    laudantium, sit asperiores voluptatum quos architecto quo? Expedita rerum est exercitationem
-                    tempora! Consectetur, expedita sequi.</p>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maxime quaerat, in illo doloribus ex libero
-                    laudantium, sit asperiores voluptatum quos architecto quo? Expedita rerum est exercitationem
-                    tempora! Consectetur, expedita sequi.</p>
+        <main class="content-main">
+            <div class="logo-wrapper">
+                <img src="assets/images/Lokal-no-background.png" alt="Lokal logo">
             </div>
+            <h1>
+                Bem vindo(a) de volta!
+            </h1>
+            <form action="" id="login-form" novalidate>
+                <div class="form-field">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="Insira seu email..." required autocomplete="email">
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" placeholder="Insira sua senha..." minlength="6"
+                        required autocomplete="current-password">
+                </div>
+                <button type="submit" id="login-form-button">Login</button>
+                <p>Não tem uma conta ainda? <a href="signup.html" id="signup-link">Cadastre-se</a></p>
+            </form>
         </main>
 
-        <aside class="content-sidebar-advertisement">
-            <h2>ADVERTISEMENT</h2>
-            <H2>ADVERTISEMENT</H2>
+        <aside class="content-image-wrapper">
+            <figure>
+                <img src="assets/images/login.png" alt="Login">
+                <figcaption>
+                    Image by <a href="https://www.flaticon.com/authors/vectorsmarket15"
+                        target="_blank" id="img-author-link">vectorsmarket15</a>
+                </figcaption>
+            </figure>
         </aside>
-
-        <footer class="footer">
-            <h1>FOOTER</h1>
-        </footer>
     </div>
 
 </body>
