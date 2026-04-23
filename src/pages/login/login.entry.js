@@ -1,9 +1,21 @@
 import "../../shared/styles/global.css"
 import "./login.css";
 import { validator } from '../../shared/utils/validations.js';
+import { authSession } from "../../shared/utils/authSession.js";
 import bcrypt from "bcryptjs";
 
 const form = document.getElementById('login-form');
+
+// Mensagem de erros em casos extremos, como usuário excluído manualmente durante uma sessão.
+const errorMessage = sessionStorage.getItem('lokal.errorMessage');
+if(errorMessage){
+    const warning = document.createElement('p');
+    warning.textContent = errorMessage;
+    warning.classList.add('warning');
+    form.prepend(warning);
+    sessionStorage.removeItem('lokal.errorMessage');
+}
+
 const email = document.getElementById('email');
 const password = document.getElementById('password');
 email.addEventListener('input', clearWarning);
@@ -50,6 +62,7 @@ form.addEventListener('submit', async (event) => {
 
     const success = await logIn(email.value.trim(), password.value);
     if (success) {
+        authSession.setCurrentUser(email.value);
         window.location.replace("dashboard.html");
     } else {
         const warning = document.createElement('p');

@@ -60,6 +60,8 @@ async function register(email, password) {
         const newUser = {
             email: email,
             password: hashedPassword,
+            projects: [],
+            tasks: []
         }
 
         const json = JSON.stringify(newUser);
