@@ -1,14 +1,22 @@
 .content-menu {
-  background: linear-gradient(
+  background-color: white;
+  background-image: linear-gradient(
     180deg,
     rgba(53, 215, 159, 0.1) 0%,
     rgba(29, 187, 127, 0.1) 100%
   );
   padding: 1rem;
   color: #202020;
-  width: 15rem;
+  height: 100vh;
+  width: min(75vw, 22rem);
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  z-index: 30;
+  transform: translateX(0);
+  transition: transform 0.3s ease-in-out;
 }
-
 
 header {
   position: relative;
@@ -16,10 +24,10 @@ header {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .avatar-svg {
-  width: 10rem;
   height: 2rem;
 }
 
@@ -39,12 +47,12 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 10rem;
+  width: min(60vw, 10rem);
   border: none;
   border-radius: 0.5rem;
   background-color: transparent;
-  padding: 0.2rem 1rem;
-  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  gap: 0.3rem;
   font-weight: bold;
   position: relative;
 }
@@ -128,7 +136,17 @@ header {
   background-color: transparent;
   border: none;
   border-radius: 0.5rem;
-  padding: 0.3rem;
+  padding: 0.5rem 0.5rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.menu-button img {
+  filter: invert(49%) sepia(96%) saturate(342%) hue-rotate(109deg)
+    brightness(93%) contrast(86%);
 }
 
 .menu-button:hover {
@@ -141,16 +159,41 @@ header {
   background-color: transparent;
 }
 
+.menu-button.side {
+  width: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-button.side img {
+  filter: invert(80%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(60%)
+    contrast(90%);
+}
+
+.menu-button.add-task {
+  color: #26a97d;
+  font-weight: bold;
+  padding: 0.5rem 1.5rem;
+}
+
 @media (min-width: 768px) {
   .content-menu {
-    background: linear-gradient(
+    background-color: white;
+    background-image: linear-gradient(
       180deg,
       rgba(53, 215, 159, 0.1) 0%,
       rgba(29, 187, 127, 0.1) 100%
     );
     padding: 1rem;
     color: #202020;
-    grid-column: 1 / 2;
+    height: 100%;
     width: 100%;
+    position: static;
+    grid-column: 1 / 2;
+    overflow-y: visible;
+    z-index: 0;
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
   }
 }

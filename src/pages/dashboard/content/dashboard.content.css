@@ -9,8 +9,15 @@
   align-items: flex-start;
 }
 
-.is-hidden {
+.menu-button.side.content.is-hidden {
   display: none;
+}
+
+.menu-button.side.content {
+  width: 15%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (min-width: 768px) {
@@ -20,5 +27,12 @@
     padding: 1rem;
     min-height: 100vh;
     grid-column: 2 / -1;
+  }
+
+  .menu-button.side.content {
+    width: 3%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }

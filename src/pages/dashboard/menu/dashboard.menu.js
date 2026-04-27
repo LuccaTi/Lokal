@@ -3,6 +3,7 @@ import { authSession } from "../../../shared/utils/authSession.js";
 import arrowDownIcon from "../assets/icons/menu/arrow-down-svgrepo-com.svg";
 import exitIcon from "../assets/icons/menu/exit-logout-sign-out-svgrepo-com.svg";
 import sidebarIcon from "../assets/icons/menu/sidebar-right-svgrepo-com.svg";
+import plusIcon from "../assets/icons/menu/plus-circle-svgrepo-com.svg";
 
 const menuCreator = {
 
@@ -92,16 +93,29 @@ const menuCreator = {
     },
 
     createSideButton() {
-        const sideButton = document.createElement('button');
-        sideButton.setAttribute('type', 'button');
-        sideButton.classList.add('menu-button');
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('menu-button', 'side');
 
-        const sideIcon = document.createElement('img');
-        sideIcon.src = sidebarIcon;
-        sideIcon.classList.add('menu-icon');
+        const icon = document.createElement('img');
+        icon.src = sidebarIcon;
+        icon.classList.add('menu-icon');
 
-        sideButton.append(sideIcon);
-        return sideButton;
+        button.append(icon);
+        return button;
+    },
+
+    createAddTaskButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('menu-button', 'add-task');
+
+        const icon = document.createElement('img');
+        icon.src = plusIcon;
+        icon.classList.add('menu-icon');
+
+        button.append(icon, 'Adicionar tarefa');
+        return button;
     }
 }
 

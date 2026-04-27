@@ -10,16 +10,16 @@ const contentCreator = {
     },
 
     createSideButton() {
-        const sideButton = document.createElement('button');
-        sideButton.setAttribute('type', 'button');
-        sideButton.classList.add('menu-button');
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('menu-button', 'side', 'content');
 
-        const sideIcon = document.createElement('img');
-        sideIcon.src = sidebarIcon;
-        sideIcon.classList.add('menu-icon');
+        const icon = document.createElement('img');
+        icon.src = sidebarIcon;
+        icon.classList.add('menu-icon');
 
-        sideButton.append(sideIcon);
-        return sideButton;
+        button.append(icon);
+        return button;
     }
 };
 

@@ -12,11 +12,31 @@
 }
 
 .container.menu-collapsed .content-menu {
-  display: none;
+  /*Puxa o menu pra esquerda.*/
+  transform: translateX(-100%);
 }
 
 .container.menu-collapsed .content-main {
   grid-column: 1/-1;
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 20;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
+}
+
+.menu-backdrop.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 @media (min-width: 768px) {
@@ -39,5 +59,9 @@
 
   .container.menu-collapsed .content-main {
     grid-column: 1/-1;
+  }
+
+  .menu-backdrop {
+    display: none;
   }
 }

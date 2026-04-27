@@ -25,6 +25,13 @@ function initDashboard() {
     const menuContainer = document.querySelector('.content-menu');
     const contentContainer = document.querySelector('.content-main');
 
+    const menuBackDrop = document.createElement('div');
+    menuBackDrop.classList.add('menu-backdrop');
+    mainContainer.append(menuBackDrop);
+
+    menuBackDrop.addEventListener('click', () => {
+        setMenuCollapsed(true);
+    });
 
     // Menu da dashboard
     const header = menuCreator.createHeader(currentUser);
@@ -32,8 +39,10 @@ function initDashboard() {
     const sideButtonMenu = menuCreator.createSideButton();
     sideButtonMenu.addEventListener('click', toggleMenu);
 
+    const addTaskButton = menuCreator.createAddTaskButton();
+
     header.append(sideButtonMenu);
-    menuContainer.append(header);
+    menuContainer.append(header, addTaskButton);
 
 
     // Conteúdo principal
@@ -64,13 +73,17 @@ function initDashboard() {
     function setMenuCollapsed(collapsed) {
         mainContainer.classList.toggle('menu-collapsed', collapsed);
         sideButtonMain.classList.toggle('is-hidden', !collapsed);
+
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        menuBackDrop.classList.toggle('is-visible', isMobile && !collapsed);
+
         if (collapsed) {
             closeMenuOverlays();
         }
     }
 
     document.addEventListener('click', (event) => {
-        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button');
+        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button, .menu-button');
 
         if (clickedInsideMenuControl) {
             return;
@@ -78,6 +91,9 @@ function initDashboard() {
         closeMenuOverlays();
         closeContentOverlays()
     });
+
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    setMenuCollapsed(isMobile);
 }
 
 initDashboard();
