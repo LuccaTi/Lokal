@@ -7,17 +7,18 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-}
-
-.menu-button.side.content.is-hidden {
-  display: none;
+  position: relative;
 }
 
 .menu-button.side.content {
-  width: 15%;
+  width: max-content;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  transition: all 0.3s ease-in-out;
 }
 
 @media (min-width: 768px) {
@@ -26,12 +27,16 @@
     color: #333;
     padding: 1rem;
     min-height: 100vh;
+    flex: 1;
+    min-width: 0;
+    transition: all 0.3s ease-in-out;
   }
 
   .menu-button.side.content {
-    width: 3%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    transform: translateX(-4rem);
+  }
+
+  .container.menu-collapsed .menu-button.side.content {
+    transform: translateX(0);
   }
 }

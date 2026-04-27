@@ -187,14 +187,17 @@ header {
     );
     padding: 1rem;
     color: #202020;
-    height: 100%;
-    width: min(75vw, 22rem);
-    position: fixed;
-    top: 0;
-    left: 0;
+    height: 100vh;
     overflow-y: auto;
-    z-index: 30;
-    transform: translateX(0);
-    transition: transform 0.3s ease-in-out;
+    position: static;
+    width: 22rem;
+    flex-shrink: 0;
+    z-index: 0;
+    transition: margin-left 0.3s ease-in-out;
+    margin-left: 0;
+  }
+
+  .menu-button.side {
+    display: none;
   }
 }

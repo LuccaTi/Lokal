@@ -38,16 +38,14 @@ function initDashboard() {
 
     const sideButtonMenu = menuCreator.createSideButton();
     sideButtonMenu.addEventListener('click', toggleMenu);
+    header.append(sideButtonMenu);
+
 
     const addTaskButton = menuCreator.createAddTaskButton();
-
-    header.append(sideButtonMenu);
     menuContainer.append(header, addTaskButton);
-
 
     // Conteúdo principal
     const sideButtonMain = contentCreator.createSideButton();
-    sideButtonMain.classList.add('is-hidden');
     sideButtonMain.addEventListener('click', toggleMenu);
     contentContainer.append(sideButtonMain);
 
@@ -72,7 +70,6 @@ function initDashboard() {
 
     function setMenuCollapsed(collapsed) {
         mainContainer.classList.toggle('menu-collapsed', collapsed);
-        sideButtonMain.classList.toggle('is-hidden', !collapsed);
 
         const isMobile = window.matchMedia('(max-width: 767px)').matches;
         menuBackDrop.classList.toggle('is-visible', isMobile && !collapsed);

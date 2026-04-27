@@ -41,23 +41,16 @@
 
 @media (min-width: 768px) {
   .container {
-    display: grid;
-    grid-template-rows: auto;
+    display: flex;
     text-align: center;
     min-height: 100vh;
     color: white;
-  }
-
-  .container.menu-collapsed {
-    grid-template-columns: 1fr;
+    overflow-x: hidden;
   }
 
   .container.menu-collapsed .content-menu {
-    transform: translateX(-100%);
-  }
-
-  .container.menu-collapsed .content-main {
-    grid-column: 1/-1;
+    margin-left: -22rem;
+    transform: translateX(0);
   }
 
   .menu-backdrop {
