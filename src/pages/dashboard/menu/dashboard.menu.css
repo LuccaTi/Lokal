@@ -188,11 +188,12 @@ header {
     padding: 1rem;
     color: #202020;
     height: 100%;
-    width: 100%;
-    position: static;
-    grid-column: 1 / 2;
-    overflow-y: visible;
-    z-index: 0;
+    width: min(75vw, 22rem);
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    z-index: 30;
     transform: translateX(0);
     transition: transform 0.3s ease-in-out;
   }

@@ -4,6 +4,7 @@ import arrowDownIcon from "../assets/icons/menu/arrow-down-svgrepo-com.svg";
 import exitIcon from "../assets/icons/menu/exit-logout-sign-out-svgrepo-com.svg";
 import sidebarIcon from "../assets/icons/menu/sidebar-right-svgrepo-com.svg";
 import plusIcon from "../assets/icons/menu/plus-circle-svgrepo-com.svg";
+import todayIcon from "../assets/icons/menu/today-outline-svgrepo-com.svg";
 
 const menuCreator = {
 
@@ -116,6 +117,10 @@ const menuCreator = {
 
         button.append(icon, 'Adicionar tarefa');
         return button;
+    },
+
+    createTodayButton(){
+        
     }
 }
 
