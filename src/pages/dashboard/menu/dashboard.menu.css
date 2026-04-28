@@ -136,17 +136,17 @@ header {
   background-color: transparent;
   border: none;
   border-radius: 0.5rem;
-  padding: 0.5rem 0.5rem;
+  padding: 1rem 1.5rem;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   gap: 0.5rem;
   width: 100%;
+  font-weight: bold;
 }
 
 .menu-button img {
-  filter: invert(49%) sepia(96%) saturate(342%) hue-rotate(109deg)
-    brightness(93%) contrast(86%);
+  filter: brightness(0);
 }
 
 .menu-button:hover {
@@ -164,17 +164,69 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0.5rem 0.5rem;
 }
 
 .menu-button.side img {
-  filter: invert(80%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(60%)
-    contrast(90%);
+  filter: brightness(0);
 }
 
 .menu-button.add-task {
   color: #26a97d;
   font-weight: bold;
   padding: 0.5rem 1.5rem;
+}
+
+.menu-button.add-task img {
+  filter: invert(49%) sepia(96%) saturate(342%) hue-rotate(109deg)
+    brightness(93%) contrast(86%);
+}
+
+#projects-buttons-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+#plus-button {
+  position: absolute;
+  right: 3.5rem;
+  width: auto;
+  padding: 0.5rem;
+  justify-content: center;
+}
+
+#plus-button:hover {
+  cursor: pointer;
+  background-color: #b9b7b7;
+}
+
+#plus-button:active {
+  cursor: pointer;
+  background-color: transparent;
+}
+
+#arrow-button {
+  position: absolute;
+  right: 0.5rem;
+  width: auto;
+  padding: 0.5rem;
+  justify-content: center;
+}
+
+#arrow-button:hover {
+  cursor: pointer;
+  background-color: #b9b7b7;
+}
+
+#arrow-button:active {
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.project-button-hovered {
+  background-color: #dedddd;
 }
 
 @media (min-width: 768px) {

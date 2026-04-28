@@ -40,9 +40,30 @@ function initDashboard() {
     sideButtonMenu.addEventListener('click', toggleMenu);
     header.append(sideButtonMenu);
 
-
     const addTaskButton = menuCreator.createAddTaskButton();
-    menuContainer.append(header, addTaskButton);
+    const todayButton = menuCreator.createTodayButton();
+    const shortlyButton = menuCreator.createShortlyButton();
+    const concludedButton = menuCreator.createConcludedButton();
+
+    const buttonContainer = menuCreator.createProjectsButtonsWrapper();
+
+    const toggleHover = (force) => myProjectsButton.classList.toggle('project-button-hovered', force);
+
+    const myProjectsButton = menuCreator.createProjectsButton();
+    myProjectsButton.addEventListener('mouseenter', () => toggleHover(true));
+    myProjectsButton.addEventListener('mouseleave', () => toggleHover(false));
+    
+    const plusButton = menuCreator.createPlusButton();
+    plusButton.addEventListener('mouseenter', () => toggleHover(true));
+    plusButton.addEventListener('mouseleave', () => toggleHover(false));
+
+    const arrowButton = menuCreator.createArrowButton();
+    arrowButton.addEventListener('mouseenter', () => toggleHover(true));
+    arrowButton.addEventListener('mouseleave', () => toggleHover(false));
+
+    buttonContainer.append(myProjectsButton, plusButton, arrowButton);
+
+    menuContainer.append(header, addTaskButton, todayButton, shortlyButton, concludedButton, buttonContainer);
 
     // Conteúdo principal
     const sideButtonMain = contentCreator.createSideButton();

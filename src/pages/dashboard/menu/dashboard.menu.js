@@ -3,8 +3,11 @@ import { authSession } from "../../../shared/utils/authSession.js";
 import arrowDownIcon from "../assets/icons/menu/arrow-down-svgrepo-com.svg";
 import exitIcon from "../assets/icons/menu/exit-logout-sign-out-svgrepo-com.svg";
 import sidebarIcon from "../assets/icons/menu/sidebar-right-svgrepo-com.svg";
-import plusIcon from "../assets/icons/menu/plus-circle-svgrepo-com.svg";
+import plusCircleIcon from "../assets/icons/menu/plus-circle-svgrepo-com.svg";
 import todayIcon from "../assets/icons/menu/today-outline-svgrepo-com.svg";
+import shortlyIcon from "../assets/icons/menu/calendar-alt-svgrepo-com.svg";
+import concludedIcon from "../assets/icons/menu/checklist-minimalistic-svgrepo-com.svg";
+import plusSymbol from "../assets/icons/menu/plus-svgrepo-com.svg";
 
 const menuCreator = {
 
@@ -44,6 +47,7 @@ const menuCreator = {
         const avatar = createAvatar(userName);
         const arrowIcon = document.createElement('img');
         arrowIcon.src = arrowDownIcon;
+        arrowIcon.alt = 'Arrow icon';
         arrowIcon.setAttribute('id', 'arrow-icon');
 
         headerButton.append(avatar, userName, arrowIcon);
@@ -112,15 +116,100 @@ const menuCreator = {
         button.classList.add('menu-button', 'add-task');
 
         const icon = document.createElement('img');
-        icon.src = plusIcon;
+        icon.src = plusCircleIcon;
+        icon.alt = 'Plus circle icon';
         icon.classList.add('menu-icon');
 
         button.append(icon, 'Adicionar tarefa');
         return button;
     },
 
-    createTodayButton(){
+    createTodayButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('menu-button');
+
+        const icon = document.createElement('img');
+        icon.src = todayIcon;
+        icon.alt = 'Today icon';
+        icon.classList.add('menu-icon');
+
+        button.append(icon, 'Hoje');
+        return button;
+    },
+
+    createShortlyButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('menu-button');
+
+        const icon = document.createElement('img');
+        icon.src = shortlyIcon;
+        icon.alt = 'Shortly icon';
+        icon.classList.add('menu-icon');
+
+        button.append(icon, 'Em breve');
+        return button;
+    },
+
+    createConcludedButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('menu-button');
+
+        const icon = document.createElement('img');
+        icon.src = concludedIcon;
+        icon.alt = 'Concluded icon';
+        icon.classList.add('menu-icon');
+
+        button.append(icon, 'Concluídos');
+        return button;
+    },
+
+    createProjectsButtonsWrapper() {
+        const wrapper = document.createElement('div');
+        wrapper.setAttribute('id', 'projects-buttons-container');
+        return wrapper;
+    },
+
+    createProjectsButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('menu-button');
+        button.textContent = 'Meus projetos';
+        return button;
+    },
+
+    createPlusButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.setAttribute('id', 'plus-button');
+        button.classList.add('menu-button');
         
+        const icon = document.createElement('img');
+        icon.src = plusSymbol;
+        icon.alt = 'Plus symbol';
+        icon.classList.add('menu-icon');
+
+        button.append(icon);
+
+        return button;
+    },
+
+    createArrowButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.setAttribute('id', 'arrow-button');
+        button.classList.add('menu-button');
+        
+        const icon = document.createElement('img');
+        icon.src = arrowDownIcon;
+        icon.alt = 'Arrow icon';
+        icon.classList.add('menu-icon');
+
+        button.append(icon);
+
+        return button;
     }
 }
 
