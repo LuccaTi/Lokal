@@ -8,13 +8,18 @@ import todayIcon from "../assets/icons/menu/today-outline-svgrepo-com.svg";
 import shortlyIcon from "../assets/icons/menu/calendar-alt-svgrepo-com.svg";
 import concludedIcon from "../assets/icons/menu/checklist-minimalistic-svgrepo-com.svg";
 import plusSymbol from "../assets/icons/menu/plus-svgrepo-com.svg";
+import historySymbol from "../assets/icons/menu/history-svgrepo-com.svg";
+import hashtagSymbol from "../assets/icons/menu/hashtag-svgrepo-com.svg";
 
 const menuCreator = {
 
     createHeader(user) {
         const header = document.createElement('header');
         header.classList.add('header');
+        return header;
+    },
 
+    createHeaderButton(user) {
         const headerButton = document.createElement('button');
         headerButton.setAttribute('type', 'button');
         headerButton.setAttribute('id', 'header-button');
@@ -51,50 +56,35 @@ const menuCreator = {
         arrowIcon.setAttribute('id', 'arrow-icon');
 
         headerButton.append(avatar, userName, arrowIcon);
+        
+        return headerButton;
+    },
 
-        const createOverlay = (user) => {
-            const div = document.createElement('div');
-            div.classList.add('overlay');
+    createHeaderOverlay(user) {
+        const div = document.createElement('div');
+        div.classList.add('overlay');
 
-            const dividerTop = document.createElement('div');
-            dividerTop.classList.add('overlay-divider');
+        const dividerTop = document.createElement('div');
+        dividerTop.classList.add('overlay-divider');
 
-            const button = document.createElement('button');
-            button.setAttribute('type', 'button');
-            button.setAttribute('id', 'logout-button');
-            button.addEventListener('click', () => {
-                authSession.logout();
-            });
-
-            const icon = document.createElement('img');
-            icon.src = exitIcon;
-            icon.setAttribute('id', 'exit-icon');
-
-            const dividerBottom = document.createElement('div');
-            dividerBottom.classList.add('overlay-divider');
-
-            button.append(icon, 'Sair');
-
-            div.append(dividerTop, button, dividerBottom);
-            return div;
-        };
-        headerButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-
-            let existingOverlay = header.querySelector('.overlay');
-
-            if (!existingOverlay) {
-                const overlay = createOverlay(user);
-                header.append(overlay);
-                headerButton.classList.add('active');
-            } else {
-                existingOverlay.remove();
-                headerButton.classList.remove('active');
-            }
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.setAttribute('id', 'logout-button');
+        button.addEventListener('click', () => {
+            authSession.logout();
         });
 
-        header.append(headerButton);
-        return header;
+        const icon = document.createElement('img');
+        icon.src = exitIcon;
+        icon.setAttribute('id', 'exit-icon');
+
+        const dividerBottom = document.createElement('div');
+        dividerBottom.classList.add('overlay-divider');
+
+        button.append(icon, 'Sair');
+
+        div.append(dividerTop, button, dividerBottom);
+        return div;
     },
 
     createSideButton() {
@@ -172,7 +162,7 @@ const menuCreator = {
         return wrapper;
     },
 
-    createProjectsButton() {
+    createMyProjectsButton() {
         const button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.classList.add('menu-button');
@@ -185,7 +175,7 @@ const menuCreator = {
         button.setAttribute('type', 'button');
         button.setAttribute('id', 'plus-button');
         button.classList.add('menu-button');
-        
+
         const icon = document.createElement('img');
         icon.src = plusSymbol;
         icon.alt = 'Plus symbol';
@@ -196,12 +186,36 @@ const menuCreator = {
         return button;
     },
 
+    createPlusButtonOverlay() {
+        const div = document.createElement('div');
+        div.classList.add('overlay');
+
+        const dividerTop = document.createElement('div');
+        dividerTop.classList.add('overlay-divider');
+
+        const icon = document.createElement('img');
+        icon.src = hashtagSymbol;
+        icon.classList.add('menu-icon');
+
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('overlay-button');
+
+        const dividerBottom = document.createElement('div');
+        dividerBottom.classList.add('overlay-divider');
+
+        button.append(icon, 'Adicionar projeto');
+
+        div.append(dividerTop, button, dividerBottom);
+        return div;
+    },
+
     createArrowButton() {
         const button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.setAttribute('id', 'arrow-button');
         button.classList.add('menu-button');
-        
+
         const icon = document.createElement('img');
         icon.src = arrowDownIcon;
         icon.alt = 'Arrow icon';
@@ -210,6 +224,25 @@ const menuCreator = {
         button.append(icon);
 
         return button;
+    },
+
+    createHistoryButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('menu-button');
+
+        const icon = document.createElement('img');
+        icon.src = historySymbol;
+        icon.alt = 'History icon';
+        icon.classList.add('menu-icon');
+
+        button.append(icon, 'Histórico');
+
+        return button;
+    },
+
+    createProjectButton() {
+
     }
 }
 

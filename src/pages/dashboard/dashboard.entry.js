@@ -35,35 +35,89 @@ function initDashboard() {
 
     // Menu da dashboard
     const header = menuCreator.createHeader(currentUser);
+    const headerButton = menuCreator.createHeaderButton(currentUser);
+    const headerOverlay = menuCreator.createHeaderOverlay(currentUser);
+
+    headerButton.addEventListener('click', (event) => {
+        let existingOverlay = header.querySelector('.overlay');
+
+        if (!existingOverlay) {
+            closeMenuOverlays();
+            const overlay = menuCreator.createHeaderOverlay(currentUser);
+            header.append(overlay);
+            headerButton.classList.add('active');
+        } else {
+            existingOverlay.remove();
+            headerButton.classList.remove('active');
+        }
+    });
 
     const sideButtonMenu = menuCreator.createSideButton();
     sideButtonMenu.addEventListener('click', toggleMenu);
-    header.append(sideButtonMenu);
+    header.append(headerButton, sideButtonMenu);
 
     const addTaskButton = menuCreator.createAddTaskButton();
     const todayButton = menuCreator.createTodayButton();
     const shortlyButton = menuCreator.createShortlyButton();
     const concludedButton = menuCreator.createConcludedButton();
+    const historyButton = menuCreator.createHistoryButton();
 
     const buttonContainer = menuCreator.createProjectsButtonsWrapper();
 
     const toggleHover = (force) => myProjectsButton.classList.toggle('project-button-hovered', force);
 
-    const myProjectsButton = menuCreator.createProjectsButton();
+    const myProjectsButton = menuCreator.createMyProjectsButton();
     myProjectsButton.addEventListener('mouseenter', () => toggleHover(true));
     myProjectsButton.addEventListener('mouseleave', () => toggleHover(false));
-    
+
     const plusButton = menuCreator.createPlusButton();
     plusButton.addEventListener('mouseenter', () => toggleHover(true));
     plusButton.addEventListener('mouseleave', () => toggleHover(false));
+    const plusButtonOverlay = menuCreator.createPlusButtonOverlay();
+
+    plusButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        let existingOverlay = document.querySelector('.plus-overlay-portal');
+
+        if (!existingOverlay) {
+            closeMenuOverlays();
+            const overlay = menuCreator.createPlusButtonOverlay();
+            overlay.classList.add('plus-overlay-portal');
+
+            const addProjectButton = overlay.querySelector('.overlay-button');
+            addProjectButton.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                overlay.remove();    
+                plusButton.classList.remove('plus-button-clicked');
+                
+                console.log("Abrir modal de criação de projeto no conteúdo principal!");
+            });
+
+            const rect = plusButton.getBoundingClientRect();
+
+            overlay.style.position = 'fixed';
+            overlay.style.top = `${rect.bottom + 8}px`;
+            overlay.style.left = `${rect.left}px`;
+            overlay.style.zIndex = '50';
+
+            document.body.append(overlay);
+
+            plusButton.classList.add('plus-button-clicked');
+        } else {
+            existingOverlay.remove();
+            plusButton.classList.remove('plus-button-clicked');
+        }
+    });
 
     const arrowButton = menuCreator.createArrowButton();
     arrowButton.addEventListener('mouseenter', () => toggleHover(true));
     arrowButton.addEventListener('mouseleave', () => toggleHover(false));
 
+
     buttonContainer.append(myProjectsButton, plusButton, arrowButton);
 
-    menuContainer.append(header, addTaskButton, todayButton, shortlyButton, concludedButton, buttonContainer);
+    menuContainer.append(header, addTaskButton, todayButton, shortlyButton, concludedButton, historyButton, buttonContainer);
 
     // Conteúdo principal
     const sideButtonMain = contentCreator.createSideButton();
@@ -71,11 +125,13 @@ function initDashboard() {
     contentContainer.append(sideButtonMain);
 
     function closeMenuOverlays() {
-        const overlays = menuContainer.querySelectorAll('.overlay');
+        const overlays = document.querySelectorAll('.overlay');
         overlays.forEach((overlay) => overlay.remove());
 
-        const activeButtons = menuContainer.querySelectorAll('#header-button.active');
-        activeButtons.forEach((button) => button.classList.remove('active'));
+        const headerButtons = menuContainer.querySelectorAll('#header-button.active');
+        headerButtons.forEach((button) => button.classList.remove('active'));
+
+        plusButton.classList.remove('plus-button-clicked');
     }
 
     function closeContentOverlays() {
@@ -101,7 +157,7 @@ function initDashboard() {
     }
 
     document.addEventListener('click', (event) => {
-        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button, .menu-button');
+        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button');
 
         if (clickedInsideMenuControl) {
             return;
@@ -109,6 +165,11 @@ function initDashboard() {
         closeMenuOverlays();
         closeContentOverlays()
     });
+
+    window.addEventListener('resize', () => {
+        closeMenuOverlays();
+        closeContentOverlays();
+    })
 
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     setMenuCollapsed(isMobile);
