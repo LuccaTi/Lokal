@@ -3,6 +3,7 @@ import "../../shared/styles/global.css"
 import { menuCreator } from "./menu/dashboard.menu.js";
 import { contentCreator } from "./content/dashboard.content.js";
 
+
 function initDashboard() {
     const currentUserEmail = sessionStorage.getItem('lokal.currentUserEmail');
     if (!currentUserEmail) {
@@ -21,9 +22,24 @@ function initDashboard() {
 
     console.log(`Usuário autenticado: ${currentUser.email}`);
 
+    const testProjects = [
+        {
+            projectName: 'Projeto 1 teste'
+        },
+        {
+            projectName: 'Projeto 2 teste'
+        }
+    ]
+
+    currentUser.projects = testProjects;
+
     const mainContainer = document.querySelector('.container');
     const menuContainer = document.querySelector('.content-menu');
     const contentContainer = document.querySelector('.content-main');
+
+    const sideButtonMenu = menuCreator.createSideButton();
+    sideButtonMenu.addEventListener('click', toggleMenu);
+    mainContainer.append(sideButtonMenu);
 
     const menuBackDrop = document.createElement('div');
     menuBackDrop.classList.add('menu-backdrop');
@@ -33,18 +49,25 @@ function initDashboard() {
         setMenuCollapsed(true);
     });
 
-    // Menu da dashboard
+
+    // Menu da dashboard:
     const header = menuCreator.createHeader(currentUser);
     const headerButton = menuCreator.createHeaderButton(currentUser);
     const headerOverlay = menuCreator.createHeaderOverlay(currentUser);
 
     headerButton.addEventListener('click', (event) => {
-        let existingOverlay = header.querySelector('.overlay');
+        event.stopPropagation();
+        
+        let existingOverlay = document.querySelector('.header-overlay-portal');
 
         if (!existingOverlay) {
             closeMenuOverlays();
             const overlay = menuCreator.createHeaderOverlay(currentUser);
-            header.append(overlay);
+            overlay.classList.add('header-overlay-portal');
+            
+            document.body.append(overlay);
+            positionOverlay(headerButton, overlay);
+            
             headerButton.classList.add('active');
         } else {
             existingOverlay.remove();
@@ -52,11 +75,12 @@ function initDashboard() {
         }
     });
 
-    const sideButtonMenu = menuCreator.createSideButton();
-    sideButtonMenu.addEventListener('click', toggleMenu);
-    header.append(headerButton, sideButtonMenu);
-
     const addTaskButton = menuCreator.createAddTaskButton();
+    header.append(headerButton, addTaskButton);
+
+    const menuTop = menuCreator.createMenuTop();
+    menuTop.append(header);
+
     const todayButton = menuCreator.createTodayButton();
     const shortlyButton = menuCreator.createShortlyButton();
     const concludedButton = menuCreator.createConcludedButton();
@@ -87,23 +111,21 @@ function initDashboard() {
 
             const addProjectButton = overlay.querySelector('.overlay-button');
             addProjectButton.addEventListener('click', (e) => {
-                e.stopPropagation(); 
-                overlay.remove();    
+                e.stopPropagation();
+                overlay.remove();
                 plusButton.classList.remove('plus-button-clicked');
-                
+
                 console.log("Abrir modal de criação de projeto no conteúdo principal!");
             });
 
-            const rect = plusButton.getBoundingClientRect();
-
-            overlay.style.position = 'fixed';
-            overlay.style.top = `${rect.bottom + 8}px`;
-            overlay.style.left = `${rect.left}px`;
-            overlay.style.zIndex = '50';
-
             document.body.append(overlay);
 
+            positionOverlay(plusButton, overlay);
+
+            // Adicionar um listener pra impedir scroll do menu quando o botão plus está ativo.
+
             plusButton.classList.add('plus-button-clicked');
+            unclickArrowButton();
         } else {
             existingOverlay.remove();
             plusButton.classList.remove('plus-button-clicked');
@@ -113,25 +135,56 @@ function initDashboard() {
     const arrowButton = menuCreator.createArrowButton();
     arrowButton.addEventListener('mouseenter', () => toggleHover(true));
     arrowButton.addEventListener('mouseleave', () => toggleHover(false));
+    const arrowButtonOverlay = menuCreator.createArrowButtonOverlay();
 
+    const unclickArrowButton = () => {
+        arrowButton.classList.remove('arrow-button-clicked');
+        arrowButton.classList.add('arrow-button-unclicked');
+    }
+
+    arrowButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        
+        let isOpen = arrowOverlay.classList.contains('arrow-overlay-open');
+        
+        closeMenuOverlays();
+
+        if (!isOpen) {
+            arrowOverlay.innerHTML = '';
+
+            currentUser.projects.forEach((element) => {
+                let button = menuCreator.createProjectButton(element.projectName);
+                arrowOverlay.append(button);
+            });
+
+            arrowOverlay.classList.add('arrow-overlay-open');
+            arrowButton.classList.add('arrow-button-clicked');
+            arrowButton.classList.remove('arrow-button-unclicked');
+        } else {
+            unclickArrowButton();
+        }
+    })
 
     buttonContainer.append(myProjectsButton, plusButton, arrowButton);
 
-    menuContainer.append(header, addTaskButton, todayButton, shortlyButton, concludedButton, historyButton, buttonContainer);
+    const arrowOverlay = menuCreator.createArrowButtonOverlay();
 
-    // Conteúdo principal
-    const sideButtonMain = contentCreator.createSideButton();
-    sideButtonMain.addEventListener('click', toggleMenu);
-    contentContainer.append(sideButtonMain);
+    const menuScroll = menuCreator.createMenuScroll();
+    menuScroll.append(todayButton, shortlyButton, concludedButton, historyButton, buttonContainer, arrowOverlay)
 
+    menuContainer.append(menuTop, menuScroll);
+
+    // Funções auxiliares:
     function closeMenuOverlays() {
-        const overlays = document.querySelectorAll('.overlay');
+        // O operador not garante que o overlay do arrow não seja removido, só fechado.
+        const overlays = document.querySelectorAll('.overlay:not(#arrow-button-overlay)');
         overlays.forEach((overlay) => overlay.remove());
 
         const headerButtons = menuContainer.querySelectorAll('#header-button.active');
         headerButtons.forEach((button) => button.classList.remove('active'));
 
         plusButton.classList.remove('plus-button-clicked');
+        arrowOverlay.classList.remove('arrow-overlay-open');
     }
 
     function closeContentOverlays() {
@@ -147,6 +200,7 @@ function initDashboard() {
 
     function setMenuCollapsed(collapsed) {
         mainContainer.classList.toggle('menu-collapsed', collapsed);
+        sideButtonMenu.classList.toggle('menu-collapsed', collapsed);
 
         const isMobile = window.matchMedia('(max-width: 767px)').matches;
         menuBackDrop.classList.toggle('is-visible', isMobile && !collapsed);
@@ -154,6 +208,38 @@ function initDashboard() {
         if (collapsed) {
             closeMenuOverlays();
         }
+    }
+
+    function positionOverlay(anchorButton, overlay) {
+        const rect = anchorButton.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const overlayHeight = overlay.offsetHeight;
+
+        const spaceBelow = viewportHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        const margin = 8;
+
+        let topPosition;
+        if (spaceBelow >= overlayHeight + margin) {
+            topPosition = rect.bottom + margin;
+        } else if (spaceAbove >= overlayHeight + margin) {
+            topPosition = rect.top - overlayHeight - margin;
+        } else {
+            topPosition = rect.bottom + margin;
+        }
+
+        let leftPosition = rect.left;
+        const overlayWidth = overlay.offsetWidth;
+        const maxLeftPosition = window.innerWidth - overlayWidth - margin;
+
+        if(leftPosition + overlayWidth > window.innerWidth){
+            leftPosition = maxLeftPosition > 0 ? maxLeftPosition : margin;
+        }
+
+        overlay.style.position = 'fixed';
+        overlay.style.top = `${topPosition}px`;
+        overlay.style.left = `${leftPosition}px`;
+        overlay.style.zIndex = '50';
     }
 
     document.addEventListener('click', (event) => {
@@ -164,6 +250,8 @@ function initDashboard() {
         }
         closeMenuOverlays();
         closeContentOverlays()
+
+        unclickArrowButton();
     });
 
     window.addEventListener('resize', () => {

@@ -87,6 +87,12 @@ const menuCreator = {
         return div;
     },
 
+    createMenuTop(){
+        const div = document.createElement('div');
+        div.classList.add('menu-top');
+        return div; 
+    },
+
     createSideButton() {
         const button = document.createElement('button');
         button.setAttribute('type', 'button');
@@ -226,6 +232,26 @@ const menuCreator = {
         return button;
     },
 
+    createArrowButtonOverlay(){
+        const div = document.createElement('div');
+        div.classList.add('overlay');
+        div.setAttribute('id', 'arrow-button-overlay');
+        return div;
+    },
+
+    createProjectButton(projectName){
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('overlay-button', 'project-button');
+
+        const img = document.createElement('img');
+        img.src = hashtagSymbol;
+        img.alt = 'Hashtag icon';
+
+        button.append(img, projectName);
+        return button;
+    },
+
     createHistoryButton() {
         const button = document.createElement('button');
         button.setAttribute('type', 'button');
@@ -241,8 +267,10 @@ const menuCreator = {
         return button;
     },
 
-    createProjectButton() {
-
+    createMenuScroll(){
+        const div = document.createElement('div');
+        div.classList.add('menu-scroll');
+        return div;
     }
 }
 
