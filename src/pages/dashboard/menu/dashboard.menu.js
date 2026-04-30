@@ -1,5 +1,5 @@
 import "./dashboard.menu.css";
-import { authSession } from "../../../shared/utils/authSession.js";
+import { logout } from "../../../shared/utils/authSession.js";
 import arrowDownIcon from "../assets/icons/menu/arrow-down-svgrepo-com.svg";
 import exitIcon from "../assets/icons/menu/exit-logout-sign-out-svgrepo-com.svg";
 import sidebarIcon from "../assets/icons/menu/sidebar-right-svgrepo-com.svg";
@@ -71,7 +71,7 @@ const menuCreator = {
         button.setAttribute('type', 'button');
         button.setAttribute('id', 'logout-button');
         button.addEventListener('click', () => {
-            authSession.logout();
+            logout();
         });
 
         const icon = document.createElement('img');

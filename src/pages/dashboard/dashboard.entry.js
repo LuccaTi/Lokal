@@ -2,36 +2,17 @@ import "./dashboard.entry.css";
 import "../../shared/styles/global.css"
 import { menuCreator } from "./menu/dashboard.menu.js";
 import { contentCreator } from "./content/dashboard.content.js";
+import { requireAuthenticatedUser } from "../../shared/utils/authSession.js";
 
 
 function initDashboard() {
-    const currentUserEmail = sessionStorage.getItem('lokal.currentUserEmail');
-    if (!currentUserEmail) {
-        window.location.replace('login.html');
-        return;
-    }
 
-    const rawUser = localStorage.getItem(currentUserEmail);
-    const currentUser = rawUser ? JSON.parse(rawUser) : null;
 
-    if (currentUser === null) {
-        sessionStorage.setItem('lokal.errorMessage', 'Não foi possível obter os dados do usuário. Faça login ou cadastre-se novamente.')
-        window.location.replace('login.html');
-        return;
-    }
+    const currentUser = requireAuthenticatedUser();
+
+    if (!currentUser) return;
 
     console.log(`Usuário autenticado: ${currentUser.email}`);
-
-    const testProjects = [
-        {
-            projectName: 'Projeto 1 teste'
-        },
-        {
-            projectName: 'Projeto 2 teste'
-        }
-    ]
-
-    currentUser.projects = testProjects;
 
     const mainContainer = document.querySelector('.container');
     const menuContainer = document.querySelector('.content-menu');
@@ -57,17 +38,17 @@ function initDashboard() {
 
     headerButton.addEventListener('click', (event) => {
         event.stopPropagation();
-        
+
         let existingOverlay = document.querySelector('.header-overlay-portal');
 
         if (!existingOverlay) {
             closeMenuOverlays();
             const overlay = menuCreator.createHeaderOverlay(currentUser);
             overlay.classList.add('header-overlay-portal');
-            
+
             document.body.append(overlay);
             positionOverlay(headerButton, overlay);
-            
+
             headerButton.classList.add('active');
         } else {
             existingOverlay.remove();
@@ -144,24 +125,26 @@ function initDashboard() {
 
     arrowButton.addEventListener('click', (event) => {
         event.stopPropagation();
-        
-        let isOpen = arrowOverlay.classList.contains('arrow-overlay-open');
-        
-        closeMenuOverlays();
 
-        if (!isOpen) {
-            arrowOverlay.innerHTML = '';
+        if (currentUser.projects.length > 0) {
+            let isOpen = arrowOverlay.classList.contains('arrow-overlay-open');
 
-            currentUser.projects.forEach((element) => {
-                let button = menuCreator.createProjectButton(element.projectName);
-                arrowOverlay.append(button);
-            });
+            closeMenuOverlays();
 
-            arrowOverlay.classList.add('arrow-overlay-open');
-            arrowButton.classList.add('arrow-button-clicked');
-            arrowButton.classList.remove('arrow-button-unclicked');
-        } else {
-            unclickArrowButton();
+            if (!isOpen) {
+                arrowOverlay.innerHTML = '';
+
+                currentUser.projects.forEach((element) => {
+                    let button = menuCreator.createProjectButton(element.projectName);
+                    arrowOverlay.append(button);
+                });
+
+                arrowOverlay.classList.add('arrow-overlay-open');
+                arrowButton.classList.add('arrow-button-clicked');
+                arrowButton.classList.remove('arrow-button-unclicked');
+            } else {
+                unclickArrowButton();
+            }
         }
     })
 
@@ -232,7 +215,7 @@ function initDashboard() {
         const overlayWidth = overlay.offsetWidth;
         const maxLeftPosition = window.innerWidth - overlayWidth - margin;
 
-        if(leftPosition + overlayWidth > window.innerWidth){
+        if (leftPosition + overlayWidth > window.innerWidth) {
             leftPosition = maxLeftPosition > 0 ? maxLeftPosition : margin;
         }
 

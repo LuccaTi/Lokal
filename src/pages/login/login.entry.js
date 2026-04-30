@@ -1,7 +1,7 @@
 import "../../shared/styles/global.css"
 import "./login.css";
-import { validator } from '../../shared/utils/validations.js';
-import { authSession } from "../../shared/utils/authSession.js";
+import { validateEmail } from '../../shared/utils/validations.js';
+import { setCurrentUser } from "../../shared/utils/authSession.js";
 import bcrypt from "bcryptjs";
 
 const form = document.getElementById('login-form');
@@ -51,7 +51,7 @@ form.addEventListener('submit', async (event) => {
         existingWarning.remove();
     }
 
-    const errorMessage = validator.validateEmail(email.value);
+    const errorMessage = validateEmail(email.value);
     if(errorMessage){
         const warning = document.createElement('p');
         warning.textContent = errorMessage;
@@ -62,7 +62,7 @@ form.addEventListener('submit', async (event) => {
 
     const success = await logIn(email.value.trim(), password.value);
     if (success) {
-        authSession.setCurrentUser(email.value);
+        setCurrentUser(email.value);
         window.location.replace("dashboard.html");
     } else {
         const warning = document.createElement('p');

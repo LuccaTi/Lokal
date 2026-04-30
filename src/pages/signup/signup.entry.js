@@ -1,6 +1,6 @@
 import "../../shared/styles/global.css"
 import "./signup.css";
-import { validator } from '../../shared/utils/validations.js';
+import { validateEmail, validatePassword, getPasswordStatus } from "../../shared/utils/validations.js";
 import bcrypt from "bcryptjs";
 
 const form = document.getElementById('signup-form');
@@ -19,7 +19,7 @@ password.addEventListener('input', (event) => {
 // Validação em tempo real
 password.addEventListener('input', () => {
     const passwordValue = password.value;
-    const status = validator.getPasswordStatus(passwordValue);
+    const status = getPasswordStatus(passwordValue);
     updateChecklistUI(status);
 })
 
@@ -88,7 +88,7 @@ form.addEventListener('submit', async (event) => {
         existingWarning.remove();
     }
 
-    const emailError = validator.validateEmail(email.value);
+    const emailError = validateEmail(email.value);
     if (emailError) {
         const warning = document.createElement('p');
         warning.textContent = emailError;
@@ -98,7 +98,7 @@ form.addEventListener('submit', async (event) => {
     }
 
     // Validação final antes de enviar
-    const passwordError = validator.validatePassword(password.value);
+    const passwordError = validatePassword(password.value);
 
     if (passwordError) {
         console.log("Validação falhou com erro:", passwordError);
