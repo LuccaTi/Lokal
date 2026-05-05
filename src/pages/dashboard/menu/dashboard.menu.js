@@ -10,6 +10,9 @@ import concludedIcon from "../assets/icons/menu/checklist-minimalistic-svgrepo-c
 import plusSymbol from "../assets/icons/menu/plus-svgrepo-com.svg";
 import historySymbol from "../assets/icons/menu/history-svgrepo-com.svg";
 import hashtagSymbol from "../assets/icons/menu/hashtag-svgrepo-com.svg";
+import dotsSymbol from "../assets/icons/menu/dot-menu-more-2-svgrepo-com.svg";
+import pencilSymbol from "../assets/icons/menu/pencil-svgrepo-com.svg";
+import crossSymbol from "../assets/icons/menu/cross-svgrepo-com.svg";
 
 const menuCreator = {
 
@@ -56,7 +59,7 @@ const menuCreator = {
         arrowIcon.setAttribute('id', 'arrow-icon');
 
         headerButton.append(avatar, userName, arrowIcon);
-        
+
         return headerButton;
     },
 
@@ -87,10 +90,10 @@ const menuCreator = {
         return div;
     },
 
-    createMenuTop(){
+    createMenuTop() {
         const div = document.createElement('div');
         div.classList.add('menu-top');
-        return div; 
+        return div;
     },
 
     createSideButton() {
@@ -232,24 +235,79 @@ const menuCreator = {
         return button;
     },
 
-    createArrowButtonOverlay(){
+    createArrowButtonOverlay() {
         const div = document.createElement('div');
         div.classList.add('overlay');
         div.setAttribute('id', 'arrow-button-overlay');
         return div;
     },
 
-    createProjectButton(projectName){
+    createProjectButtonDiv() {
+        const div = document.createElement('div');
+        div.classList.add('overlay-button-div');
+        return div;
+    },
+
+    createProjectButton(projectName) {
         const button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.classList.add('overlay-button', 'project-button');
 
-        const img = document.createElement('img');
-        img.src = hashtagSymbol;
-        img.alt = 'Hashtag icon';
+        const hashtag = document.createElement('img');
+        hashtag.src = hashtagSymbol;
+        hashtag.alt = 'Hashtag icon';
 
-        button.append(img, projectName);
+        button.append(hashtag, projectName);
         return button;
+    },
+
+    createEllipsisButton() {
+        const button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.classList.add('ellipsis-button');
+
+        const ellipsis = document.createElement('img');
+        ellipsis.src = dotsSymbol;
+        ellipsis.alt = 'Ellipsis icon';
+
+        button.append(ellipsis);
+        return button;
+    },
+
+    createEllipsisButtonOverlay() {
+        const div = document.createElement('div');
+        div.classList.add('overlay');
+
+        const dividerTop = document.createElement('div');
+        dividerTop.classList.add('overlay-divider');
+
+        const firstIcon = document.createElement('img');
+        firstIcon.src = pencilSymbol;
+        firstIcon.classList.add('menu-icon');
+
+        const firstButton = document.createElement('button');
+        firstButton.setAttribute('type', 'button');
+        firstButton.setAttribute('id', 'edit-project-button');
+        firstButton.classList.add('overlay-button');
+
+        firstButton.append(firstIcon, 'Editar projeto');
+
+        const secondIcon = document.createElement('img');
+        secondIcon.src = crossSymbol;
+        secondIcon.classList.add('menu-icon');
+
+        const secondButton = document.createElement('button');
+        secondButton.setAttribute('type', 'button');
+        secondButton.setAttribute('id', 'delete-project-button');
+        secondButton.classList.add('overlay-button');
+
+        secondButton.append(secondIcon, 'Excluir projeto');
+
+        const dividerBottom = document.createElement('div');
+        dividerBottom.classList.add('overlay-divider');
+
+        div.append(dividerTop, firstButton, secondButton, dividerBottom);
+        return div;
     },
 
     createHistoryButton() {
@@ -267,7 +325,7 @@ const menuCreator = {
         return button;
     },
 
-    createMenuScroll(){
+    createMenuScroll() {
         const div = document.createElement('div');
         div.classList.add('menu-scroll');
         return div;

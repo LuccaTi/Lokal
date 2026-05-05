@@ -57,6 +57,7 @@ async function register(email, password) {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+        // Será dividido na camada de domínio: Domain/user.js, Domain/task.js, Domain/project.js.
         const newUser = {
             email: email,
             password: hashedPassword,
