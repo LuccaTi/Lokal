@@ -131,6 +131,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
                     let button = menuCreator.createProjectButton(element.projectName);
                     let ellipsisButton = menuCreator.createEllipsisButton();
 
+                    button.addEventListener('click', () => {
+                        callbacks.closeEllipsisOverlays();
+                    });
+
                     ellipsisButton.addEventListener('click', () => {
                         event.stopPropagation();
 

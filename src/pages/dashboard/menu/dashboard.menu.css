@@ -64,11 +64,6 @@ header {
   background-color: #dedddd;
 }
 
-#header-button:hover {
-  cursor: pointer;
-  background-color: #dedddd;
-}
-
 #arrow-icon {
   height: 1rem;
   filter: invert(80%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(60%)
@@ -81,7 +76,7 @@ header {
   border-radius: 0.5rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   z-index: 1;
-  min-width: 12rem;
+  min-width: 10rem;
   display: flex;
   flex-direction: column;
   padding-top: 0.5rem;
@@ -172,6 +167,7 @@ header {
 
 @media (hover: hover) {
   /*Media query para efeito de hover apenas no PC*/
+  #header-button:hover,
   .menu-button:hover,
   #logout-button:hover,
   .overlay-button:hover {
@@ -320,7 +316,6 @@ header {
   width: 100%;
 }
 
-
 .overlay-button.project-button:active {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.05);
@@ -332,7 +327,7 @@ header {
   border-radius: 0.5rem;
   position: absolute;
   top: 0.5rem;
-  right: 2rem;
+  right: 4rem;
   width: 2rem;
   z-index: 50;
   display: flex;
@@ -381,5 +376,13 @@ header {
 
   .menu-button.side.menu-collapsed {
     left: 1rem;
+  }
+
+  .overlay {
+    min-width: 12rem;
+  }
+
+  .ellipsis-button {
+    right: 2rem;
   }
 }
