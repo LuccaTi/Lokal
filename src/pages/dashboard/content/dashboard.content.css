@@ -5,8 +5,9 @@
   min-height: 100vh;
   grid-column: 1 / -1;
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: relative;
 }
 
@@ -19,6 +20,78 @@
   top: 1rem;
   left: 1rem;
   transition: all 0.3s ease-in-out;
+}
+
+.content-today {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10rem;
+}
+
+.content-title {
+  font-size: 2rem;
+  align-self: center;
+}
+
+.content-wrapper {
+  width: 80vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 5rem;
+}
+
+.content-wrapper img {
+  width: 100%;
+  height: 10rem;
+}
+
+.content-wrapper .content-wrapper-p-bold {
+  font-weight: bold;
+  color: rgb(67, 67, 67);
+}
+
+.content-wrapper p {
+  font-size: 1rem;
+  color: rgb(148, 148, 148);
+}
+
+.content-wrapper-button-img {
+  width: 1rem;
+  height: 1rem;
+  filter: invert(100%) brightness(200%);
+}
+
+.content-wrapper-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: center;
+  align-self: center;
+  padding: 0.8rem;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 1rem;
+  background-color: #26a97d;
+  color: white;
+  width: 10rem;
+}
+
+@media (hover: hover) {
+  /*Media query para efeito de hover apenas no PC*/
+  .content-wrapper-button:hover {
+    cursor: pointer;
+    background-color: #2bc18f;
+  }
+}
+
+.content-wrapper-button:active {
+  background-color: #2bc18f;
 }
 
 @media (min-width: 768px) {
@@ -38,5 +111,27 @@
 
   .container.menu-collapsed .menu-button.side.content {
     transform: translateX(0);
+  }
+
+  .content-today {
+     margin-bottom: 0rem;
+  }
+
+  .content-wrapper {
+    width: 360px;
+  }
+
+  .content-title {
+    font-size: 2rem;
+    align-self: flex-start;
+    margin-left: 5rem;
+  }
+
+  .content-wrapper-button {
+    width: 150px;
+  }
+
+  .content-wrapper-button:active {
+    background-color: #26a97d;
   }
 }

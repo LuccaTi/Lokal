@@ -40,6 +40,10 @@
   pointer-events: auto;
 }
 
+.menu-button.button-clicked {
+  background-color: #dedddd;
+}
+
 @media (min-width: 768px) {
   .container {
     display: flex;

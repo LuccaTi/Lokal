@@ -1,6 +1,7 @@
 import { menuCreator } from "../menu/dashboard.menu.js";
 import { positionOverlay } from "../../../shared/utils/domUtils.js";
 import { positionEllipsisOverlay } from "../../../shared/utils/domUtils.js";
+import * as contentCreator from "../content/dashboard.content.js";
 
 export function initLayoutBlocks(currentUser, callbacks) {
 
@@ -8,6 +9,8 @@ export function initLayoutBlocks(currentUser, callbacks) {
     const menuContainer = document.querySelector('.content-menu');
     const contentContainer = document.querySelector('.content-main');
 
+
+    // #region Menu Lateral
     // 1. Menu Lateral / Backdrop:
     const sideButtonMenu = menuCreator.createSideButton();
     sideButtonMenu.addEventListener('click', callbacks.toggleMenu);
@@ -154,7 +157,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
                                 e.stopPropagation();
                                 overlay.remove();
                                 ellipsisButton.classList.remove('ellipsis-button-clicked');
-                                callbacks.unclickArrowButton();
+                                //callbacks.unclickArrowButton();
                             });
 
                             const deleteProjectButton = overlayButtons[1];
@@ -162,7 +165,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
                                 e.stopPropagation();
                                 overlay.remove();
                                 ellipsisButton.classList.remove('ellipsis-button-clicked');
-                                callbacks.unclickArrowButton();
+                                //callbacks.unclickArrowButton();
                             });
 
                             document.body.append(overlay);
@@ -194,16 +197,33 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
     // 4. Junção das duas partes do menu lateral
     menuContainer.append(menuTop, menuScroll);
+    // #endregion
+
+    // #region Conteúdo Principal
+
+
+    // 5. Tela principal - Hoje
+    const todayView = contentCreator.createTodayView();
+
+    // #endregion
 
     return {
         mainContainer,
+
         menuContainer,
-        contentContainer,
         sideButtonMenu,
         menuBackDrop,
+        todayButton,
+        shortlyButton,
+        concludedButton,
+        historyButton,
+        myProjectsButton,
         headerButton,
         plusButton,
         arrowButton,
-        arrowOverlay
+        arrowOverlay,
+
+        contentContainer,
+        todayView
     };
 }

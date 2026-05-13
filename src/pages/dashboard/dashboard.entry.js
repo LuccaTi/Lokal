@@ -12,23 +12,7 @@ function initDashboard() {
 
     console.log(`Usuário autenticado: ${currentUser.email}`);
 
-    const preventScrollHandler = (e) => {
-        const isInsideOverlay = e.target.closest('.overlay');
-        
-        if (isInsideOverlay) {
-            const overlayContent = isInsideOverlay;
-            const hasScrollableContent = overlayContent.scrollHeight > overlayContent.clientHeight;
-            
-            // Só libera o evento de roda do mouse caso ele realmente tenha lista para rolar!
-            if (hasScrollableContent) {
-                return; // Pula o preventDefault() e deixa ele rolar!
-            }
-        }
-        
-        // Se não estava em cima do overlay (ou se o overlay é pequenininho e não rola), mata tudo.
-        e.preventDefault();
-    }
-
+    // #region Criação dos callbacks e 'env'.
     const controllerCallbacks = {
         toggleMenu: () => {
             const isCollapsed = env.mainContainer.classList.contains('menu-collapsed');
@@ -121,7 +105,66 @@ function initDashboard() {
     };
 
     // Trocar para 'currentUser' após testes
+    // Criador do menu lateral e da tela principal
     const env = initLayoutBlocks(testUser, controllerCallbacks);
+
+    // #endregion
+
+    // #region Ponte do menu com tela principal
+    env.todayButton.addEventListener('click', () => {
+        removeAllOtherButtonsClicked();
+        env.contentContainer.replaceChildren();
+        env.contentContainer.append(env.todayView);
+        env.todayButton.classList.add('button-clicked');
+    });
+
+    env.shortlyButton.addEventListener('click', () => {
+        removeAllOtherButtonsClicked();
+        env.contentContainer.replaceChildren();
+        env.shortlyButton.classList.add('button-clicked');
+    });
+
+    env.concludedButton.addEventListener('click', () => {
+        removeAllOtherButtonsClicked();
+        env.contentContainer.replaceChildren();
+        env.concludedButton.classList.add('button-clicked');
+    });
+
+    env.historyButton.addEventListener('click', () => {
+        removeAllOtherButtonsClicked();
+        env.contentContainer.replaceChildren();
+        env.historyButton.classList.add('button-clicked');
+    });
+
+    env.myProjectsButton.addEventListener('click', () => {
+        removeAllOtherButtonsClicked();
+        env.contentContainer.replaceChildren();
+        env.myProjectsButton.classList.add('button-clicked');
+    });
+    // #endregion
+
+    // #region Funções auxiliares
+    function removeAllOtherButtonsClicked(){
+        const buttons = env.menuContainer.querySelectorAll('.button-clicked');
+        buttons.forEach((button) => button.classList.remove('button-clicked'));
+    }
+
+    const preventScrollHandler = (e) => {
+        const isInsideOverlay = e.target.closest('.overlay');
+
+        if (isInsideOverlay) {
+            const overlayContent = isInsideOverlay;
+            const hasScrollableContent = overlayContent.scrollHeight > overlayContent.clientHeight;
+
+            // Só libera o evento de roda do mouse caso ele realmente tenha lista para rolar!
+            if (hasScrollableContent) {
+                return; // Pula o preventDefault() e deixa ele rolar!
+            }
+        }
+
+        // Se não estava em cima do overlay (ou se o overlay é pequenininho e não rola), mata tudo.
+        e.preventDefault();
+    }
 
     function closeContentOverlays() {
         const overlays = env.contentContainer.querySelectorAll('.overlay');
@@ -143,9 +186,13 @@ function initDashboard() {
         controllerCallbacks.closeMenuOverlays();
         closeContentOverlays();
     })
+    // #endregion
 
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     controllerCallbacks.setMenuCollapsed(isMobile);
+
+    // Faz o botão hoje ser clicado ao carregar a página
+    env.todayButton.click();
 }
 
 initDashboard();
