@@ -1,3 +1,4 @@
+import { userStorage } from "../../core/storage/userStorage.js";
 
 export function getCurrentUserEmail() {
     return sessionStorage.getItem('lokal.currentUserEmail');
@@ -24,8 +25,7 @@ export function requireAuthenticatedUser() {
         return null;
     }
 
-    const rawUser = localStorage.getItem(currentUserEmail);
-    const currentUser = rawUser ? JSON.parse(rawUser) : null;
+    const currentUser = userStorage.getUser(currentUserEmail);
 
     if (currentUser === null) {
         sessionStorage.setItem('lokal.errorMessage', 'Não foi possível obter os dados do usuário. Faça login ou cadastre-se novamente.')

@@ -114,7 +114,16 @@ function initDashboard() {
     env.todayButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
         env.contentContainer.replaceChildren();
-        env.contentContainer.append(env.todayView);
+
+        if (currentUser.tasks.length === 0) {
+            env.contentContainer.append(env.todayView);
+        } else {
+            /*
+            Continuar a conversa com o copilot sobre a camada de Domain antes de criar a outra view.
+            É fundamental tratar a questão das datas das tarefas.
+            */
+        }
+
         env.todayButton.classList.add('button-clicked');
     });
 
@@ -144,7 +153,7 @@ function initDashboard() {
     // #endregion
 
     // #region Funções auxiliares
-    function removeAllOtherButtonsClicked(){
+    function removeAllOtherButtonsClicked() {
         const buttons = env.menuContainer.querySelectorAll('.button-clicked');
         buttons.forEach((button) => button.classList.remove('button-clicked'));
     }

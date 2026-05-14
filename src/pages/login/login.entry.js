@@ -3,6 +3,7 @@ import "./login.css";
 import { validateEmail } from '../../shared/utils/validations.js';
 import { setCurrentUser } from "../../shared/utils/authSession.js";
 import bcrypt from "bcryptjs";
+import { userStorage } from "../../core/storage/userStorage.js";
 
 const form = document.getElementById('login-form');
 
@@ -23,14 +24,13 @@ password.addEventListener('input', clearWarning);
 
 async function logIn(email, password) {
 
-    const registeredUser = localStorage.getItem(email);
+    const user = userStorage.getUser(email);
 
-    if (!registeredUser) {
+    if (!user) {
         console.log(`User with email: ${email} is not registered!`);
         return false;
     }
 
-    const user = JSON.parse(registeredUser);
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (validPassword) {

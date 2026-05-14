@@ -2,6 +2,8 @@ import "../../shared/styles/global.css"
 import "./signup.css";
 import { validateEmail, validatePassword, getPasswordStatus } from "../../shared/utils/validations.js";
 import bcrypt from "bcryptjs";
+import { createUser } from "../../core/domain/user.js";
+import { userStorage } from "../../core/storage/userStorage.js";
 
 const form = document.getElementById('signup-form');
 const email = document.getElementById('email');
@@ -46,8 +48,7 @@ async function register(email, password) {
         error: '',
     }
 
-    const userExists = localStorage.getItem(email);
-    if (userExists) {
+    if (userStorage.userExists(email)) {
         registration.registered = false;
         registration.error = 'Usuário já registrado!';
         return registration;
@@ -58,15 +59,12 @@ async function register(email, password) {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // Será dividido na camada de domínio: Domain/user.js, Domain/task.js, Domain/project.js.
-        const newUser = {
+        const newUser = createUser({
             email: email,
-            password: hashedPassword,
-            projects: [],
-            tasks: []
-        }
+            password: hashedPassword
+        });
 
-        const json = JSON.stringify(newUser);
-        localStorage.setItem(email, json);
+        userStorage.saveUser(newUser);
 
         registration.registered = true;
         registration.error = '';
