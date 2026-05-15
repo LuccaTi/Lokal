@@ -75,6 +75,11 @@ function initDashboard() {
                     existingOverlay.remove();
                 }
             }
+        },
+
+        closeContentOverlays() {
+            const overlays = document.querySelectorAll('.overlay-content');
+            overlays.forEach((overlay) => overlay.remove());
         }
     }
 
@@ -111,17 +116,47 @@ function initDashboard() {
     // #endregion
 
     // #region Ponte do menu com tela principal
+    env.addTaskButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        controllerCallbacks.closeMenuOverlays();
+        controllerCallbacks.unclickArrowButton();
+
+        env.addTaskOverlay.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Próximo passo: Adicionar os overlays dos botões de data e selecionar projeto. 
+            // Depois vamos integrar com a lógica de criação de tarefas (pegar os dados do formulário, etc).
+        });
+
+        env.cancelButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            controllerCallbacks.closeContentOverlays();
+        });
+
+        document.body.append(env.addTaskOverlay);
+    });
+
     env.todayButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
         env.contentContainer.replaceChildren();
 
         if (currentUser.tasks.length === 0) {
-            env.contentContainer.append(env.todayView);
+            env.contentContainer.append(env.todayViewNoTasks);
+            env.todayViewAddTaskButton.addEventListener('click', () => {
+                event.stopPropagation();
+
+                controllerCallbacks.closeContentOverlays();
+                controllerCallbacks.closeMenuOverlays();
+                controllerCallbacks.unclickArrowButton();
+
+                document.body.append(env.addTaskOverlay);
+                env.cancelButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    controllerCallbacks.closeContentOverlays();
+                });
+            });
         } else {
-            /*
-            Continuar a conversa com o copilot sobre a camada de Domain antes de criar a outra view.
-            É fundamental tratar a questão das datas das tarefas.
-            */
+            env.contentContainer.append(env.todayViewWithTasks);
         }
 
         env.todayButton.classList.add('button-clicked');
@@ -175,19 +210,14 @@ function initDashboard() {
         e.preventDefault();
     }
 
-    function closeContentOverlays() {
-        const overlays = env.contentContainer.querySelectorAll('.overlay');
-        overlays.forEach((overlay) => overlay.remove());
-    }
-
     document.addEventListener('click', (event) => {
-        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button');
+        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button, .overlay-content');
 
         if (clickedInsideMenuControl) {
             return;
         }
         controllerCallbacks.closeMenuOverlays();
-        closeContentOverlays()
+        controllerCallbacks.closeContentOverlays()
         controllerCallbacks.unclickArrowButton();
     });
 

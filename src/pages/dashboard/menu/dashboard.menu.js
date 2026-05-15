@@ -1,13 +1,13 @@
 import "./dashboard.menu.css";
 import { logout } from "../../../shared/utils/authSession.js";
-import arrowDownIcon from "../assets/icons/menu/arrow-down-svgrepo-com.svg";
+import arrowDownIcon from "../assets/icons/shared/arrow-down-svgrepo-com.svg";
 import exitIcon from "../assets/icons/menu/exit-logout-sign-out-svgrepo-com.svg";
-import sidebarIcon from "../assets/icons/menu/sidebar-right-svgrepo-com.svg";
+import sidebarIcon from "../assets/icons/shared/sidebar-right-svgrepo-com.svg";
 import plusCircleIcon from "../assets/icons/menu/plus-circle-svgrepo-com.svg";
-import todayIcon from "../assets/icons/menu/today-outline-svgrepo-com.svg";
+import todayIcon from "../assets/icons/shared/today-outline-svgrepo-com.svg";
 import shortlyIcon from "../assets/icons/menu/calendar-alt-svgrepo-com.svg";
 import concludedIcon from "../assets/icons/menu/checklist-minimalistic-svgrepo-com.svg";
-import plusSymbol from "../assets/icons/menu/plus-svgrepo-com.svg";
+import plusSymbol from "../assets/icons/shared/plus-svgrepo-com.svg";
 import historySymbol from "../assets/icons/menu/history-svgrepo-com.svg";
 import hashtagSymbol from "../assets/icons/menu/hashtag-svgrepo-com.svg";
 import dotsSymbol from "../assets/icons/menu/dot-menu-more-2-svgrepo-com.svg";

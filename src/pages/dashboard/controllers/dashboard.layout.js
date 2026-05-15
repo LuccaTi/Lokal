@@ -81,6 +81,8 @@ export function initLayoutBlocks(currentUser, callbacks) {
     plusButton.addEventListener('click', (event) => {
         event.stopPropagation();
 
+        callbacks.closeContentOverlays();
+
         let existingOverlay = document.querySelector('.plus-overlay-portal');
 
         if (!existingOverlay) {
@@ -120,6 +122,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
             let isOpen = arrowOverlay.classList.contains('arrow-overlay-open');
 
             callbacks.closeMenuOverlays();
+            callbacks.closeContentOverlays();
 
             if (currentUser.projects.length === 0) {
                 callbacks.unclickArrowButton();
@@ -136,10 +139,13 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
                     button.addEventListener('click', () => {
                         callbacks.closeEllipsisOverlays();
+                        callbacks.closeContentOverlays();
                     });
 
                     ellipsisButton.addEventListener('click', () => {
                         event.stopPropagation();
+
+                        callbacks.closeContentOverlays();
 
                         const alreadyOpened = ellipsisButton.classList.contains('ellipsis-button-clicked');
 
@@ -155,6 +161,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
                             const editProjectButton = overlayButtons[0];
                             editProjectButton.addEventListener('click', (e) => {
                                 e.stopPropagation();
+                                callbacks.closeContentOverlays();
                                 overlay.remove();
                                 ellipsisButton.classList.remove('ellipsis-button-clicked');
                                 //callbacks.unclickArrowButton();
@@ -163,6 +170,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
                             const deleteProjectButton = overlayButtons[1];
                             deleteProjectButton.addEventListener('click', (e) => {
                                 e.stopPropagation();
+                                callbacks.closeContentOverlays();
                                 overlay.remove();
                                 ellipsisButton.classList.remove('ellipsis-button-clicked');
                                 //callbacks.unclickArrowButton();
@@ -200,10 +208,24 @@ export function initLayoutBlocks(currentUser, callbacks) {
     // #endregion
 
     // #region Conteúdo Principal
+    // 5. Tela principal - Hoje, view sem tarefas
+    const todayViewNoTasks = contentCreator.createTodayViewNoTasks();
+    const todayViewAddTaskButton = contentCreator.createTodayViewNoTasksAddTaskButton();
+    todayViewNoTasks.append(todayViewAddTaskButton);
 
+    // 6. Tela principal - Formulário de adicionar tarefa
+    const addTaskOverlay = contentCreator.createAddTaskForm();
+    const dateButton = contentCreator.createDateButton();
+    const divider = contentCreator.createOverlayDivider();
+    const selectProjectButton = contentCreator.createSelectProjectButton();
+    const cancelButton = contentCreator.createCancelButton();
+    const overlayAddTaskButton = contentCreator.createOverlayAddTaskButton();
+    const bottomButtonsDiv = contentCreator.createFormBottomButtonsDiv();
+    bottomButtonsDiv.append(selectProjectButton, cancelButton, overlayAddTaskButton);
+    addTaskOverlay.append(dateButton, divider, bottomButtonsDiv);
 
-    // 5. Tela principal - Hoje
-    const todayView = contentCreator.createTodayView();
+    // 7. Tela principal - Hoje, view com tarefas
+    const todayViewWithTasks = contentCreator.createTodayViewWithTasks();
 
     // #endregion
 
@@ -213,6 +235,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         menuContainer,
         sideButtonMenu,
         menuBackDrop,
+        addTaskButton,
         todayButton,
         shortlyButton,
         concludedButton,
@@ -224,6 +247,12 @@ export function initLayoutBlocks(currentUser, callbacks) {
         arrowOverlay,
 
         contentContainer,
-        todayView
+        todayViewNoTasks,
+        todayViewAddTaskButton,
+        addTaskOverlay,
+        dateButton,
+        selectProjectButton,
+        cancelButton,
+        todayViewWithTasks
     };
 }
