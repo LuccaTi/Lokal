@@ -215,7 +215,35 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
     // 6. Tela principal - Formulário de adicionar tarefa
     const addTaskOverlay = contentCreator.createAddTaskForm();
+
     const dateButton = contentCreator.createDateButton();
+    const dateButtonOverlay = contentCreator.createDateButtonOverlay((selectedDate) => {
+
+        // Essa arrow function é o callback que o calendário chama quando clica em um dia, e recebe a data selecionada como parâmetro (selectedDate)
+        // É o manual de instruções que o calendário segue quando um dia é clicado.
+        // Mais especificamente, é a função 'onDateSelected' passada como argumento na declaração do calendário, lá no dashboard.content.js.
+
+        // 1. Zera horas para bater exatamente igual ao dia de 'hoje'
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        selectedDate.setHours(0, 0, 0, 0);
+
+        // Recupera o ícone existente no botão para não perdê-lo
+        const icon = dateButton.querySelector('img');
+
+        // 2. Compara se clicou em 'hoje' ou 'futuro/passado' e altera o texto do Botão
+        if (selectedDate.getTime() === today.getTime()) {
+            dateButton.replaceChildren(icon, ' Hoje');
+        } else {
+            const optionsFormat = { day: 'numeric', month: 'short', year: 'numeric' };
+            const formatedText = selectedDate.toLocaleDateString('pt-BR', optionsFormat);
+            dateButton.replaceChildren(icon, ` ${formatedText}`);
+        }
+
+        // 3. Some com o calendário após selecionar
+        dateButtonOverlay.remove();
+    });
+
     const divider = contentCreator.createOverlayDivider();
     const selectProjectButton = contentCreator.createSelectProjectButton();
     const cancelButton = contentCreator.createCancelButton();
@@ -251,6 +279,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         todayViewAddTaskButton,
         addTaskOverlay,
         dateButton,
+        dateButtonOverlay,
         selectProjectButton,
         cancelButton,
         todayViewWithTasks

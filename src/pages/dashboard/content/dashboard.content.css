@@ -93,6 +93,12 @@
     cursor: pointer;
     background-color: rgb(234, 233, 233);
   }
+
+  .calendar-nav-btn:hover {
+  color: #333;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
 }
 
 .content-wrapper-button:active {
@@ -112,6 +118,14 @@
   top: 20%;
   left: 5%;
   padding: 0.5rem;
+
+  /*Efeito de transição*/
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-20px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .overlay-input-title {
@@ -197,6 +211,91 @@ input:focus {
   background-color: #2dbf8e;
 }
 
+/* Calendário Overlay*/
+.calendar-overlay {
+  width: 280px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: white;
+  position: absolute;
+  z-index: 1005; 
+  padding: 1rem;
+  top: 36%; 
+  left: 15%;
+}
+
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 1rem;
+  padding: 0.2rem 0.5rem;
+}
+
+
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.calendar-day-name {
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-cell {
+  padding: 0.4rem;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #333;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: center;
+}
+
+.calendar-cell:hover:not(.empty) {
+  background-color: #b1b1b1;
+}
+
+.calendar-cell.empty {
+  cursor: default;
+}
+
+.calendar-cell.past-day {
+  color: #bbb;
+  pointer-events: none;  
+}
+
+.calendar-cell.today-highlight {
+  background-color: #26a97d;
+  color: white;
+  font-weight: bold;
+}
+
 @media (min-width: 768px) {
   .content-main {
     background-color: white;
@@ -243,4 +342,16 @@ input:focus {
     top: 18%;
     left: 29%;
   }
+
+  .calendar-overlay {
+  width: 280px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: white;
+  position: absolute; /* Vai ficar posicionado solto na tela */
+  z-index: 1005; /* Tem que ser maior que o do form de tarefas (1000) */
+  padding: 1rem;
+  top: 2%; /* Ajuste a posição inicial, se necessário */
+  left: 36%;
+}
 }

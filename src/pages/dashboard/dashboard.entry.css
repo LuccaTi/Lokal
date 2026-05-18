@@ -44,6 +44,14 @@
   background-color: #dedddd;
 }
 
+
+.overlay-content.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+
 @media (min-width: 768px) {
   .container {
     display: flex;

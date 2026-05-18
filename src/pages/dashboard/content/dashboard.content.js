@@ -80,9 +80,127 @@ export function createDateButton() {
     return dateButton;
 }
 
-export function createDateButtonOverlay(){
-    // O conteúdo textual do botão vai ser a palavra hoje.
-    // Se a data for posterior ele vai escrever ela, ex: 30/07/2026.
+export function createDateButtonOverlay(onDateSelected) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('calendar-overlay');
+
+    // Variáveis de estado do calendário
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const dayNames = ["D", "S", "T", "Q", "Q", "S", "S"];
+
+    // Header do mês/ano
+    const header = document.createElement('div');
+    header.classList.add('calendar-header');
+
+    const monthYearDisplay = document.createElement('span');
+
+    const navDiv = document.createElement('div');
+    navDiv.classList.add('calendar-nav');
+
+    const prevBtn = document.createElement('button');
+    prevBtn.classList.add('calendar-nav-btn');
+    prevBtn.innerHTML = '&#8249;'; // Símbolo <
+    prevBtn.setAttribute('type', 'button');
+
+    const nextBtn = document.createElement('button');
+    nextBtn.classList.add('calendar-nav-btn');
+    nextBtn.innerHTML = '&#8250;'; // Símbolo >
+    nextBtn.setAttribute('type', 'button');
+
+    navDiv.append(prevBtn, nextBtn);
+    header.append(monthYearDisplay, navDiv);
+
+    // Div onde ficarão as letras dos dias e os números
+    const gridContainer = document.createElement('div');
+    gridContainer.classList.add('calendar-grid');
+
+    function renderCalendar(month, year) {
+        gridContainer.innerHTML = ''; // Limpa o grid a cada mudança de mês
+        monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
+
+        // 1. Gera o nome dos dias da semana (D, S, T...)
+        dayNames.forEach(day => {
+            const dayNameCell = document.createElement('div');
+            dayNameCell.classList.add('calendar-day-name');
+            dayNameCell.textContent = day;
+            gridContainer.append(dayNameCell);
+        });
+
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // 2. Preenche os espaços vazios do início do mês
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.classList.add('calendar-cell', 'empty');
+            gridContainer.append(emptyCell);
+        }
+
+        // 3. Preenche os dias reais
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayCell = document.createElement('div');
+
+            if (
+                year < today.getFullYear() ||
+                (year === today.getFullYear() && month < today.getMonth()) ||
+                (year === today.getFullYear() && month === today.getMonth() && day < today.getDate())
+            ) {
+                dayCell.classList.add('calendar-cell', 'past-day');
+            } else {
+                dayCell.classList.add('calendar-cell', 'day');
+            }
+
+            dayCell.textContent = day;
+
+            // Destaca o dia de hoje
+            if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                dayCell.classList.add('today-highlight');
+            }
+
+            // O disparo do clique -> devolve a data selecionada pra quem chamou o calendário
+            dayCell.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const selectedDate = new Date(year, month, day);
+
+                // Inversão de controle que permite que o calendário seja reutilizável e não dependa de detalhes específicos de implementação de quem o chamou.
+                onDateSelected(selectedDate);
+            });
+
+            gridContainer.append(dayCell);
+        }
+    }
+
+    // Lógica para retroceder e avançar o mês
+    prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        renderCalendar(currentMonth, currentYear);
+    });
+
+    nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        renderCalendar(currentMonth, currentYear);
+    });
+
+    renderCalendar(currentMonth, currentYear);
+
+    // Método customizado anexado ao elemento HTML para resetar o calendário
+    overlay.resetCalendar = () => {
+        today = new Date();
+        currentMonth = today.getMonth();
+        currentYear = today.getFullYear();
+        renderCalendar(currentMonth, currentYear);
+    };
+
+    overlay.append(header, gridContainer);
+    return overlay;
 }
 
 export function createOverlayDivider() {
@@ -130,6 +248,12 @@ export function createOverlayAddTaskButton() {
     addTaskButton.setAttribute('type', 'submit');
     addTaskButton.textContent = 'Adicionar tarefa';
     return addTaskButton;
+}
+
+export function createOverlayContent() {
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay-content');
+    return overlay;
 }
 // #endregion
 

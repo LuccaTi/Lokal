@@ -79,7 +79,21 @@ function initDashboard() {
 
         closeContentOverlays() {
             const overlays = document.querySelectorAll('.overlay-content');
-            overlays.forEach((overlay) => overlay.remove());
+            overlays.forEach((overlay) => {
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    overlay.remove();
+                }, 300);
+            });
+
+            this.closeCalendarOverlay();
+        },
+
+        closeCalendarOverlay() {
+            const calendarOverlay = document.querySelector('.calendar-overlay');
+            if (calendarOverlay) {
+                calendarOverlay.remove();
+            }
         }
     }
 
@@ -116,24 +130,51 @@ function initDashboard() {
     // #endregion
 
     // #region Ponte do menu com tela principal
+
+    // Form de adicionar tarefa
+    env.addTaskOverlay.addEventListener('submit', (e) => {
+        e.preventDefault();
+        controllerCallbacks.closeContentOverlays();
+        // Próximo passo: Adicionar o overlay do botão de selecionar projeto. 
+        // Depois vamos integrar com a lógica de criação de tarefas (pegar os dados do formulário, etc).
+    });
+
+    env.dateButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        // Remove qualquer calendário já aberto para não abrir duplos
+        const existingCalendar = document.querySelector('.calendar-overlay');
+        if (existingCalendar) {
+            existingCalendar.remove();
+            return;
+        }
+
+        env.dateButtonOverlay.resetCalendar();
+        document.body.append(env.dateButtonOverlay);
+    });
+
+    env.selectProjectButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        controllerCallbacks.closeCalendarOverlay();
+    });
+
+    env.cancelButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        controllerCallbacks.closeContentOverlays();
+    });
+
     env.addTaskButton.addEventListener('click', (event) => {
         event.stopPropagation();
 
         controllerCallbacks.closeMenuOverlays();
         controllerCallbacks.unclickArrowButton();
 
-        env.addTaskOverlay.addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Próximo passo: Adicionar os overlays dos botões de data e selecionar projeto. 
-            // Depois vamos integrar com a lógica de criação de tarefas (pegar os dados do formulário, etc).
-        });
-
-        env.cancelButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            controllerCallbacks.closeContentOverlays();
-        });
-
         document.body.append(env.addTaskOverlay);
+
+        // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
+        setTimeout(() => {
+            env.addTaskOverlay.classList.add('active');
+        }, 10);
     });
 
     env.todayButton.addEventListener('click', () => {
@@ -142,18 +183,19 @@ function initDashboard() {
 
         if (currentUser.tasks.length === 0) {
             env.contentContainer.append(env.todayViewNoTasks);
-            env.todayViewAddTaskButton.addEventListener('click', () => {
+            
+            // O botão de criar tarefa DO MEIO DA TELA precisa deste (event) para não quebrar no stopPropagation!
+            env.todayViewAddTaskButton.addEventListener('click', (event) => {
                 event.stopPropagation();
 
-                controllerCallbacks.closeContentOverlays();
                 controllerCallbacks.closeMenuOverlays();
                 controllerCallbacks.unclickArrowButton();
 
                 document.body.append(env.addTaskOverlay);
-                env.cancelButton.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    controllerCallbacks.closeContentOverlays();
-                });
+
+                setTimeout(() => {
+                    env.addTaskOverlay.classList.add('active');
+                }, 10);
             });
         } else {
             env.contentContainer.append(env.todayViewWithTasks);
@@ -211,7 +253,7 @@ function initDashboard() {
     }
 
     document.addEventListener('click', (event) => {
-        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button, .overlay-content');
+        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button, .overlay-content, .calendar-overlay');
 
         if (clickedInsideMenuControl) {
             return;
@@ -223,7 +265,8 @@ function initDashboard() {
 
     window.addEventListener('resize', () => {
         controllerCallbacks.closeMenuOverlays();
-        closeContentOverlays();
+        controllerCallbacks.closeContentOverlays();
+        controllerCallbacks.unclickArrowButton();
     })
     // #endregion
 
