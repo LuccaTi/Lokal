@@ -56,7 +56,7 @@ export function createOverlayContent() {
     return overlay;
 }
 
-export function createOverlayDivider() {
+function createOverlayDivider() {
     const divider = document.createElement('div');
     divider.classList.add('overlay-divider-content');
     return divider;
@@ -75,11 +75,6 @@ export function createAddTaskForm() {
     descriptionInput.classList.add('overlay-input-description');
     descriptionInput.setAttribute('placeholder', 'Descrição');
 
-    form.append(titleInput, descriptionInput);
-    return form;
-}
-
-export function createDateButton() {
     const dateButton = document.createElement('button');
     dateButton.classList.add('overlay-button-content', 'date');
     dateButton.setAttribute('type', 'button');
@@ -90,7 +85,37 @@ export function createDateButton() {
     dateButton.alt = 'Calendar icon';
 
     dateButton.append(dateButtonIcon, 'Hoje');
-    return dateButton;
+
+    const divider = createOverlayDivider();
+
+    const div = document.createElement('div');
+    div.classList.add('overlay-button-content-div');
+
+    const selectProjectButton = createSelectProjectButton();
+
+    const cancelButton = document.createElement('button');
+    cancelButton.classList.add('overlay-button-content', 'cancel');
+    cancelButton.setAttribute('type', 'button');
+    cancelButton.textContent = 'Cancelar';
+
+    const addTaskButton = document.createElement('button');
+    addTaskButton.classList.add('overlay-button-content', 'add');
+    addTaskButton.setAttribute('type', 'submit');
+    addTaskButton.textContent = 'Adicionar tarefa';
+
+    div.append(selectProjectButton, cancelButton, addTaskButton);
+
+    form.append(titleInput, descriptionInput, dateButton, divider, div);
+
+    return {
+        element: form,
+        titleInput: titleInput,
+        descriptionInput: descriptionInput,
+        dateButton: dateButton,
+        selectProjectButton: selectProjectButton,
+        cancelButton: cancelButton,
+        addTaskButton: addTaskButton
+    };
 }
 
 export function createDateButtonOverlay(onDateSelected) {
@@ -216,13 +241,7 @@ export function createDateButtonOverlay(onDateSelected) {
     return overlay;
 }
 
-export function createFormBottomButtonsDiv() {
-    const div = document.createElement('div');
-    div.classList.add('overlay-button-content-div');
-    return div;
-}
-
-export function createSelectProjectButton() {
+function createSelectProjectButton() {
     const selectProjectButton = document.createElement('button');
     selectProjectButton.classList.add('overlay-button-content');
     selectProjectButton.setAttribute('type', 'button');
@@ -253,25 +272,9 @@ export function createSelectProjectButton() {
     return selectProjectButton;
 }
 
-export function createCancelButton() {
-    const cancelButton = document.createElement('button');
-    cancelButton.classList.add('overlay-button-content', 'cancel');
-    cancelButton.setAttribute('type', 'button');
-    cancelButton.textContent = 'Cancelar';
-    return cancelButton;
-}
-
-export function createOverlayAddTaskButton() {
-    const addTaskButton = document.createElement('button');
-    addTaskButton.classList.add('overlay-button-content', 'add');
-    addTaskButton.setAttribute('type', 'submit');
-    addTaskButton.textContent = 'Adicionar tarefa';
-    return addTaskButton;
-}
-
 export function createSelectProjectButtonOverlay(onProjectSelected, userProjects) {
     const overlay = document.createElement('div')
-    overlay.classList.add('overlay-content','select-project-overlay');
+    overlay.classList.add('overlay-content', 'select-project-overlay');
 
     const searchProjectInput = document.createElement('input');
     searchProjectInput.classList.add('input-search-project');

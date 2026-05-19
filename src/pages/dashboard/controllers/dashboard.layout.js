@@ -213,9 +213,8 @@ export function initLayoutBlocks(currentUser, callbacks) {
     todayViewNoTasks.append(todayViewAddTaskButton);
 
     // 6. Tela principal - Formulário de adicionar tarefa
-    const addTaskOverlay = contentCreator.createAddTaskForm();
+    const addTaskForm= contentCreator.createAddTaskForm();
 
-    const dateButton = contentCreator.createDateButton();
     const dateButtonOverlay = contentCreator.createDateButtonOverlay((selectedDate) => {
 
         // Essa arrow function é o callback que o calendário chama quando clica em um dia, e recebe a data selecionada como parâmetro (selectedDate)
@@ -228,36 +227,28 @@ export function initLayoutBlocks(currentUser, callbacks) {
         selectedDate.setHours(0, 0, 0, 0);
 
         // Recupera o ícone existente no botão para não perdê-lo
-        const icon = dateButton.querySelector('img');
+        const icon = addTaskForm.dateButton.querySelector('img');
 
         // 2. Compara se clicou em 'hoje' ou 'futuro/passado' e altera o texto do Botão
         if (selectedDate.getTime() === today.getTime()) {
-            dateButton.replaceChildren(icon, ' Hoje');
+            addTaskForm.dateButton.replaceChildren(icon, ' Hoje');
         } else {
             const optionsFormat = { day: 'numeric', month: 'short', year: 'numeric' };
             const formatedText = selectedDate.toLocaleDateString('pt-BR', optionsFormat);
-            dateButton.replaceChildren(icon, ` ${formatedText}`);
+            addTaskForm.dateButton.replaceChildren(icon, ` ${formatedText}`);
         }
 
         // 3. Some com o calendário após selecionar
         dateButtonOverlay.remove();
     });
 
-    const divider = contentCreator.createOverlayDivider();
-    const selectProjectButton = contentCreator.createSelectProjectButton();
     const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => { 
         
-        selectProjectButton.updateSelection(selectedProject);
+        addTaskForm.selectProjectButton.updateSelection(selectedProject);
 
         selectProjectButtonOverlay.remove();
     }, 
     currentUser.projects);
-
-    const cancelButton = contentCreator.createCancelButton();
-    const overlayAddTaskButton = contentCreator.createOverlayAddTaskButton();
-    const bottomButtonsDiv = contentCreator.createFormBottomButtonsDiv();
-    bottomButtonsDiv.append(selectProjectButton, cancelButton, overlayAddTaskButton);
-    addTaskOverlay.append(dateButton, divider, bottomButtonsDiv);
 
     // 7. Tela principal - Hoje, view com tarefas
     const todayViewWithTasks = contentCreator.createTodayViewWithTasks();
@@ -283,12 +274,9 @@ export function initLayoutBlocks(currentUser, callbacks) {
         contentContainer,
         todayViewNoTasks,
         todayViewAddTaskButton,
-        addTaskOverlay,
-        dateButton,
+        addTaskForm,
         dateButtonOverlay,
-        selectProjectButton,
         selectProjectButtonOverlay,
-        cancelButton,
         todayViewWithTasks
     };
 }

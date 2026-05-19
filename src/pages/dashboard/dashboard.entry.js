@@ -144,13 +144,13 @@ function initDashboard() {
     // #region Ponte do menu com tela principal
 
     // Form de adicionar tarefa
-    env.addTaskOverlay.addEventListener('submit', (e) => {
+    env.addTaskForm.element.addEventListener('submit', (e) => {
         e.preventDefault();
         controllerCallbacks.closeContentOverlays();
         // Próximo passo: Integrar com a lógica de criação de tarefas (pegar os dados do formulário, etc).
     });
 
-    env.dateButton.addEventListener('click', (event) => {
+    env.addTaskForm.dateButton.addEventListener('click', (event) => {
         event.stopPropagation();
         controllerCallbacks.closeSelectProjectOverlay();
 
@@ -164,7 +164,7 @@ function initDashboard() {
         document.body.append(env.dateButtonOverlay);
     });
 
-    env.selectProjectButton.addEventListener('click', (event) => {
+    env.addTaskForm.selectProjectButton.addEventListener('click', (event) => {
         event.stopPropagation();
         controllerCallbacks.closeCalendarOverlay();
 
@@ -177,7 +177,7 @@ function initDashboard() {
         document.body.append(env.selectProjectButtonOverlay);
     });
 
-    env.cancelButton.addEventListener('click', (event) => {
+    env.addTaskForm.cancelButton.addEventListener('click', (event) => {
         event.stopPropagation();
         controllerCallbacks.closeContentOverlays();
     });
@@ -188,11 +188,11 @@ function initDashboard() {
         controllerCallbacks.closeMenuOverlays();
         controllerCallbacks.unclickArrowButton();
 
-        document.body.append(env.addTaskOverlay);
+        document.body.append(env.addTaskForm.element);
 
         // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
         setTimeout(() => {
-            env.addTaskOverlay.classList.add('active');
+            env.addTaskForm.element.classList.add('active');
         }, 10);
     });
 
@@ -210,10 +210,10 @@ function initDashboard() {
                 controllerCallbacks.closeMenuOverlays();
                 controllerCallbacks.unclickArrowButton();
 
-                document.body.append(env.addTaskOverlay);
+                document.body.append(env.addTaskForm.element);
 
                 setTimeout(() => {
-                    env.addTaskOverlay.classList.add('active');
+                    env.addTaskForm.element.classList.add('active');
                 }, 10);
             });
         } else {
