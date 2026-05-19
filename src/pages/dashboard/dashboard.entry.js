@@ -80,10 +80,15 @@ function initDashboard() {
         closeContentOverlays() {
             const overlays = document.querySelectorAll('.overlay-content');
             overlays.forEach((overlay) => {
-                overlay.classList.remove('active');
-                setTimeout(() => {
+
+                if (!overlay.classList.contains('select-project-overlay')) {
+                    overlay.classList.remove('active');
+                    setTimeout(() => {
+                        overlay.remove();
+                    }, 300);
+                } else {
                     overlay.remove();
-                }, 300);
+                }
             });
 
             this.closeCalendarOverlay();
@@ -93,6 +98,13 @@ function initDashboard() {
             const calendarOverlay = document.querySelector('.calendar-overlay');
             if (calendarOverlay) {
                 calendarOverlay.remove();
+            }
+        },
+
+        closeSelectProjectOverlay() {
+            const selectProjectOverlay = document.querySelector('.select-project-overlay');
+            if (selectProjectOverlay) {
+                selectProjectOverlay.remove();
             }
         }
     }
@@ -135,17 +147,16 @@ function initDashboard() {
     env.addTaskOverlay.addEventListener('submit', (e) => {
         e.preventDefault();
         controllerCallbacks.closeContentOverlays();
-        // Próximo passo: Adicionar o overlay do botão de selecionar projeto. 
-        // Depois vamos integrar com a lógica de criação de tarefas (pegar os dados do formulário, etc).
+        // Próximo passo: Integrar com a lógica de criação de tarefas (pegar os dados do formulário, etc).
     });
 
     env.dateButton.addEventListener('click', (event) => {
         event.stopPropagation();
+        controllerCallbacks.closeSelectProjectOverlay();
 
-        // Remove qualquer calendário já aberto para não abrir duplos
-        const existingCalendar = document.querySelector('.calendar-overlay');
-        if (existingCalendar) {
-            existingCalendar.remove();
+        const existingOverlay = document.querySelector('.calendar-overlay');
+        if (existingOverlay) {
+            existingOverlay.remove();
             return;
         }
 
@@ -156,6 +167,14 @@ function initDashboard() {
     env.selectProjectButton.addEventListener('click', (event) => {
         event.stopPropagation();
         controllerCallbacks.closeCalendarOverlay();
+
+        const existingOverlay = document.querySelector('.select-project-overlay');
+        if (existingOverlay) {
+            existingOverlay.remove();
+            return;
+        }
+
+        document.body.append(env.selectProjectButtonOverlay);
     });
 
     env.cancelButton.addEventListener('click', (event) => {
@@ -183,7 +202,7 @@ function initDashboard() {
 
         if (currentUser.tasks.length === 0) {
             env.contentContainer.append(env.todayViewNoTasks);
-            
+
             // O botão de criar tarefa DO MEIO DA TELA precisa deste (event) para não quebrar no stopPropagation!
             env.todayViewAddTaskButton.addEventListener('click', (event) => {
                 event.stopPropagation();
@@ -208,12 +227,6 @@ function initDashboard() {
         removeAllOtherButtonsClicked();
         env.contentContainer.replaceChildren();
         env.shortlyButton.classList.add('button-clicked');
-    });
-
-    env.concludedButton.addEventListener('click', () => {
-        removeAllOtherButtonsClicked();
-        env.contentContainer.replaceChildren();
-        env.concludedButton.classList.add('button-clicked');
     });
 
     env.historyButton.addEventListener('click', () => {
@@ -253,7 +266,7 @@ function initDashboard() {
     }
 
     document.addEventListener('click', (event) => {
-        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button, .overlay-content, .calendar-overlay');
+        const clickedInsideMenuControl = event.target.closest('.overlay, #header-button, .overlay-content, .calendar-overlay, .select-project-overlay');
 
         if (clickedInsideMenuControl) {
             return;

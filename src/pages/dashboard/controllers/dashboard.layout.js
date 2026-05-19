@@ -62,7 +62,6 @@ export function initLayoutBlocks(currentUser, callbacks) {
     // 3. Restante do menu
     const todayButton = menuCreator.createTodayButton();
     const shortlyButton = menuCreator.createShortlyButton();
-    const concludedButton = menuCreator.createConcludedButton();
     const historyButton = menuCreator.createHistoryButton();
 
     const buttonContainer = menuCreator.createProjectsButtonsWrapper();
@@ -201,7 +200,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
     buttonContainer.append(myProjectsButton, plusButton, arrowButton);
 
     const menuScroll = menuCreator.createMenuScroll();
-    menuScroll.append(todayButton, shortlyButton, concludedButton, historyButton, buttonContainer, arrowOverlay)
+    menuScroll.append(todayButton, shortlyButton, historyButton, buttonContainer, arrowOverlay)
 
     // 4. Junção das duas partes do menu lateral
     menuContainer.append(menuTop, menuScroll);
@@ -246,6 +245,14 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
     const divider = contentCreator.createOverlayDivider();
     const selectProjectButton = contentCreator.createSelectProjectButton();
+    const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => { 
+        
+        selectProjectButton.updateSelection(selectedProject);
+
+        selectProjectButtonOverlay.remove();
+    }, 
+    currentUser.projects);
+
     const cancelButton = contentCreator.createCancelButton();
     const overlayAddTaskButton = contentCreator.createOverlayAddTaskButton();
     const bottomButtonsDiv = contentCreator.createFormBottomButtonsDiv();
@@ -266,7 +273,6 @@ export function initLayoutBlocks(currentUser, callbacks) {
         addTaskButton,
         todayButton,
         shortlyButton,
-        concludedButton,
         historyButton,
         myProjectsButton,
         headerButton,
@@ -281,6 +287,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         dateButton,
         dateButtonOverlay,
         selectProjectButton,
+        selectProjectButtonOverlay,
         cancelButton,
         todayViewWithTasks
     };

@@ -95,10 +95,10 @@
   }
 
   .calendar-nav-btn:hover {
-  color: #333;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-}
+    color: #333;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+  }
 }
 
 .content-wrapper-button:active {
@@ -218,12 +218,11 @@ input:focus {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   background-color: white;
   position: absolute;
-  z-index: 1005; 
+  z-index: 1005;
   padding: 1rem;
-  top: 36%; 
-  left: 15%;
+  top: 36%;
+  left: 20%;
 }
-
 
 .calendar-header {
   display: flex;
@@ -247,8 +246,6 @@ input:focus {
   font-size: 1rem;
   padding: 0.2rem 0.5rem;
 }
-
-
 
 .calendar-grid {
   display: grid;
@@ -287,13 +284,78 @@ input:focus {
 
 .calendar-cell.past-day {
   color: #bbb;
-  pointer-events: none;  
+  pointer-events: none;
 }
 
 .calendar-cell.today-highlight {
   background-color: #26a97d;
   color: white;
   font-weight: bold;
+}
+
+/* Selecionar Projeto Overlay */
+.overlay-content.select-project-overlay {
+  width: 250px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: fixed;
+  z-index: 1005;
+  top: 50%;
+  left: 8%;
+  padding: 1rem;
+  gap: 0.2rem;
+
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0px);
+  transition:
+    opacity 0,
+    transform 0;
+}
+
+.input-search-project {
+  padding: 0.5rem;
+  border: solid 1px rgb(202, 202, 202);
+  border-radius: 0.5rem;
+}
+
+input:focus {
+  outline: none;
+}
+
+.overlay-select-project-header {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.overlay-button-content.select-project {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+}
+
+.overlay-button-content-icon.select-project {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.overlay-projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  max-height: 100px;
+  overflow-y: auto;
 }
 
 @media (min-width: 768px) {
@@ -344,14 +406,19 @@ input:focus {
   }
 
   .calendar-overlay {
-  width: 280px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background-color: white;
-  position: absolute; /* Vai ficar posicionado solto na tela */
-  z-index: 1005; /* Tem que ser maior que o do form de tarefas (1000) */
-  padding: 1rem;
-  top: 2%; /* Ajuste a posição inicial, se necessário */
-  left: 36%;
-}
+    width: 280px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: white;
+    position: absolute; /* Vai ficar posicionado solto na tela */
+    z-index: 1005; /* Tem que ser maior que o do form de tarefas (1000) */
+    padding: 1rem;
+    top: 2%; /* Ajuste a posição inicial, se necessário */
+    left: 36%;
+  }
+
+  .overlay-content.select-project-overlay {
+    top: 50%;
+    left: 25%;
+  }
 }

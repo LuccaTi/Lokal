@@ -6,10 +6,9 @@ import sidebarIcon from "../assets/icons/shared/sidebar-right-svgrepo-com.svg";
 import plusCircleIcon from "../assets/icons/menu/plus-circle-svgrepo-com.svg";
 import todayIcon from "../assets/icons/shared/today-outline-svgrepo-com.svg";
 import shortlyIcon from "../assets/icons/menu/calendar-alt-svgrepo-com.svg";
-import concludedIcon from "../assets/icons/menu/checklist-minimalistic-svgrepo-com.svg";
 import plusSymbol from "../assets/icons/shared/plus-svgrepo-com.svg";
 import historySymbol from "../assets/icons/menu/history-svgrepo-com.svg";
-import hashtagSymbol from "../assets/icons/menu/hashtag-svgrepo-com.svg";
+import hashtagSymbol from "../assets/icons/shared/hashtag-svgrepo-com.svg";
 import dotsSymbol from "../assets/icons/menu/dot-menu-more-2-svgrepo-com.svg";
 import pencilSymbol from "../assets/icons/menu/pencil-svgrepo-com.svg";
 import crossSymbol from "../assets/icons/menu/cross-svgrepo-com.svg";
@@ -148,20 +147,6 @@ const menuCreator = {
         icon.classList.add('menu-icon');
 
         button.append(icon, 'Em breve');
-        return button;
-    },
-
-    createConcludedButton() {
-        const button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.classList.add('menu-button');
-
-        const icon = document.createElement('img');
-        icon.src = concludedIcon;
-        icon.alt = 'Concluded icon';
-        icon.classList.add('menu-icon');
-
-        button.append(icon, 'Concluídos');
         return button;
     },
 

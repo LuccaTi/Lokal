@@ -5,6 +5,7 @@ import plusIcon from "../assets/icons/shared/plus-svgrepo-com.svg";
 import todayIcon from "../assets/icons/shared/today-outline-svgrepo-com.svg";
 import mailBoxIcon from "../assets/icons/content/mail-box-svgrepo-com.svg";
 import arrowDownIcon from "../assets/icons/shared/arrow-down-svgrepo-com.svg";
+import hashtagSymbol from "../assets/icons/shared/hashtag-svgrepo-com.svg";
 
 
 export function createContent(user) {
@@ -47,6 +48,18 @@ export function createTodayViewNoTasksAddTaskButton() {
 
 export function createTodayViewWithTasks(user) {
     // TODO
+}
+
+export function createOverlayContent() {
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay-content');
+    return overlay;
+}
+
+export function createOverlayDivider() {
+    const divider = document.createElement('div');
+    divider.classList.add('overlay-divider-content');
+    return divider;
 }
 
 // #region AddTaskForm
@@ -203,12 +216,6 @@ export function createDateButtonOverlay(onDateSelected) {
     return overlay;
 }
 
-export function createOverlayDivider() {
-    const divider = document.createElement('div');
-    divider.classList.add('overlay-divider-content');
-    return divider;
-}
-
 export function createFormBottomButtonsDiv() {
     const div = document.createElement('div');
     div.classList.add('overlay-button-content-div');
@@ -230,7 +237,19 @@ export function createSelectProjectButton() {
     selectProjectButtonSecondIcon.src = arrowDownIcon;
     selectProjectButtonSecondIcon.alt = 'Arrow down icon';
 
-    selectProjectButton.append(selectProjectButtonFirstIcon, 'Entrada', selectProjectButtonSecondIcon);
+    selectProjectButton.append(selectProjectButtonFirstIcon, ' Entrada ', selectProjectButtonSecondIcon);
+
+    // Método customizado para o botão recriar a si mesmo sem perder a referência das imagens importadas
+    selectProjectButton.updateSelection = (project) => {
+        if (project === null) {
+            selectProjectButtonFirstIcon.src = mailBoxIcon;
+            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ' Entrada ', selectProjectButtonSecondIcon);
+        } else {
+            selectProjectButtonFirstIcon.src = hashtagSymbol;
+            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ` ${project.projectName} `, selectProjectButtonSecondIcon);
+        }
+    };
+
     return selectProjectButton;
 }
 
@@ -250,11 +269,82 @@ export function createOverlayAddTaskButton() {
     return addTaskButton;
 }
 
-export function createOverlayContent() {
-    const overlay = document.createElement('div');
-    overlay.classList.add('overlay-content');
+export function createSelectProjectButtonOverlay(onProjectSelected, userProjects) {
+    const overlay = document.createElement('div')
+    overlay.classList.add('overlay-content','select-project-overlay');
+
+    const searchProjectInput = document.createElement('input');
+    searchProjectInput.classList.add('input-search-project');
+    searchProjectInput.setAttribute('placeholder', 'Digite o nome de um projeto');
+
+    const divider = createOverlayDivider();
+
+    const entryButton = document.createElement('button');
+    entryButton.classList.add('overlay-button-content', 'select-project');
+    entryButton.setAttribute('type', 'button');
+
+    const entryButtonFirstIcon = document.createElement('img');
+    entryButtonFirstIcon.classList.add('overlay-button-content-icon', 'select-project');
+    entryButtonFirstIcon.src = mailBoxIcon;
+    entryButtonFirstIcon.alt = 'Mailbox icon';
+
+    entryButton.append(entryButtonFirstIcon, 'Entrada');
+    entryButton.addEventListener('click', () => {
+        onProjectSelected(null); // Sem projeto, "Entrada" é representado por null
+    });
+
+    const myProjectsHeader = document.createElement('h2');
+    myProjectsHeader.classList.add('overlay-select-project-header');
+    myProjectsHeader.textContent = 'Meus projetos';
+
+    overlay.append(searchProjectInput, divider, entryButton, myProjectsHeader);
+
+    const projectButtonsElements = [];
+
+    const projectsList = document.createElement('div');
+    projectsList.classList.add('overlay-projects-list');
+
+    userProjects.forEach(project => {
+        const projectButton = document.createElement('button');
+        projectButton.classList.add('overlay-button-content', 'select-project');
+        projectButton.setAttribute('type', 'button');
+
+        const projectButtonFirstIcon = document.createElement('img');
+        projectButtonFirstIcon.classList.add('overlay-button-content-icon', 'select-project');
+        projectButtonFirstIcon.src = hashtagSymbol;
+        projectButtonFirstIcon.alt = 'Hashtag icon';
+
+        projectButton.append(projectButtonFirstIcon, project.projectName);
+
+        projectButton.addEventListener('click', () => {
+            onProjectSelected(project);
+        });
+
+        projectsList.append(projectButton);
+
+        projectButtonsElements.push({
+            htmlElement: projectButton,
+            projectNameText: project.projectName.toLowerCase(),
+        })
+    });
+
+    overlay.append(projectsList);
+
+    searchProjectInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+
+        projectButtonsElements.forEach(item => {
+            if (item.projectNameText.includes(searchTerm)) {
+                item.htmlElement.style.display = '';
+            } else {
+                item.htmlElement.style.display = 'none';
+            }
+        });
+    });
+
     return overlay;
 }
+
 // #endregion
 
 // #region Funções auxiliares para criar elementos do conteúdo
