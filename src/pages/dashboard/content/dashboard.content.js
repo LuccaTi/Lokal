@@ -107,7 +107,7 @@ export function createAddTaskForm() {
 
     form.append(titleInput, descriptionInput, dateButton, divider, div);
 
-    return {
+    const formComponents = {
         element: form,
         titleInput: titleInput,
         descriptionInput: descriptionInput,
@@ -115,7 +115,20 @@ export function createAddTaskForm() {
         selectProjectButton: selectProjectButton,
         cancelButton: cancelButton,
         addTaskButton: addTaskButton
+    }
+
+    formComponents.resetForm = () => {
+        form.reset();
+        
+        selectProjectButton.updateSelection(null);
+        
+        const dateIcon = dateButton.querySelector('img');
+        dateButton.replaceChildren(dateIcon, 'Hoje');
+
+        addTaskButton.classList.add('add-task-button-restrict');
     };
+
+    return formComponents;
 }
 
 export function createDateButtonOverlay(onDateSelected) {

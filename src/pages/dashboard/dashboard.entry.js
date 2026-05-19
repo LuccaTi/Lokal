@@ -85,6 +85,9 @@ function initDashboard() {
                     overlay.classList.remove('active');
                     setTimeout(() => {
                         overlay.remove();
+                        if(overlay === env.addTaskForm.element) {
+                            env.addTaskForm.resetForm();
+                        }
                     }, 300);
                 } else {
                     overlay.remove();
@@ -144,10 +147,24 @@ function initDashboard() {
     // #region Ponte do menu com tela principal
 
     // Form de adicionar tarefa
-    env.addTaskForm.element.addEventListener('submit', (e) => {
-        e.preventDefault();
-        controllerCallbacks.closeContentOverlays();
-        // Próximo passo: Integrar com a lógica de criação de tarefas (pegar os dados do formulário, etc).
+    env.addTaskButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        controllerCallbacks.closeMenuOverlays();
+        controllerCallbacks.unclickArrowButton();
+
+        document.body.append(env.addTaskForm.element);
+
+        // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
+        setTimeout(() => {
+            env.addTaskForm.addTaskButton.classList.add('add-task-button-restrict');
+            env.addTaskForm.element.classList.add('active');
+        }, 10);
+    });
+
+    env.addTaskForm.titleInput.addEventListener('input', () => {
+        const hasTitle = env.addTaskForm.titleInput.value.trim() !== '';
+        env.addTaskForm.addTaskButton.classList.toggle('add-task-button-restrict', !hasTitle);
     });
 
     env.addTaskForm.dateButton.addEventListener('click', (event) => {
@@ -182,18 +199,10 @@ function initDashboard() {
         controllerCallbacks.closeContentOverlays();
     });
 
-    env.addTaskButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-
-        controllerCallbacks.closeMenuOverlays();
-        controllerCallbacks.unclickArrowButton();
-
-        document.body.append(env.addTaskForm.element);
-
-        // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
-        setTimeout(() => {
-            env.addTaskForm.element.classList.add('active');
-        }, 10);
+    env.addTaskForm.element.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Próximo passo: Integrar com a lógica de criação de tarefas (pegar os dados do formulário) e criar a view que mostra as tarefas do usuário.
+        controllerCallbacks.closeContentOverlays();
     });
 
     env.todayButton.addEventListener('click', () => {
