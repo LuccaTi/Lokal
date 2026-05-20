@@ -2,6 +2,8 @@ import "./dashboard.entry.css";
 import "../../shared/styles/global.css"
 import { requireAuthenticatedUser } from "../../shared/utils/authSession.js";
 import { initLayoutBlocks } from "./controllers/dashboard.layout.js";
+import { createTask } from "../../core/domain/task.js";
+import { userStorage } from "../../core/storage/userStorage.js";
 
 
 function initDashboard() {
@@ -11,6 +13,14 @@ function initDashboard() {
     if (!currentUser) return;
 
     console.log(`Usuário autenticado: ${currentUser.email}`);
+
+    const currentTaskState = {
+        dueDate: new Date(),
+    };
+
+    const currentProjectState = {
+        project: null,
+    }
 
     // #region Criação dos callbacks e 'env'.
     const controllerCallbacks = {
@@ -87,6 +97,9 @@ function initDashboard() {
                         overlay.remove();
                         if(overlay === env.addTaskForm.element) {
                             env.addTaskForm.resetForm();
+
+                            currentTaskState.dueDate = new Date();
+                            currentProjectState.project = null;
                         }
                     }, 300);
                 } else {
@@ -109,38 +122,19 @@ function initDashboard() {
             if (selectProjectOverlay) {
                 selectProjectOverlay.remove();
             }
+        },
+
+        updateTaskState(date){
+            currentTaskState.dueDate = date;
+        },
+
+        updateProjectState(project){
+            currentProjectState.project = project;
         }
     }
 
-    // Usuário teste
-    const testUser = {
-        email: 'tirellilucca@gmail.com',
-        password: 'Lokal123@',
-        projects: [
-            {
-                projectName: 'Projeto 1'
-            },
-            {
-                projectName: 'Projeto 2'
-            },
-            {
-                projectName: 'Projeto 3'
-            },
-            {
-                projectName: 'Projeto 4'
-            },
-            {
-                projectName: 'Projeto 5'
-            },
-            {
-                projectName: 'Projeto 6'
-            }
-        ]
-    };
-
-    // Trocar para 'currentUser' após testes
     // Criador do menu lateral e da tela principal
-    const env = initLayoutBlocks(testUser, controllerCallbacks);
+    const env = initLayoutBlocks(currentUser, controllerCallbacks);
 
     // #endregion
 
@@ -201,7 +195,23 @@ function initDashboard() {
 
     env.addTaskForm.element.addEventListener('submit', (e) => {
         e.preventDefault();
-        // Próximo passo: Integrar com a lógica de criação de tarefas (pegar os dados do formulário) e criar a view que mostra as tarefas do usuário.
+        // Próximos passos: Pegar os dados do formulário para criar tarefas sem projeto. OK
+        // Criar a view que mostra as tarefas sem projeto do usuário. TODO
+
+
+        const titleText = env.addTaskForm.titleInput.value.trim();
+        const descriptionText = env.addTaskForm.descriptionInput.value.trim();
+
+        const newTask = createTask({
+            title: titleText,
+            description: descriptionText,
+            dueDate: currentTaskState.dueDate,
+        })
+
+        currentUser.addTask(newTask);
+
+        userStorage.saveUser(currentUser);
+
         controllerCallbacks.closeContentOverlays();
     });
 
@@ -228,7 +238,7 @@ function initDashboard() {
         } else {
             env.contentContainer.append(env.todayViewWithTasks);
         }
-
+        
         env.todayButton.classList.add('button-clicked');
     });
 

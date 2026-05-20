@@ -6,16 +6,16 @@ export function createTask(
         title,
         description = '',
         dueDate = null,
-        priority = 'baixa',
-        isCompleted = false
+        isCompleted = false,
+        createdAt = Date.now(),
     }
 ) {
     let _id = id;
     let _title = title;
     let _description = description;
     let _dueDate = dueDate;
-    let _priority = priority;
     let _isCompleted = isCompleted;
+    let _createdAt = createdAt;
 
     return {
 
@@ -24,8 +24,8 @@ export function createTask(
         get title() { return _title; },
         get description() { return _description; },
         get dueDate() { return _dueDate; },
-        get priority() { return _priority; },
         get isCompleted() { return _isCompleted; },
+        get createdAt() { return _createdAt; },
 
         // Funções que funcionarão como setters.
         updateTitle(newTitle) {
@@ -36,13 +36,20 @@ export function createTask(
             _title = newTitle.trim();
         },
 
-        updatePriority(newPriority) {
-            const allowedPriorities = ['baixa', 'média', 'alta'];
-            if (!allowedPriorities.includes(newPriority.toLowerCase())) {
-                throw new Error("Prioridade inválida");
+        updateDescription(newDescription){
+            if(!newDescription || newDescription.trim() === ''){
+                throw new Error("A descrição da tarefa não pode ser vazia.");
             }
 
-            _priority = newPriority.toLowerCase();
+            _description = newDescription.trim();
+        },
+
+        updateDueDate(newDueDate){
+            if(newDueDate && isNaN(Date.parse(newDueDate))){
+                throw new Error("Data de vencimento inválida.");
+            }
+
+            _dueDate = newDueDate;
         },
 
         toggleStatus(){
@@ -55,8 +62,8 @@ export function createTask(
                 title: _title,
                 description: _description,
                 dueDate: _dueDate,
-                priority: _priority,
-                isCompleted: _isCompleted
+                isCompleted: _isCompleted,
+                createdAt: _createdAt,
             }
         }
     }

@@ -216,20 +216,12 @@ export function initLayoutBlocks(currentUser, callbacks) {
     const addTaskForm= contentCreator.createAddTaskForm();
 
     const dateButtonOverlay = contentCreator.createDateButtonOverlay((selectedDate) => {
-
-        // Essa arrow function é o callback que o calendário chama quando clica em um dia, e recebe a data selecionada como parâmetro (selectedDate)
-        // É o manual de instruções que o calendário segue quando um dia é clicado.
-        // Mais especificamente, é a função 'onDateSelected' passada como argumento na declaração do calendário, lá no dashboard.content.js.
-
-        // 1. Zera horas para bater exatamente igual ao dia de 'hoje'
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         selectedDate.setHours(0, 0, 0, 0);
 
-        // Recupera o ícone existente no botão para não perdê-lo
         const icon = addTaskForm.dateButton.querySelector('img');
 
-        // 2. Compara se clicou em 'hoje' ou 'futuro/passado' e altera o texto do Botão
         if (selectedDate.getTime() === today.getTime()) {
             addTaskForm.dateButton.replaceChildren(icon, ' Hoje');
         } else {
@@ -238,13 +230,16 @@ export function initLayoutBlocks(currentUser, callbacks) {
             addTaskForm.dateButton.replaceChildren(icon, ` ${formatedText}`);
         }
 
-        // 3. Some com o calendário após selecionar
+        callbacks.updateTaskState(selectedDate);
+
         dateButtonOverlay.remove();
     });
 
     const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => { 
         
         addTaskForm.selectProjectButton.updateSelection(selectedProject);
+
+        callbacks.updateProjectState(selectedProject);
 
         selectProjectButtonOverlay.remove();
     }, 
