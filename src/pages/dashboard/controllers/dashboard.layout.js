@@ -213,7 +213,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
     todayViewNoTasks.append(todayViewAddTaskButton);
 
     // 6. Tela principal - Formulário de adicionar tarefa
-    const addTaskForm= contentCreator.createAddTaskForm();
+    const addTaskForm = contentCreator.createAddTaskForm();
 
     const dateButtonOverlay = contentCreator.createDateButtonOverlay((selectedDate) => {
         const today = new Date();
@@ -235,18 +235,18 @@ export function initLayoutBlocks(currentUser, callbacks) {
         dateButtonOverlay.remove();
     });
 
-    const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => { 
-        
+    const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
+
         addTaskForm.selectProjectButton.updateSelection(selectedProject);
 
         callbacks.updateProjectState(selectedProject);
 
         selectProjectButtonOverlay.remove();
-    }, 
-    currentUser.projects);
+    },
+        currentUser.projects);
 
     // 7. Tela principal - Hoje, view com tarefas
-    const todayViewWithTasks = contentCreator.createTodayViewWithTasks();
+    const todayViewWithTasks = contentCreator.createTodayViewWithTasks(currentUser);
 
     // #endregion
 

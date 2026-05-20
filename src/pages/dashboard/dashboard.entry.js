@@ -95,7 +95,7 @@ function initDashboard() {
                     overlay.classList.remove('active');
                     setTimeout(() => {
                         overlay.remove();
-                        if(overlay === env.addTaskForm.element) {
+                        if (overlay === env.addTaskForm.element) {
                             env.addTaskForm.resetForm();
 
                             currentTaskState.dueDate = new Date();
@@ -124,11 +124,11 @@ function initDashboard() {
             }
         },
 
-        updateTaskState(date){
+        updateTaskState(date) {
             currentTaskState.dueDate = date;
         },
 
-        updateProjectState(project){
+        updateProjectState(project) {
             currentProjectState.project = project;
         }
     }
@@ -194,11 +194,8 @@ function initDashboard() {
     });
 
     env.addTaskForm.element.addEventListener('submit', (e) => {
-        e.preventDefault();
         // Próximos passos: Pegar os dados do formulário para criar tarefas sem projeto. OK
         // Criar a view que mostra as tarefas sem projeto do usuário. TODO
-
-
         const titleText = env.addTaskForm.titleInput.value.trim();
         const descriptionText = env.addTaskForm.descriptionInput.value.trim();
 
@@ -215,6 +212,8 @@ function initDashboard() {
         controllerCallbacks.closeContentOverlays();
     });
 
+
+
     env.todayButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
         env.contentContainer.replaceChildren();
@@ -222,7 +221,6 @@ function initDashboard() {
         if (currentUser.tasks.length === 0) {
             env.contentContainer.append(env.todayViewNoTasks);
 
-            // O botão de criar tarefa DO MEIO DA TELA precisa deste (event) para não quebrar no stopPropagation!
             env.todayViewAddTaskButton.addEventListener('click', (event) => {
                 event.stopPropagation();
 
@@ -236,9 +234,30 @@ function initDashboard() {
                 }, 10);
             });
         } else {
-            env.contentContainer.append(env.todayViewWithTasks);
+            env.contentContainer.append(env.todayViewWithTasks.element);
+
+            env.todayViewWithTasks.taskViewsWithoutProject.forEach(taskView => {
+                taskView.checkbox.addEventListener('change', (event) => {
+                    if (event.target.checked) {
+                        console.log(`Tarefa "${taskView.taskTitle.textContent}" marcada como concluída.`);
+                        // Restante da lógica para marcar a tarefa como concluída, como atualizar o estado da tarefa, mover para uma seção de tarefas concluídas, etc.
+                    } else {
+                        console.log(`Tarefa "${taskView.taskTitle.textContent}" desmarcada como concluída.`);
+                    }
+                });
+
+                taskView.editButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    // Lógica para abrir o formulário de edição da tarefa, preenchendo os campos com as informações atuais da tarefa. Pode ser necessário um overlay para isso, dependendo da complexidade da aplicação.
+                });
+
+                taskView.deleteButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    // Lógica para deletar a tarefa, como atualizar o estado do usuário, remover a tarefa da tela, etc. Pode ser necessário um overlay de confirmação, dependendo da complexidade da aplicação.
+                });
+            });
         }
-        
+
         env.todayButton.classList.add('button-clicked');
     });
 

@@ -6,6 +6,8 @@ import todayIcon from "../assets/icons/shared/today-outline-svgrepo-com.svg";
 import mailBoxIcon from "../assets/icons/content/mail-box-svgrepo-com.svg";
 import arrowDownIcon from "../assets/icons/shared/arrow-down-svgrepo-com.svg";
 import hashtagSymbol from "../assets/icons/shared/hashtag-svgrepo-com.svg";
+import crossSymbol from "../assets/icons/shared/cross-svgrepo-com.svg";
+import pencilSymbol from "../assets/icons/shared/pencil-svgrepo-com.svg";
 
 
 export function createContent(user) {
@@ -29,7 +31,7 @@ export function createSideButton() {
 
 export function createTodayViewNoTasks() {
     const view = document.createElement('div');
-    view.classList.add('content-today');
+    view.classList.add('content-container');
 
     const title = createContentTitle('Hoje');
 
@@ -47,7 +49,120 @@ export function createTodayViewNoTasksAddTaskButton() {
 }
 
 export function createTodayViewWithTasks(user) {
-    // TODO
+    const tasksContainer = document.createElement('div');
+    tasksContainer.classList.add('content-container');
+
+    const title = createContentTitle('Hoje');
+    title.classList.add('with-tasks-title');
+
+    const taskCountHeader = document.createElement('h2');
+    taskCountHeader.classList.add('content-today-with-tasks-count-header');
+    taskCountHeader.textContent = `${user.tasks.length} tarefa(s) para hoje`;
+
+    tasksContainer.appendChild(title, taskCountHeader);
+
+    const taskViewsWithoutProject = [];
+
+    user.tasks.forEach(task => {
+        const taskView = createTaskView(task, null);
+        tasksContainer.append(taskView.element);
+        taskViewsWithoutProject.push(taskView);
+    });
+
+    return {
+        element: tasksContainer,
+        taskViewsWithoutProject: taskViewsWithoutProject
+    }
+}
+
+function createTaskView(task, project) {
+    const taskDiv = document.createElement('div');
+    taskDiv.classList.add('task-div');
+
+    const checkboxDiv = document.createElement('div');
+    checkboxDiv.classList.add('checkbox-task-div');
+
+    const checkbox = document.createElement('input');
+    checkbox.setAttribute('type', 'checkbox');
+    checkbox.classList.add('checkbox-task');
+
+    checkboxDiv.append(checkbox);
+
+    const taskInfoDiv = document.createElement('div');
+    taskInfoDiv.classList.add('task-div-info');
+
+    const titleAndDeleteButtonDiv = document.createElement('div');
+    titleAndDeleteButtonDiv.classList.add('task-div-title-delete');
+
+    const taskTitle = document.createElement('h3');
+    taskTitle.classList.add('task-div-title');
+    taskTitle.textContent = task.title;
+
+    const editButton = document.createElement('button');
+    editButton.classList.add('task-div-button');
+    editButton.setAttribute('type', 'button');
+
+    const editButtonIcon = document.createElement('img');
+    editButtonIcon.src = pencilSymbol;
+    editButtonIcon.classList.add('task-div-icon');
+    editButtonIcon.alt = 'Pencil icon';
+    editButton.append(editButtonIcon);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('task-div-button');
+    deleteButton.setAttribute('type', 'button');
+
+    const deleteButtonIcon = document.createElement('img');
+    deleteButtonIcon.src = crossSymbol;
+    deleteButtonIcon.classList.add('task-div-icon');
+    deleteButtonIcon.alt = 'Cross icon';
+    deleteButton.append(deleteButtonIcon);
+
+    const editDeleteDiv = document.createElement('div');
+    editDeleteDiv.classList.add('task-div-edit-delete');
+    editDeleteDiv.append(editButton, deleteButton);
+
+    titleAndDeleteButtonDiv.append(taskTitle, editDeleteDiv);
+
+    const taskDescription = document.createElement('p');
+    taskDescription.classList.add('task-div-description');
+    taskDescription.textContent = task.description;
+
+    taskInfoDiv.append(titleAndDeleteButtonDiv, taskDescription);
+
+    const projectInfoDiv = document.createElement('div');
+    projectInfoDiv.classList.add('task-div-project');
+
+    const projectName = document.createElement('p');
+    projectName.classList.add('task-div-project-name');
+
+    const projectIcon = document.createElement('img');
+    projectIcon.classList.add('task-div-icon');
+
+    if (project === null) {
+        projectName.textContent = 'Entrada';
+        projectIcon.src = mailBoxIcon;
+        projectIcon.alt = 'Mailbox icon';
+    } else {
+        projectName.textContent = project.title;
+        projectIcon.src = hashtagSymbol;
+        projectIcon.alt = 'Hashtag icon';
+    }
+
+    projectInfoDiv.append(projectIcon, projectName);
+
+    const bottomDivider = createOverlayDivider();
+    bottomDivider.classList.add('task-div-divider');
+
+    taskDiv.append(checkboxDiv, taskInfoDiv, projectInfoDiv, bottomDivider);
+
+    return {
+        element: taskDiv,
+        taskTitle: taskTitle,
+        checkbox: checkbox,
+        editButton: editButton,
+        deleteButton: deleteButton
+    };
 }
 
 export function createOverlayContent() {
@@ -119,9 +234,9 @@ export function createAddTaskForm() {
 
     formComponents.resetForm = () => {
         form.reset();
-        
+
         selectProjectButton.updateSelection(null);
-        
+
         const dateIcon = dateButton.querySelector('img');
         dateButton.replaceChildren(dateIcon, 'Hoje');
 

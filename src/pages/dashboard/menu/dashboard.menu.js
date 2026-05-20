@@ -10,8 +10,8 @@ import plusSymbol from "../assets/icons/shared/plus-svgrepo-com.svg";
 import historySymbol from "../assets/icons/menu/history-svgrepo-com.svg";
 import hashtagSymbol from "../assets/icons/shared/hashtag-svgrepo-com.svg";
 import dotsSymbol from "../assets/icons/menu/dot-menu-more-2-svgrepo-com.svg";
-import pencilSymbol from "../assets/icons/menu/pencil-svgrepo-com.svg";
-import crossSymbol from "../assets/icons/menu/cross-svgrepo-com.svg";
+import pencilSymbol from "../assets/icons/shared/pencil-svgrepo-com.svg";
+import crossSymbol from "../assets/icons/shared/cross-svgrepo-com.svg";
 
 const menuCreator = {
 
