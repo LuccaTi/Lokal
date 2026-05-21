@@ -49,8 +49,8 @@ export function createTodayViewNoTasksAddTaskButton() {
 }
 
 export function createTodayViewWithTasks(user) {
-    const tasksContainer = document.createElement('div');
-    tasksContainer.classList.add('content-container');
+    const viewContainer = document.createElement('div');
+    viewContainer.classList.add('content-container');
 
     const title = createContentTitle('Hoje');
     title.classList.add('with-tasks-title');
@@ -59,18 +59,29 @@ export function createTodayViewWithTasks(user) {
     taskCountHeader.classList.add('content-today-with-tasks-count-header');
     taskCountHeader.textContent = `${user.tasks.length} tarefa(s) para hoje`;
 
-    tasksContainer.appendChild(title, taskCountHeader);
+    viewContainer.append(title, taskCountHeader);
 
-    const taskViewsWithoutProject = [];
+    const taskViewsWithoutProject = user.tasks
+        .sort((a, b) => a.createdAt - b.createdAt)
+        .map(task => {
+            const taskView = createTaskView(task, null); // Sem projeto, então passa null
 
-    user.tasks.forEach(task => {
-        const taskView = createTaskView(task, null);
+            taskView.taskId = task.id;
+
+            return taskView;
+        });
+
+    const tasksContainer = document.createElement('div');
+    tasksContainer.classList.add('content-today-with-tasks-container');
+
+    taskViewsWithoutProject.forEach(taskView => {
         tasksContainer.append(taskView.element);
-        taskViewsWithoutProject.push(taskView);
     });
 
+    viewContainer.append(tasksContainer);
+
     return {
-        element: tasksContainer,
+        element: viewContainer,
         taskViewsWithoutProject: taskViewsWithoutProject
     }
 }
@@ -163,6 +174,37 @@ function createTaskView(task, project) {
         editButton: editButton,
         deleteButton: deleteButton
     };
+}
+
+export function createDeleteTaskOverlay(taskTitle) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay-content', 'delete-task-overlay');
+
+    const message = document.createElement('p');
+    message.classList.add('overlay-message');
+    message.textContent = `Tem certeza que deseja deletar a tarefa "${taskTitle}"?`;
+
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.classList.add('delete-confirmation-buttons');
+
+    const cancelButton = document.createElement('button');
+    cancelButton.classList.add('overlay-button-content', 'cancel');
+    cancelButton.setAttribute('type', 'button');
+    cancelButton.textContent = 'Cancelar';
+
+    const confirmButton = document.createElement('button');
+    confirmButton.classList.add('overlay-button-content', 'delete');
+    confirmButton.setAttribute('type', 'button');
+    confirmButton.textContent = 'Excluir';
+
+    buttonsDiv.append(cancelButton, confirmButton);
+    overlay.append(message, buttonsDiv);
+
+    return {
+        element: overlay,
+        cancelButton: cancelButton,
+        confirmButton: confirmButton
+    }
 }
 
 export function createOverlayContent() {

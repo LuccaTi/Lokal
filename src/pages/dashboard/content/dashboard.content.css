@@ -140,6 +140,7 @@ input:focus {
   background-color: white;
   color: rgb(129, 128, 128);
   border: solid 1px rgb(202, 202, 202);
+  width: 8rem;
 }
 
 .overlay-button-content:active {
@@ -341,9 +342,20 @@ input:focus {
   overflow-y: auto;
 }
 
+.content-today-with-tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+
 .content-today-with-tasks-count-header {
   font-size: 1rem;
   color: rgb(148, 148, 148);
+  align-self: flex-start;
+  margin-top: 3rem;
 }
 
 .task-div {
@@ -377,15 +389,20 @@ input:focus {
   justify-content: center;
   align-items: flex-start;
   gap: 0.2rem;
+  min-width: 0;
 }
 
 .task-div-title {
   font-size: 1rem;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-.task-div-title-delete{
+.task-div-title-delete {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -403,6 +420,11 @@ input:focus {
 .task-div-description {
   font-size: 0.9rem;
   color: rgb(148, 148, 148);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5rem;
+  max-width: 100%;
 }
 
 .task-div-project {
@@ -434,6 +456,29 @@ input:focus {
   gap: 0.5rem;
 }
 
+.overlay-message {
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5rem;
+  max-width: 100%;
+}
+
+.delete-confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.overlay-button-content.delete {
+  background-color: rgb(199, 42, 42);
+  color: white;
+  border: none;
+}
+
 @media (hover: hover) {
   /*Media query para efeito de hover apenas no PC*/
   .content-wrapper-button:hover {
@@ -443,7 +488,7 @@ input:focus {
 
   .overlay-button-content:hover {
     cursor: pointer;
-    background-color: rgb(234, 233, 233);
+    background-color: rgb(202, 201, 201);
   }
 
   .calendar-nav-btn:hover {
@@ -454,6 +499,14 @@ input:focus {
 
   .task-div-button:hover {
     background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .overlay-button-content.delete:hover {
+    background-color: rgb(222, 46, 46);
+  }
+
+  .overlay-button-content.add:hover {
+    background-color: #2dbf8e;
   }
 }
 
@@ -507,6 +560,12 @@ input:focus {
     width: 500px;
     top: 18%;
     left: 29%;
+  }
+
+  .overlay-content.delete-task-overlay {
+    top: 40%;
+    left: 48%;
+    width: 400px;
   }
 
   .calendar-overlay {

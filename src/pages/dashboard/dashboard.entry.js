@@ -4,6 +4,7 @@ import { requireAuthenticatedUser } from "../../shared/utils/authSession.js";
 import { initLayoutBlocks } from "./controllers/dashboard.layout.js";
 import { createTask } from "../../core/domain/task.js";
 import { userStorage } from "../../core/storage/userStorage.js";
+import { createUser } from "../../core/domain/user.js";
 
 
 function initDashboard() {
@@ -145,6 +146,7 @@ function initDashboard() {
         event.stopPropagation();
 
         controllerCallbacks.closeMenuOverlays();
+        controllerCallbacks.closeContentOverlays();
         controllerCallbacks.unclickArrowButton();
 
         document.body.append(env.addTaskForm.element);
@@ -194,8 +196,12 @@ function initDashboard() {
     });
 
     env.addTaskForm.element.addEventListener('submit', (e) => {
-        // Próximos passos: Pegar os dados do formulário para criar tarefas sem projeto. OK
-        // Criar a view que mostra as tarefas sem projeto do usuário. TODO
+        // Próximos passos:
+        // Ver como remover a tarefar e atualizar a view depois de cada remoção. TODO
+        // Criar a feat de editar a tarefa. TODO
+        // Refinar no desktop tudo feito até agora e depois partir pro mobile. TODO
+        e.preventDefault();
+
         const titleText = env.addTaskForm.titleInput.value.trim();
         const descriptionText = env.addTaskForm.descriptionInput.value.trim();
 
@@ -210,9 +216,9 @@ function initDashboard() {
         userStorage.saveUser(currentUser);
 
         controllerCallbacks.closeContentOverlays();
+
+        env.todayButton.click();
     });
-
-
 
     env.todayButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
@@ -234,9 +240,11 @@ function initDashboard() {
                 }, 10);
             });
         } else {
-            env.contentContainer.append(env.todayViewWithTasks.element);
+            const freshView = env.refreshTodayView();
 
-            env.todayViewWithTasks.taskViewsWithoutProject.forEach(taskView => {
+            env.contentContainer.append(freshView.element);
+
+            freshView.taskViewsWithoutProject.forEach(taskView => {
                 taskView.checkbox.addEventListener('change', (event) => {
                     if (event.target.checked) {
                         console.log(`Tarefa "${taskView.taskTitle.textContent}" marcada como concluída.`);
@@ -253,7 +261,28 @@ function initDashboard() {
 
                 taskView.deleteButton.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    // Lógica para deletar a tarefa, como atualizar o estado do usuário, remover a tarefa da tela, etc. Pode ser necessário um overlay de confirmação, dependendo da complexidade da aplicação.
+                    controllerCallbacks.closeMenuOverlays();
+                    controllerCallbacks.closeContentOverlays();
+
+                    const deleteOverlay = env.deleteTaskOverlay(taskView.taskTitle.textContent);
+                    document.body.append(deleteOverlay.element);
+
+                    setTimeout(() => {
+                        deleteOverlay.element.classList.add('active');
+                    }, 10);
+
+                    deleteOverlay.cancelButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        controllerCallbacks.closeContentOverlays();
+                    });
+
+                    deleteOverlay.confirmButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentUser.removeTask(taskView.taskId);
+                        userStorage.saveUser(currentUser);
+                        controllerCallbacks.closeContentOverlays();
+                        env.todayButton.click();
+                    });
                 });
             });
         }

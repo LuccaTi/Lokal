@@ -250,6 +250,14 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
     // #endregion
 
+    const refreshTodayView = () => {
+        return contentCreator.createTodayViewWithTasks(currentUser);
+    }
+
+    const deleteTaskOverlay = (taskTitle) => {
+        return contentCreator.createDeleteTaskOverlay(taskTitle);
+    }
+
     return {
         mainContainer,
 
@@ -269,9 +277,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
         contentContainer,
         todayViewNoTasks,
         todayViewAddTaskButton,
+        refreshTodayView,
+        deleteTaskOverlay,
         addTaskForm,
         dateButtonOverlay,
         selectProjectButtonOverlay,
-        todayViewWithTasks
     };
 }
