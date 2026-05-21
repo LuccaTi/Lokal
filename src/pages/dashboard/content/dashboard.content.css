@@ -29,12 +29,25 @@
   width: 70vw;
   margin-bottom: 16rem;
   gap: 1rem;
+  height: 100%;
 }
 
 .content-title {
   font-size: 2rem;
-  position: fixed;
-  top: 10%;
+}
+
+.content-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 10;
+  padding: 2rem 0 1rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .content-wrapper {
@@ -342,7 +355,7 @@ input:focus {
   overflow-y: auto;
 }
 
-.content-today-with-tasks-container {
+.tasks-container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -354,8 +367,6 @@ input:focus {
 .content-today-with-tasks-count-header {
   font-size: 1rem;
   color: rgb(148, 148, 148);
-  align-self: flex-start;
-  margin-top: 3rem;
 }
 
 .task-div {
@@ -538,14 +549,14 @@ input:focus {
     margin-bottom: 0rem;
   }
 
-  .content-wrapper {
-    width: 360px;
+  .content-header {
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 2rem;
   }
 
-  .content-title {
-    font-size: 2rem;
-    align-self: flex-start;
-    margin-left: 2rem;
+  .content-wrapper {
+    width: 360px;
   }
 
   .content-wrapper-button {
@@ -583,5 +594,9 @@ input:focus {
   .overlay-content.select-project-overlay {
     top: 50%;
     left: 25%;
+  }
+
+  .tasks-container {
+    max-height: 350px;
   }
 }

@@ -8,6 +8,7 @@ import arrowDownIcon from "../assets/icons/shared/arrow-down-svgrepo-com.svg";
 import hashtagSymbol from "../assets/icons/shared/hashtag-svgrepo-com.svg";
 import crossSymbol from "../assets/icons/shared/cross-svgrepo-com.svg";
 import pencilSymbol from "../assets/icons/shared/pencil-svgrepo-com.svg";
+import { formatDateForButton } from "../../../shared/utils/dateUtils.js";
 
 
 export function createContent(user) {
@@ -33,13 +34,18 @@ export function createTodayViewNoTasks() {
     const view = document.createElement('div');
     view.classList.add('content-container');
 
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('content-header');
+
     const title = createContentTitle('Hoje');
+
+    headerContainer.append(title);
 
     const p1 = 'Bem vindo(a) à sua visualização Hoje';
     const p2 = 'Veja tudo com vencimento hoje em todos os seus projetos';
     const wrapper = createContentWrapper(lokalImage, 'Lokal logo', p1, p2);
 
-    view.append(title, wrapper);
+    view.append(headerContainer, wrapper);
     return view;
 }
 
@@ -52,6 +58,9 @@ export function createTodayViewWithTasks(user) {
     const viewContainer = document.createElement('div');
     viewContainer.classList.add('content-container');
 
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('content-header');
+
     const title = createContentTitle('Hoje');
     title.classList.add('with-tasks-title');
 
@@ -59,7 +68,9 @@ export function createTodayViewWithTasks(user) {
     taskCountHeader.classList.add('content-today-with-tasks-count-header');
     taskCountHeader.textContent = `${user.tasks.length} tarefa(s) para hoje`;
 
-    viewContainer.append(title, taskCountHeader);
+    headerContainer.append(title, taskCountHeader);
+
+    viewContainer.append(headerContainer);
 
     const taskViewsWithoutProject = user.tasks
         .sort((a, b) => a.createdAt - b.createdAt)
@@ -72,7 +83,7 @@ export function createTodayViewWithTasks(user) {
         });
 
     const tasksContainer = document.createElement('div');
-    tasksContainer.classList.add('content-today-with-tasks-container');
+    tasksContainer.classList.add('tasks-container');
 
     taskViewsWithoutProject.forEach(taskView => {
         tasksContainer.append(taskView.element);
@@ -170,10 +181,78 @@ function createTaskView(task, project) {
     return {
         element: taskDiv,
         taskTitle: taskTitle,
+        taskDescription: taskDescription,
         checkbox: checkbox,
         editButton: editButton,
         deleteButton: deleteButton
     };
+}
+
+export function createEditTaskForm(
+    taskTitle,
+    taskDescription,
+    taskDate,
+    ProjectName
+) {
+    const form = document.createElement('form');
+    form.classList.add('overlay-content');
+
+    const titleInput = document.createElement('input');
+    titleInput.classList.add('overlay-input-title', 'edit');
+    titleInput.setAttribute('placeholder', taskTitle);
+
+    const descriptionInput = document.createElement('input');
+    descriptionInput.classList.add('overlay-input-description', 'edit');
+    descriptionInput.setAttribute('placeholder', taskDescription);
+
+    const dateButton = document.createElement('button');
+    dateButton.classList.add('overlay-button-content', 'date');
+    dateButton.setAttribute('type', 'button');
+
+    const dateButtonIcon = document.createElement('img');
+    dateButtonIcon.classList.add('overlay-button-content-icon');
+    dateButtonIcon.src = todayIcon;
+    dateButton.alt = 'Calendar icon';
+
+    const formattedDate = formatDateForButton(taskDate);
+
+    dateButton.append(dateButtonIcon, formattedDate);
+
+    const divider = createOverlayDivider();
+
+    const div = document.createElement('div');
+    div.classList.add('overlay-button-content-div');
+
+    const selectProjectButton = createSelectProjectButton();
+    if (ProjectName !== null) {
+        selectProjectButton.updateSelection(ProjectName);
+    }
+
+    const cancelButton = document.createElement('button');
+    cancelButton.classList.add('overlay-button-content', 'cancel');
+    cancelButton.setAttribute('type', 'button');
+    cancelButton.textContent = 'Cancelar';
+
+    const saveButton = document.createElement('button');
+    saveButton.classList.add('overlay-button-content', 'add');
+    saveButton.setAttribute('type', 'submit');
+    saveButton.textContent = 'Salvar alterações';
+
+    div.append(selectProjectButton, cancelButton, saveButton);
+
+    form.append(titleInput, descriptionInput, dateButton, divider, div);
+
+    const formComponents = {
+        element: form,
+        titleInput: titleInput,
+        descriptionInput: descriptionInput,
+        dateButton: dateButton,
+        selectProjectButton: selectProjectButton,
+        cancelButton: cancelButton,
+        saveButton: saveButton
+    }
+
+    return formComponents;
 }
 
 export function createDeleteTaskOverlay(taskTitle) {

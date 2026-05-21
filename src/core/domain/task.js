@@ -37,10 +37,6 @@ export function createTask(
         },
 
         updateDescription(newDescription){
-            if(!newDescription || newDescription.trim() === ''){
-                throw new Error("A descrição da tarefa não pode ser vazia.");
-            }
-
             _description = newDescription.trim();
         },
 

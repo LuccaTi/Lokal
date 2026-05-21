@@ -215,7 +215,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
     // 6. Tela principal - Formulário de adicionar tarefa
     const addTaskForm = contentCreator.createAddTaskForm();
 
-    const dateButtonOverlay = contentCreator.createDateButtonOverlay((selectedDate) => {
+    const dateButtonOverlayAddTask = contentCreator.createDateButtonOverlay((selectedDate) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         selectedDate.setHours(0, 0, 0, 0);
@@ -232,7 +232,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
         callbacks.updateTaskState(selectedDate);
 
-        dateButtonOverlay.remove();
+        dateButtonOverlayAddTask.remove();
     });
 
     const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
@@ -254,7 +254,49 @@ export function initLayoutBlocks(currentUser, callbacks) {
         return contentCreator.createTodayViewWithTasks(currentUser);
     }
 
-    const deleteTaskOverlay = (taskTitle) => {
+    const createEditTaskForm = (taskId) => {
+        const task = currentUser.tasks.find(t => t.id === taskId);
+        const form = contentCreator.createEditTaskForm(
+            task.title,
+            task.description,
+            task.dueDate,
+            null
+        );
+
+        form.dateButtonOverlayEditTask = contentCreator.createDateButtonOverlay((selectedDate) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            const icon = form.dateButton.querySelector('img');
+
+            if (selectedDate.getTime() === today.getTime()) {
+                form.dateButton.replaceChildren(icon, ' Hoje');
+            } else {
+                const optionsFormat = { day: 'numeric', month: 'short', year: 'numeric' };
+                const formatedText = selectedDate.toLocaleDateString('pt-BR', optionsFormat);
+                form.dateButton.replaceChildren(icon, ` ${formatedText}`);
+            }
+
+            callbacks.updateTaskState(selectedDate);
+
+            form.dateButtonOverlayEditTask.remove();
+        });
+
+        form.selectProjectButtonOverlayEditTask = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
+
+            form.selectProjectButton.updateSelection(selectedProject);
+
+            callbacks.updateProjectState(selectedProject);
+
+            form.selectProjectButtonOverlayEditTask.remove();
+        },
+            currentUser.projects);
+
+        return form;
+    }
+
+    const createDeleteTaskOverlay = (taskTitle) => {
         return contentCreator.createDeleteTaskOverlay(taskTitle);
     }
 
@@ -278,9 +320,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
         todayViewNoTasks,
         todayViewAddTaskButton,
         refreshTodayView,
-        deleteTaskOverlay,
+        createEditTaskForm,
+        createDeleteTaskOverlay,
         addTaskForm,
-        dateButtonOverlay,
+        dateButtonOverlayAddTask,
         selectProjectButtonOverlay,
     };
 }

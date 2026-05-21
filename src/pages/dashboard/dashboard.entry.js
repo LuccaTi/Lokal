@@ -5,7 +5,12 @@ import { initLayoutBlocks } from "./controllers/dashboard.layout.js";
 import { createTask } from "../../core/domain/task.js";
 import { userStorage } from "../../core/storage/userStorage.js";
 import { createUser } from "../../core/domain/user.js";
+import { formatDateForButton } from "../../shared/utils/dateUtils.js";
 
+// Próximos passos:
+// Criar mais um botão de adicionar tarefa abaixo da última tarefa adicionada. TODO
+// Criar a view do botão 'Em breve'. TODO
+// Criar a view do botão 'Histórico', onde serão enviadas as tarefas concluídas. TODO
 
 function initDashboard() {
 
@@ -173,8 +178,8 @@ function initDashboard() {
             return;
         }
 
-        env.dateButtonOverlay.resetCalendar();
-        document.body.append(env.dateButtonOverlay);
+        env.dateButtonOverlayAddTask.resetCalendar();
+        document.body.append(env.dateButtonOverlayAddTask);
     });
 
     env.addTaskForm.selectProjectButton.addEventListener('click', (event) => {
@@ -196,10 +201,6 @@ function initDashboard() {
     });
 
     env.addTaskForm.element.addEventListener('submit', (e) => {
-        // Próximos passos:
-        // Ver como remover a tarefar e atualizar a view depois de cada remoção. TODO
-        // Criar a feat de editar a tarefa. TODO
-        // Refinar no desktop tudo feito até agora e depois partir pro mobile. TODO
         e.preventDefault();
 
         const titleText = env.addTaskForm.titleInput.value.trim();
@@ -256,7 +257,85 @@ function initDashboard() {
 
                 taskView.editButton.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    // Lógica para abrir o formulário de edição da tarefa, preenchendo os campos com as informações atuais da tarefa. Pode ser necessário um overlay para isso, dependendo da complexidade da aplicação.
+                    controllerCallbacks.closeMenuOverlays();
+                    controllerCallbacks.closeContentOverlays();
+
+                    const projectName = null;
+                    let taskToEdit = null;
+                    if (currentProjectState.project === null) {
+                        taskToEdit = currentUser.tasks.find(task => task.id === taskView.taskId);
+                    } else {
+                        // Faz a busca da tarefa dentro do projeto específico, caso esteja vindo da seção de um projeto. TODO
+                    }
+
+                    if (!taskToEdit) return;
+
+                    const date = formatDateForButton(taskToEdit.dueDate);
+
+                    const currentTaskId = currentUser.tasks.find(t => t.id === taskView.taskId).id;
+                    const editOverlay = env.createEditTaskForm(currentTaskId);
+
+                    document.body.append(editOverlay.element);
+
+                    setTimeout(() => {
+                        editOverlay.element.classList.add('active');
+                    }, 10);
+
+                    editOverlay.dateButton.addEventListener('click', (e) => {
+                        event.stopPropagation();
+                        controllerCallbacks.closeSelectProjectOverlay();
+
+                        const existingOverlay = document.querySelector('.calendar-overlay');
+                        if (existingOverlay) {
+                            existingOverlay.remove();
+                            return;
+                        }
+
+                        editOverlay.dateButtonOverlayEditTask.resetCalendar();
+                        document.body.append(editOverlay.dateButtonOverlayEditTask);
+                    });
+
+                    editOverlay.selectProjectButton.addEventListener('click', (e) => {
+                        event.stopPropagation();
+                        controllerCallbacks.closeCalendarOverlay();
+
+                        const existingOverlay = document.querySelector('.select-project-overlay');
+                        if (existingOverlay) {
+                            existingOverlay.remove();
+                            return;
+                        }
+
+                        document.body.append(editOverlay.selectProjectButtonOverlayEditTask);
+                    });
+
+                    editOverlay.cancelButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        controllerCallbacks.closeContentOverlays();
+                    });
+
+                    editOverlay.element.addEventListener('submit', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        let updatedTitle = editOverlay.titleInput.value.trim();
+                        let updatedDescription = editOverlay.descriptionInput.value.trim();
+
+                        if (updatedTitle === '') {
+                            updatedTitle = taskToEdit.title;
+                        }
+
+                        if (updatedDescription === '') {
+                            updatedDescription = taskToEdit.description;
+                        }
+
+                        taskToEdit.updateTitle(updatedTitle);
+                        taskToEdit.updateDescription(updatedDescription);
+                        taskToEdit.updateDueDate(currentTaskState.dueDate);
+
+                        userStorage.saveUser(currentUser);
+                        controllerCallbacks.closeContentOverlays();
+                        env.todayButton.click();
+                    });
                 });
 
                 taskView.deleteButton.addEventListener('click', (event) => {
@@ -264,7 +343,7 @@ function initDashboard() {
                     controllerCallbacks.closeMenuOverlays();
                     controllerCallbacks.closeContentOverlays();
 
-                    const deleteOverlay = env.deleteTaskOverlay(taskView.taskTitle.textContent);
+                    const deleteOverlay = env.createDeleteTaskOverlay(taskView.taskTitle.textContent);
                     document.body.append(deleteOverlay.element);
 
                     setTimeout(() => {
