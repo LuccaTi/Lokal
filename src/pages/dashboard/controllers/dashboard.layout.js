@@ -246,12 +246,53 @@ export function initLayoutBlocks(currentUser, callbacks) {
         currentUser.projects);
 
     // 7. Tela principal - Hoje, view com tarefas
-    const todayViewWithTasks = contentCreator.createTodayViewWithTasks(currentUser);
+    const todayTasks = currentUser.tasks.filter(task => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const taskDueDate = new Date(task.dueDate);
+        taskDueDate.setHours(0, 0, 0, 0);
+        return taskDueDate.getTime() === today.getTime();
+    });
+    const todayViewWithTasks = contentCreator.createTodayViewWithTasks(todayTasks);
+
+    // 8. Tela principal - Em breve
+    const shortlyViewNoTasks = contentCreator.createShortlyViewNoTasks();
+
+    const shortlyTasks = currentUser.tasks.filter(task => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const taskDueDate = new Date(task.dueDate);
+        taskDueDate.setHours(0, 0, 0, 0);
+        return taskDueDate.getTime() > today.getTime();
+    });
+    const shortlyViewWithTasks = contentCreator.createShortlyViewWithTasks(shortlyTasks);
 
     // #endregion
 
     const refreshTodayView = () => {
-        return contentCreator.createTodayViewWithTasks(currentUser);
+        const todayTasks = currentUser.tasks.filter(task => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const taskDueDate = new Date(task.dueDate);
+            taskDueDate.setHours(0, 0, 0, 0);
+            return taskDueDate.getTime() === today.getTime();
+        });
+        return contentCreator.createTodayViewWithTasks(todayTasks);
+    }
+
+    const refreshShortlyView = () => {
+        const shortlyTasks = currentUser.tasks.filter(task => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const taskDueDate = new Date(task.dueDate);
+            taskDueDate.setHours(0, 0, 0, 0);
+            return taskDueDate.getTime() > today.getTime();
+        });
+        return contentCreator.createShortlyViewWithTasks(shortlyTasks);
     }
 
     const createEditTaskForm = (taskId) => {
@@ -300,6 +341,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
         return contentCreator.createDeleteTaskOverlay(taskTitle);
     }
 
+    const createTaskLateWarning = (daysLate) => {
+        return contentCreator.createTaskLateWarning(daysLate);
+    }
+
     return {
         mainContainer,
 
@@ -322,8 +367,12 @@ export function initLayoutBlocks(currentUser, callbacks) {
         refreshTodayView,
         createEditTaskForm,
         createDeleteTaskOverlay,
+        createTaskLateWarning,
         addTaskForm,
         dateButtonOverlayAddTask,
         selectProjectButtonOverlay,
+        shortlyViewNoTasks,
+        shortlyViewWithTasks,
+        refreshShortlyView
     };
 }

@@ -8,8 +8,6 @@ import { createUser } from "../../core/domain/user.js";
 import { formatDateForButton } from "../../shared/utils/dateUtils.js";
 
 // Próximos passos:
-// Criar mais um botão de adicionar tarefa abaixo da última tarefa adicionada. TODO
-// Criar a view do botão 'Em breve'. TODO
 // Criar a view do botão 'Histórico', onde serão enviadas as tarefas concluídas. TODO
 
 function initDashboard() {
@@ -154,6 +152,9 @@ function initDashboard() {
         controllerCallbacks.closeContentOverlays();
         controllerCallbacks.unclickArrowButton();
 
+        controllerCallbacks.updateTaskState(new Date());
+        controllerCallbacks.updateProjectState(null);
+
         document.body.append(env.addTaskForm.element);
 
         // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
@@ -218,14 +219,20 @@ function initDashboard() {
 
         controllerCallbacks.closeContentOverlays();
 
-        env.todayButton.click();
+        const taskDate = new Date(newTask.dueDate).setHours(0, 0, 0, 0);
+        const today = new Date().setHours(0, 0, 0, 0);
+        if (taskDate === today) {
+            env.todayButton.click();
+        } else {
+            env.shortlyButton.click();
+        }
     });
 
     env.todayButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
         env.contentContainer.replaceChildren();
 
-        if (currentUser.tasks.length === 0) {
+        if (currentUser.tasks.length === 0 || currentUser.tasks.every(task => new Date(task.dueDate).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0))) {
             env.contentContainer.append(env.todayViewNoTasks);
 
             env.todayViewAddTaskButton.addEventListener('click', (event) => {
@@ -234,6 +241,9 @@ function initDashboard() {
                 controllerCallbacks.closeMenuOverlays();
                 controllerCallbacks.unclickArrowButton();
 
+                controllerCallbacks.updateTaskState(new Date());
+                controllerCallbacks.updateProjectState(null);
+
                 document.body.append(env.addTaskForm.element);
 
                 setTimeout(() => {
@@ -241,11 +251,26 @@ function initDashboard() {
                 }, 10);
             });
         } else {
-            const freshView = env.refreshTodayView();
+            const freshViewToday = env.refreshTodayView();
 
-            env.contentContainer.append(freshView.element);
+            env.contentContainer.append(freshViewToday.element);
 
-            freshView.taskViewsWithoutProject.forEach(taskView => {
+            freshViewToday.taskViewsWithoutProject.forEach(taskView => {
+
+                let task = currentUser.tasks.find(task => task.id === taskView.taskId);
+
+                if (isTaskOverdue(task)) {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    const dueDate = new Date(task.dueDate);
+                    dueDate.setHours(0, 0, 0, 0);
+
+                    const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                    const warningOverlay = env.createTaskLateWarning(daysLate);
+                    taskView.element.before(warningOverlay);
+                }
+
                 taskView.checkbox.addEventListener('change', (event) => {
                     if (event.target.checked) {
                         console.log(`Tarefa "${taskView.taskTitle.textContent}" marcada como concluída.`);
@@ -260,17 +285,12 @@ function initDashboard() {
                     controllerCallbacks.closeMenuOverlays();
                     controllerCallbacks.closeContentOverlays();
 
-                    const projectName = null;
-                    let taskToEdit = null;
-                    if (currentProjectState.project === null) {
-                        taskToEdit = currentUser.tasks.find(task => task.id === taskView.taskId);
-                    } else {
-                        // Faz a busca da tarefa dentro do projeto específico, caso esteja vindo da seção de um projeto. TODO
-                    }
+                    if (!task) return;
 
-                    if (!taskToEdit) return;
+                    controllerCallbacks.updateTaskState(task.dueDate);
+                    controllerCallbacks.updateProjectState(task.project || null);
 
-                    const date = formatDateForButton(taskToEdit.dueDate);
+                    const date = formatDateForButton(task.dueDate);
 
                     const currentTaskId = currentUser.tasks.find(t => t.id === taskView.taskId).id;
                     const editOverlay = env.createEditTaskForm(currentTaskId);
@@ -321,20 +341,25 @@ function initDashboard() {
                         let updatedDescription = editOverlay.descriptionInput.value.trim();
 
                         if (updatedTitle === '') {
-                            updatedTitle = taskToEdit.title;
+                            updatedTitle = task.title;
                         }
 
                         if (updatedDescription === '') {
-                            updatedDescription = taskToEdit.description;
+                            updatedDescription = task.description;
                         }
 
-                        taskToEdit.updateTitle(updatedTitle);
-                        taskToEdit.updateDescription(updatedDescription);
-                        taskToEdit.updateDueDate(currentTaskState.dueDate);
+                        task.updateTitle(updatedTitle);
+                        task.updateDescription(updatedDescription);
+                        task.updateDueDate(currentTaskState.dueDate);
 
                         userStorage.saveUser(currentUser);
                         controllerCallbacks.closeContentOverlays();
-                        env.todayButton.click();
+
+                        if (new Date(task.dueDate).setHours(0, 0, 0, 0) === new Date().setHours(0, 0, 0, 0)) {
+                            env.todayButton.click();
+                        } else {
+                            env.shortlyButton.click();
+                        }
                     });
                 });
 
@@ -364,6 +389,25 @@ function initDashboard() {
                     });
                 });
             });
+
+            freshViewToday.addTaskButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+
+                controllerCallbacks.closeMenuOverlays();
+                controllerCallbacks.closeContentOverlays();
+                controllerCallbacks.unclickArrowButton();
+
+                controllerCallbacks.updateTaskState(new Date());
+                controllerCallbacks.updateProjectState(null);
+
+                document.body.append(env.addTaskForm.element);
+
+                // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
+                setTimeout(() => {
+                    env.addTaskForm.addTaskButton.classList.add('add-task-button-restrict');
+                    env.addTaskForm.element.classList.add('active');
+                }, 10);
+            });
         }
 
         env.todayButton.classList.add('button-clicked');
@@ -373,6 +417,150 @@ function initDashboard() {
         removeAllOtherButtonsClicked();
         env.contentContainer.replaceChildren();
         env.shortlyButton.classList.add('button-clicked');
+
+        const today = new Date().setHours(0, 0, 0, 0);
+
+        if (currentUser.tasks.length === 0 || currentUser.tasks.every(task => new Date(task.dueDate).setHours(0, 0, 0, 0) === today)) {
+            env.contentContainer.append(env.shortlyViewNoTasks);
+        } else {
+            const freshViewShortly = env.refreshShortlyView();
+
+            env.contentContainer.append(freshViewShortly.element);
+
+            freshViewShortly.taskViewsWithoutProject.forEach(taskView => {
+                let task = currentUser.tasks.find(task => task.id === taskView.taskId);
+
+                if (isTaskOverdue(task)) {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    const dueDate = new Date(task.dueDate);
+                    dueDate.setHours(0, 0, 0, 0);
+
+                    const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                    const warningOverlay = env.createTaskLateWarning(daysLate);
+                    taskView.element.before(warningOverlay);
+                }
+
+                taskView.checkbox.addEventListener('change', (event) => {
+                    if (event.target.checked) {
+                        console.log(`Tarefa "${taskView.taskTitle.textContent}" marcada como concluída.`);
+                        // Restante da lógica para marcar a tarefa como concluída, como atualizar o estado da tarefa, mover para uma seção de tarefas concluídas, etc.
+                    } else {
+                        console.log(`Tarefa "${taskView.taskTitle.textContent}" desmarcada como concluída.`);
+                    }
+                });
+
+                taskView.editButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    controllerCallbacks.closeMenuOverlays();
+                    controllerCallbacks.closeContentOverlays();
+
+                    if (!task) return;
+
+                    controllerCallbacks.updateTaskState(task.dueDate);
+                    controllerCallbacks.updateProjectState(task.project || null);
+
+                    const date = formatDateForButton(task.dueDate);
+
+                    const currentTaskId = currentUser.tasks.find(t => t.id === taskView.taskId).id;
+                    const editOverlay = env.createEditTaskForm(currentTaskId);
+
+                    document.body.append(editOverlay.element);
+
+                    setTimeout(() => {
+                        editOverlay.element.classList.add('active');
+                    }, 10);
+
+                    editOverlay.dateButton.addEventListener('click', (e) => {
+                        event.stopPropagation();
+                        controllerCallbacks.closeSelectProjectOverlay();
+
+                        const existingOverlay = document.querySelector('.calendar-overlay');
+                        if (existingOverlay) {
+                            existingOverlay.remove();
+                            return;
+                        }
+
+                        editOverlay.dateButtonOverlayEditTask.resetCalendar();
+                        document.body.append(editOverlay.dateButtonOverlayEditTask);
+                    });
+
+                    editOverlay.selectProjectButton.addEventListener('click', (e) => {
+                        event.stopPropagation();
+                        controllerCallbacks.closeCalendarOverlay();
+
+                        const existingOverlay = document.querySelector('.select-project-overlay');
+                        if (existingOverlay) {
+                            existingOverlay.remove();
+                            return;
+                        }
+
+                        document.body.append(editOverlay.selectProjectButtonOverlayEditTask);
+                    });
+
+                    editOverlay.cancelButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        controllerCallbacks.closeContentOverlays();
+                    });
+
+                    editOverlay.element.addEventListener('submit', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        let updatedTitle = editOverlay.titleInput.value.trim();
+                        let updatedDescription = editOverlay.descriptionInput.value.trim();
+
+                        if (updatedTitle === '') {
+                            updatedTitle = task.title;
+                        }
+
+                        if (updatedDescription === '') {
+                            updatedDescription = task.description;
+                        }
+
+                        task.updateTitle(updatedTitle);
+                        task.updateDescription(updatedDescription);
+                        task.updateDueDate(currentTaskState.dueDate);
+
+                        userStorage.saveUser(currentUser);
+                        controllerCallbacks.closeContentOverlays();
+
+                        if (new Date(task.dueDate).setHours(0, 0, 0, 0) === new Date().setHours(0, 0, 0, 0)) {
+                            env.todayButton.click();
+                        } else {
+                            env.shortlyButton.click();
+                        }
+                    });
+                });
+
+                taskView.deleteButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    controllerCallbacks.closeMenuOverlays();
+                    controllerCallbacks.closeContentOverlays();
+
+                    const deleteOverlay = env.createDeleteTaskOverlay(taskView.taskTitle.textContent);
+                    document.body.append(deleteOverlay.element);
+
+                    setTimeout(() => {
+                        deleteOverlay.element.classList.add('active');
+                    }, 10);
+
+                    deleteOverlay.cancelButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        controllerCallbacks.closeContentOverlays();
+                    });
+
+                    deleteOverlay.confirmButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentUser.removeTask(taskView.taskId);
+                        userStorage.saveUser(currentUser);
+                        controllerCallbacks.closeContentOverlays();
+                        env.shortlyButton.click();
+                    });
+                });
+            });
+        }
     });
 
     env.historyButton.addEventListener('click', () => {
@@ -392,6 +580,16 @@ function initDashboard() {
     function removeAllOtherButtonsClicked() {
         const buttons = env.menuContainer.querySelectorAll('.button-clicked');
         buttons.forEach((button) => button.classList.remove('button-clicked'));
+    }
+
+    function isTaskOverdue(task) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const dueDate = new Date(task.dueDate);
+        dueDate.setHours(0, 0, 0, 0);
+
+        return dueDate < today && !task.isCompleted;
     }
 
     const preventScrollHandler = (e) => {
