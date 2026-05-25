@@ -226,13 +226,17 @@ function initDashboard() {
         } else {
             env.shortlyButton.click();
         }
+
+        closeMenuIfMobile()
     });
 
     env.todayButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
+        closeMenuIfMobile()
         env.contentContainer.replaceChildren();
 
-        if (currentUser.tasks.length === 0 || currentUser.tasks.every(task => new Date(task.dueDate).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0))) {
+        if (currentUser.tasks.length === 0 ||
+            currentUser.tasks.every(task => new Date(task.dueDate).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0))) {
             env.contentContainer.append(env.todayViewNoTasks);
 
             env.todayViewAddTaskButton.addEventListener('click', (event) => {
@@ -268,7 +272,7 @@ function initDashboard() {
 
                     const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
                     const warningOverlay = env.createTaskLateWarning(daysLate);
-                    taskView.element.before(warningOverlay);
+                    taskView.element.append(warningOverlay);
                 }
 
                 taskView.checkbox.addEventListener('change', (event) => {
@@ -415,12 +419,18 @@ function initDashboard() {
 
     env.shortlyButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
+        closeMenuIfMobile()
+
         env.contentContainer.replaceChildren();
         env.shortlyButton.classList.add('button-clicked');
 
         const today = new Date().setHours(0, 0, 0, 0);
 
-        if (currentUser.tasks.length === 0 || currentUser.tasks.every(task => new Date(task.dueDate).setHours(0, 0, 0, 0) === today)) {
+        const hasFutureTasks = currentUser.tasks.some(task => {
+            return new Date(task.dueDate).setHours(0, 0, 0, 0) > today;
+        });
+
+        if (!hasFutureTasks) {
             env.contentContainer.append(env.shortlyViewNoTasks);
         } else {
             const freshViewShortly = env.refreshShortlyView();
@@ -429,18 +439,6 @@ function initDashboard() {
 
             freshViewShortly.taskViewsWithoutProject.forEach(taskView => {
                 let task = currentUser.tasks.find(task => task.id === taskView.taskId);
-
-                if (isTaskOverdue(task)) {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-
-                    const dueDate = new Date(task.dueDate);
-                    dueDate.setHours(0, 0, 0, 0);
-
-                    const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
-                    const warningOverlay = env.createTaskLateWarning(daysLate);
-                    taskView.element.before(warningOverlay);
-                }
 
                 taskView.checkbox.addEventListener('change', (event) => {
                     if (event.target.checked) {
@@ -565,12 +563,16 @@ function initDashboard() {
 
     env.historyButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
+        closeMenuIfMobile()
+
         env.contentContainer.replaceChildren();
         env.historyButton.classList.add('button-clicked');
     });
 
     env.myProjectsButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
+        closeMenuIfMobile()
+
         env.contentContainer.replaceChildren();
         env.myProjectsButton.classList.add('button-clicked');
     });
@@ -580,6 +582,13 @@ function initDashboard() {
     function removeAllOtherButtonsClicked() {
         const buttons = env.menuContainer.querySelectorAll('.button-clicked');
         buttons.forEach((button) => button.classList.remove('button-clicked'));
+    }
+
+    function closeMenuIfMobile() {
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        if (isMobile) {
+            controllerCallbacks.setMenuCollapsed(true);
+        }
     }
 
     function isTaskOverdue(task) {

@@ -262,7 +262,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
     const shortlyTasks = currentUser.tasks.filter(task => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         const taskDueDate = new Date(task.dueDate);
         taskDueDate.setHours(0, 0, 0, 0);
         return taskDueDate.getTime() > today.getTime();
@@ -272,25 +272,25 @@ export function initLayoutBlocks(currentUser, callbacks) {
     // #endregion
 
     const refreshTodayView = () => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
         const todayTasks = currentUser.tasks.filter(task => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
             const taskDueDate = new Date(task.dueDate);
             taskDueDate.setHours(0, 0, 0, 0);
-            return taskDueDate.getTime() === today.getTime();
+            return (taskDueDate.getTime() <= today.getTime()) && !task.completed;
         });
         return contentCreator.createTodayViewWithTasks(todayTasks);
     }
 
     const refreshShortlyView = () => {
-        const shortlyTasks = currentUser.tasks.filter(task => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
+        const shortlyTasks = currentUser.tasks.filter(task => {
             const taskDueDate = new Date(task.dueDate);
             taskDueDate.setHours(0, 0, 0, 0);
-            return taskDueDate.getTime() > today.getTime();
+            return (taskDueDate.getTime() > today.getTime()) && !task.completed;
         });
         return contentCreator.createShortlyViewWithTasks(shortlyTasks);
     }

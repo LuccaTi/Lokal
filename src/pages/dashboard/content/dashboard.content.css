@@ -358,7 +358,7 @@ input:focus {
 .tasks-container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.5rem;
   max-height: 400px;
   overflow-y: auto;
   width: 100%;
@@ -517,6 +517,7 @@ input:focus {
   background-color: rgb(255, 200, 200);
   padding: 0.5rem;
   border-radius: 0.5rem;
+  grid-column: 1 / -1;
 }
 
 .task-icon {

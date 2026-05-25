@@ -89,6 +89,8 @@ export function createTodayViewWithTasks(userTasksToday) {
 
     taskViewsWithoutProject.forEach(taskView => {
         tasksContainer.append(taskView.element);
+        console.log('Adicionando tarefa');
+        console.log(taskView);
     });
 
     viewContainer.append(tasksContainer);
@@ -509,6 +511,9 @@ export function createTaskLateWarning(daysLate) {
     const warningDiv = document.createElement('div');
     warningDiv.classList.add('task-late-warning');
 
+    const today = new Date().setHours(0, 0, 0, 0);
+    const dueDate = new Date(today - (daysLate * 24 * 60 * 60 * 1000));
+
     const warningIcon = document.createElement('img');
     warningIcon.src = overdueSymbol;
     warningIcon.alt = 'Overdue icon';
@@ -516,7 +521,7 @@ export function createTaskLateWarning(daysLate) {
 
     const warningText = document.createElement('p');
     warningText.classList.add('task-late-warning-text');
-    warningText.textContent = `Atrasada há ${daysLate} dia(s)`;
+    warningText.textContent = `Atrasada há ${daysLate} dia(s) - Venceu dia: ${dueDate.toLocaleDateString()}`;
 
     warningDiv.append(warningIcon, warningText);
 
