@@ -403,6 +403,11 @@ input:focus {
   min-width: 0;
 }
 
+.task-div-info.no-checkbox{
+  grid-column: 1 / 3;
+  padding-left: 0.5rem;
+}
+
 .task-div-title {
   font-size: 1rem;
   font-weight: bold;
@@ -547,6 +552,59 @@ input:focus {
   font-weight: bold;
 }
 
+.task-completed-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgb(200, 255, 200);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  grid-column: 1 / -1;
+}
+
+.task-completed-warning-text {
+  font-size: 0.9rem;
+  color: rgb(50, 150, 50);
+}
+
+.history-month-header-div {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgb(231, 229, 229);
+}
+
+.history-month-header {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  padding-bottom: 0.5rem;
+}
+
+.history-nav-button {
+  background: none;
+  border: none;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  color: #888;
+  font-size: 0.9rem;
+  padding: 0.2rem 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.history-nav-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.history-nav-disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
 @media (hover: hover) {
   /*Media query para efeito de hover apenas no PC*/
   .content-wrapper-button:hover {
@@ -581,9 +639,17 @@ input:focus {
     background-color: #2dbf8e;
     cursor: pointer;
   }
+
+  .history-nav-button:hover {
+     background-color: #bab8b8;
+  }
 }
 
 .task-div-button:active {
+  background-color: transparent;
+}
+
+.history-nav-button:active {
   background-color: transparent;
 }
 
@@ -614,7 +680,7 @@ input:focus {
   .content-header {
     justify-content: flex-start;
     align-items: flex-start;
-    padding-left: 2rem;
+    padding-left: 0rem;
   }
 
   .content-wrapper {

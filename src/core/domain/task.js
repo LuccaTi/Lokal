@@ -6,6 +6,7 @@ export function createTask(
         title,
         description = '',
         dueDate = null,
+        completedDate = null,
         isCompleted = false,
         createdAt = Date.now(),
     }
@@ -14,6 +15,7 @@ export function createTask(
     let _title = title;
     let _description = description;
     let _dueDate = dueDate;
+    let _completedDate = completedDate;
     let _isCompleted = isCompleted;
     let _createdAt = createdAt;
 
@@ -24,6 +26,7 @@ export function createTask(
         get title() { return _title; },
         get description() { return _description; },
         get dueDate() { return _dueDate; },
+        get completedDate() { return _completedDate; },
         get isCompleted() { return _isCompleted; },
         get createdAt() { return _createdAt; },
 
@@ -48,8 +51,9 @@ export function createTask(
             _dueDate = newDueDate;
         },
 
-        toggleStatus(){
+        toggleStatus(completedDate){
             _isCompleted = !_isCompleted;
+            _completedDate = completedDate;
         },
 
         toJSON() {
@@ -58,6 +62,7 @@ export function createTask(
                 title: _title,
                 description: _description,
                 dueDate: _dueDate,
+                completedDate: _completedDate,
                 isCompleted: _isCompleted,
                 createdAt: _createdAt,
             }

@@ -11,6 +11,10 @@ import pencilSymbol from "../assets/icons/shared/pencil-svgrepo-com.svg";
 import { formatDateForButton } from "../../../shared/utils/dateUtils.js";
 import overdueSymbol from "../assets/icons/content/calendar-overdue-svgrepo-com.svg";
 import calendarSymbol from "../assets/icons/content/calendar-lines-pen-svgrepo-com.svg";
+import calendarCheckSymbol from "../assets/icons/content/calendar-check-svgrepo-com.svg";
+import arrowLeftIcon from "../assets/icons/content/arrow-left-svgrepo-com.svg";
+import arrowRightIcon from "../assets/icons/content/arrow-right-svgrepo-com.svg";
+
 
 export function createContent(user) {
     const content = document.createElement('div');
@@ -32,25 +36,6 @@ export function createSideButton() {
 }
 
 // #region Today view
-export function createTodayViewNoTasks() {
-    const view = document.createElement('div');
-    view.classList.add('content-container');
-
-    const headerContainer = document.createElement('div');
-    headerContainer.classList.add('content-header');
-
-    const title = createContentTitle('Hoje');
-
-    headerContainer.append(title);
-
-    const p1 = 'Bem vindo(a) à sua visualização Hoje';
-    const p2 = 'Veja tudo com vencimento hoje em todos os seus projetos';
-    const wrapper = createContentWrapper(lokalImage, 'Lokal logo', p1, p2);
-
-    view.append(headerContainer, wrapper);
-    return view;
-}
-
 export function createTodayViewNoTasksAddTaskButton() {
     const button = createContentWrapperButton(plusIcon, 'Plus icon', 'Adicionar tarefa');
     return button;
@@ -77,7 +62,7 @@ export function createTodayViewWithTasks(userTasksToday) {
     const taskViewsWithoutProject = userTasksToday
         .sort((a, b) => a.createdAt - b.createdAt)
         .map(task => {
-            const taskView = createTaskView(task, null); // Sem projeto, então passa null
+            const taskView = createTaskViewWithCheckbox(task, null); // Sem projeto, então passa null
 
             taskView.taskId = task.id;
 
@@ -89,8 +74,6 @@ export function createTodayViewWithTasks(userTasksToday) {
 
     taskViewsWithoutProject.forEach(taskView => {
         tasksContainer.append(taskView.element);
-        console.log('Adicionando tarefa');
-        console.log(taskView);
     });
 
     viewContainer.append(tasksContainer);
@@ -415,8 +398,152 @@ export function createSelectProjectButtonOverlay(onProjectSelected, userProjects
 }
 // #endregion
 
+// #region Shortly view
+export function createShortlyViewWithTasks(userTasksShortly) {
+    const viewContainer = document.createElement('div');
+    viewContainer.classList.add('content-container');
+
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('content-header');
+
+    const title = createContentTitle('Em breve');
+    title.classList.add('with-tasks-title');
+
+    const taskCountHeader = document.createElement('h2');
+    taskCountHeader.classList.add('content-with-tasks-count-header');
+    taskCountHeader.textContent = `${userTasksShortly.length} tarefa(s) posteriores`;
+
+    headerContainer.append(title, taskCountHeader);
+
+    viewContainer.append(headerContainer);
+
+    const taskViewsWithoutProject = userTasksShortly
+        .sort((a, b) => {
+            const dateA = new Date(a.dueDate);
+            const dateB = new Date(b.dueDate);
+            return dateA - dateB;
+        })
+        .map(task => {
+            const taskView = createTaskViewWithoutCheckbox(task, null); // Sem projeto, então passa null
+
+            taskView.taskId = task.id;
+            taskView.dueDate = task.dueDate;
+
+            return taskView;
+        });
+
+    const tasksContainer = document.createElement('div');
+    tasksContainer.classList.add('tasks-container');
+
+    taskViewsWithoutProject.forEach(taskView => {
+        const taskDueDate = new Date(taskView.dueDate);
+
+        const dueDateDiv = document.createElement('div');
+        dueDateDiv.classList.add('task-div-due-date');
+
+        const dueDateIcon = document.createElement('img');
+        dueDateIcon.src = calendarSymbol;
+        dueDateIcon.alt = 'Calendar icon';
+        dueDateIcon.classList.add('task-icon');
+
+        const dueDateText = document.createElement('p');
+        dueDateText.classList.add('task-text');
+        dueDateText.textContent = `Vence em ${taskDueDate.toLocaleDateString()}`;
+
+        dueDateDiv.append(dueDateIcon, dueDateText);
+
+        taskView.element.append(dueDateDiv);
+
+        tasksContainer.append(taskView.element);
+    });
+
+    viewContainer.append(tasksContainer);
+
+    return {
+        element: viewContainer,
+        taskViewsWithoutProject: taskViewsWithoutProject,
+    }
+}
+
+// #endregion
+
+// #region History view
+export function createHistoryViewWithTasks(tasksForMonth, monthLabel, disableLeft, disableRight) {
+    const viewContainer = document.createElement('div');
+    viewContainer.classList.add('content-container');
+
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('content-header');
+
+    const title = createContentTitle('Histórico');
+    title.classList.add('with-tasks-title');
+
+    const taskCountHeader = document.createElement('h2');
+    taskCountHeader.classList.add('content-with-tasks-count-header');
+    taskCountHeader.textContent = `${tasksForMonth.length} tarefa(s) concluída(s)`;
+
+    const monthHeaderDiv = document.createElement('div');
+    monthHeaderDiv.classList.add('history-month-header-div');
+
+    const leftArrowButton = document.createElement('button');
+    leftArrowButton.classList.add('history-nav-button');
+    leftArrowButton.setAttribute('type', 'button');
+    if(disableLeft) leftArrowButton.classList.add('history-nav-disabled');
+
+    const leftArrowIcon = document.createElement('img');
+    leftArrowIcon.classList.add('history-nav-icon');
+    leftArrowIcon.src = arrowLeftIcon;
+    leftArrowIcon.alt = 'Left arrow icon';
+    leftArrowButton.append(leftArrowIcon);
+
+    const rightArrowButton = document.createElement('button');
+    rightArrowButton.classList.add('history-nav-button');
+    rightArrowButton.setAttribute('type', 'button');
+    if(disableRight) rightArrowButton.classList.add('history-nav-disabled');
+
+    const rightArrowIcon = document.createElement('img');
+    rightArrowIcon.classList.add('history-nav-icon');
+    rightArrowIcon.src = arrowRightIcon;
+    rightArrowIcon.alt = 'Right arrow icon';
+    rightArrowButton.append(rightArrowIcon);
+
+    const monthNavDiv = document.createElement('div');
+    monthNavDiv.classList.add('history-month-nav');
+
+    const monthHeader = document.createElement('h3');
+    monthHeader.classList.add('history-month-header');
+    monthHeader.textContent = monthLabel;
+    monthNavDiv.append(monthHeader);
+
+    monthHeaderDiv.append(leftArrowButton, monthNavDiv, rightArrowButton);
+
+    headerContainer.append(title, taskCountHeader, monthHeaderDiv);
+    viewContainer.append(headerContainer);
+
+    const tasksContainer = document.createElement('div');
+    tasksContainer.classList.add('tasks-container');
+
+    const completedTasksViews = [];
+
+    tasksForMonth.forEach(task => {
+        const taskElement = createCompletedTaskView(task, null); // Sem projeto, então passa null
+        completedTasksViews.push(taskElement);
+        tasksContainer.append(taskElement.element);
+    });
+
+    viewContainer.append(tasksContainer);
+
+    return {
+        element: viewContainer,
+        completedTasksViews: completedTasksViews,
+        leftArrowButton: leftArrowButton,
+        rightArrowButton: rightArrowButton
+    };
+}
+// #endregion
+
 // #region Task view 
-function createTaskView(task, project) {
+function createTaskViewWithCheckbox(task, project) {
     const taskDiv = document.createElement('div');
     taskDiv.classList.add('task-div');
 
@@ -505,6 +632,175 @@ function createTaskView(task, project) {
         editButton: editButton,
         deleteButton: deleteButton
     };
+}
+
+function createTaskViewWithoutCheckbox(task, project) {
+    const taskDiv = document.createElement('div');
+    taskDiv.classList.add('task-div');
+
+    const taskInfoDiv = document.createElement('div');
+    taskInfoDiv.classList.add('task-div-info', 'no-checkbox');
+
+    const titleAndDeleteButtonDiv = document.createElement('div');
+    titleAndDeleteButtonDiv.classList.add('task-div-title-delete');
+
+    const taskTitle = document.createElement('h3');
+    taskTitle.classList.add('task-div-title');
+    taskTitle.textContent = task.title;
+
+    const editButton = document.createElement('button');
+    editButton.classList.add('task-div-button');
+    editButton.setAttribute('type', 'button');
+
+    const editButtonIcon = document.createElement('img');
+    editButtonIcon.src = pencilSymbol;
+    editButtonIcon.classList.add('task-div-icon');
+    editButtonIcon.alt = 'Pencil icon';
+    editButton.append(editButtonIcon);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('task-div-button');
+    deleteButton.setAttribute('type', 'button');
+
+    const deleteButtonIcon = document.createElement('img');
+    deleteButtonIcon.src = crossSymbol;
+    deleteButtonIcon.classList.add('task-div-icon');
+    deleteButtonIcon.alt = 'Cross icon';
+    deleteButton.append(deleteButtonIcon);
+
+    const editDeleteDiv = document.createElement('div');
+    editDeleteDiv.classList.add('task-div-edit-delete');
+    editDeleteDiv.append(editButton, deleteButton);
+
+    titleAndDeleteButtonDiv.append(taskTitle, editDeleteDiv);
+
+    const taskDescription = document.createElement('p');
+    taskDescription.classList.add('task-div-description');
+    taskDescription.textContent = task.description;
+
+    taskInfoDiv.append(titleAndDeleteButtonDiv, taskDescription);
+
+    const projectInfoDiv = document.createElement('div');
+    projectInfoDiv.classList.add('task-div-project');
+
+    const projectName = document.createElement('p');
+    projectName.classList.add('task-div-project-name');
+
+    const projectIcon = document.createElement('img');
+    projectIcon.classList.add('task-div-icon');
+
+    if (project === null) {
+        projectName.textContent = 'Entrada';
+        projectIcon.src = mailBoxIcon;
+        projectIcon.alt = 'Mailbox icon';
+    } else {
+        projectName.textContent = project.title;
+        projectIcon.src = hashtagSymbol;
+        projectIcon.alt = 'Hashtag icon';
+    }
+
+    projectInfoDiv.append(projectIcon, projectName);
+
+    const bottomDivider = createOverlayDivider();
+    bottomDivider.classList.add('task-div-divider');
+
+    taskDiv.append(taskInfoDiv, projectInfoDiv, bottomDivider);
+
+    return {
+        element: taskDiv,
+        taskTitle: taskTitle,
+        taskDescription: taskDescription,
+        editButton: editButton,
+        deleteButton: deleteButton
+    };
+}
+
+function createCompletedTaskView(task, project) {
+    const taskDiv = document.createElement('div');
+    taskDiv.classList.add('task-div');
+
+    const taskInfoDiv = document.createElement('div');
+    taskInfoDiv.classList.add('task-div-info', 'no-checkbox');
+
+    const titleAndDeleteButtonDiv = document.createElement('div');
+    titleAndDeleteButtonDiv.classList.add('task-div-title-delete');
+
+    const taskTitle = document.createElement('h3');
+    taskTitle.classList.add('task-div-title');
+    taskTitle.textContent = task.title;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('task-div-button');
+    deleteButton.setAttribute('type', 'button');
+
+    const deleteButtonIcon = document.createElement('img');
+    deleteButtonIcon.src = crossSymbol;
+    deleteButtonIcon.classList.add('task-div-icon');
+    deleteButtonIcon.alt = 'Cross icon';
+    deleteButton.append(deleteButtonIcon);
+
+    titleAndDeleteButtonDiv.append(taskTitle, deleteButton);
+
+    const taskDescription = document.createElement('p');
+    taskDescription.classList.add('task-div-description');
+    taskDescription.textContent = task.description;
+
+    taskInfoDiv.append(titleAndDeleteButtonDiv, taskDescription);
+
+    const projectInfoDiv = document.createElement('div');
+    projectInfoDiv.classList.add('task-div-project');
+
+    const projectName = document.createElement('p');
+    projectName.classList.add('task-div-project-name');
+
+    const projectIcon = document.createElement('img');
+    projectIcon.classList.add('task-div-icon');
+
+    if (project === null) {
+        projectName.textContent = 'Entrada';
+        projectIcon.src = mailBoxIcon;
+        projectIcon.alt = 'Mailbox icon';
+    } else {
+        projectName.textContent = project.title;
+        projectIcon.src = hashtagSymbol;
+        projectIcon.alt = 'Hashtag icon';
+    }
+
+    projectInfoDiv.append(projectIcon, projectName);
+
+    const bottomDivider = createOverlayDivider();
+    bottomDivider.classList.add('task-div-divider');
+
+    taskDiv.append(taskInfoDiv, projectInfoDiv, bottomDivider);
+
+    return {
+        element: taskDiv,
+        taskId: task.id,
+        taskTitle: taskTitle,
+        taskDescription: taskDescription,
+        deleteButton: deleteButton
+    };
+}
+
+export function createTaskCompletedWarning(daysAgoCompleted) {
+    const warningDiv = document.createElement('div');
+    warningDiv.classList.add('task-completed-warning');
+
+    const today = new Date().setHours(0, 0, 0, 0);
+    const completedDate = new Date(today - (daysAgoCompleted * 24 * 60 * 60 * 1000));
+
+    const warningIcon = document.createElement('img');
+    warningIcon.src = calendarCheckSymbol;
+    warningIcon.alt = 'Calendar check icon';
+    warningIcon.classList.add('task-icon');
+
+    const warningText = document.createElement('p');
+    warningText.classList.add('task-completed-warning-text');
+    warningText.textContent = `Completa há ${daysAgoCompleted} dia(s) - Finalizada dia: ${completedDate.toLocaleDateString()}`;
+
+    warningDiv.append(warningIcon, warningText);
+
+    return warningDiv;
 }
 
 export function createTaskLateWarning(daysLate) {
@@ -627,95 +923,26 @@ export function createDeleteTaskOverlay(taskTitle) {
 }
 // #endregion
 
-// #region Shortly view
-export function createShortlyViewNoTasks() {
+// #region Funções auxiliares para criar elementos do conteúdo
+export function createViewWithoutTasks(titleTextContent, p1TextContent, p2TextContent) {
     const view = document.createElement('div');
     view.classList.add('content-container');
 
     const headerContainer = document.createElement('div');
     headerContainer.classList.add('content-header');
 
-    const title = createContentTitle('Em breve');
+    const title = createContentTitle(titleTextContent);
 
     headerContainer.append(title);
 
-    const p1 = 'Bem vindo(a) à sua visualização Em breve';
-    const p2 = 'Veja o que vem por aí nos próximos dias em todos os seus projetos';
+    const p1 = p1TextContent;
+    const p2 = p2TextContent;
     const wrapper = createContentWrapper(lokalImage, 'Lokal logo', p1, p2);
 
     view.append(headerContainer, wrapper);
     return view;
 }
 
-export function createShortlyViewWithTasks(userTasksShortly) {
-    const viewContainer = document.createElement('div');
-    viewContainer.classList.add('content-container');
-
-    const headerContainer = document.createElement('div');
-    headerContainer.classList.add('content-header');
-
-    const title = createContentTitle('Em breve');
-    title.classList.add('with-tasks-title');
-
-    const taskCountHeader = document.createElement('h2');
-    taskCountHeader.classList.add('content-with-tasks-count-header');
-    taskCountHeader.textContent = `${userTasksShortly.length} tarefa(s) posteriores`;
-
-    headerContainer.append(title, taskCountHeader);
-
-    viewContainer.append(headerContainer);
-
-    const taskViewsWithoutProject = userTasksShortly
-        .sort((a, b) => {
-            const dateA = new Date(a.dueDate);
-            const dateB = new Date(b.dueDate);
-            return dateA - dateB;
-        })
-        .map(task => {
-            const taskView = createTaskView(task, null); // Sem projeto, então passa null
-
-            taskView.taskId = task.id;
-            taskView.dueDate = task.dueDate;
-
-            return taskView;
-        });
-
-    const tasksContainer = document.createElement('div');
-    tasksContainer.classList.add('tasks-container');
-
-    taskViewsWithoutProject.forEach(taskView => {
-        const taskDueDate = new Date(taskView.dueDate);
-
-        const dueDateDiv = document.createElement('div');
-        dueDateDiv.classList.add('task-div-due-date');
-
-        const dueDateIcon = document.createElement('img');
-        dueDateIcon.src = calendarSymbol;
-        dueDateIcon.alt = 'Calendar icon';
-        dueDateIcon.classList.add('task-icon');
-
-        const dueDateText = document.createElement('p');
-        dueDateText.classList.add('task-text');
-        dueDateText.textContent = `Vence em ${taskDueDate.toLocaleDateString()}`;
-
-        dueDateDiv.append(dueDateIcon, dueDateText);
-
-        taskView.element.append(dueDateDiv);
-
-        tasksContainer.append(taskView.element);
-    });
-
-    viewContainer.append(tasksContainer);
-
-    return {
-        element: viewContainer,
-        taskViewsWithoutProject: taskViewsWithoutProject,
-    }
-}
-
-// #endregion
-
-// #region Funções auxiliares para criar elementos do conteúdo
 export function createOverlayContent() {
     const overlay = document.createElement('div');
     overlay.classList.add('overlay-content');

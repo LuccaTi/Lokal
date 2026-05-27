@@ -208,7 +208,11 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
     // #region Conteúdo Principal
     // 5. Tela principal - Hoje, view sem tarefas
-    const todayViewNoTasks = contentCreator.createTodayViewNoTasks();
+    const todayViewNoTasks = contentCreator.createViewWithoutTasks(
+        'Hoje',
+        'Bem vindo(a) à sua visualização Hoje',
+        'Veja tudo com vencimento hoje em todos os seus projetos'
+    );
     const todayViewAddTaskButton = contentCreator.createTodayViewNoTasksAddTaskButton();
     todayViewNoTasks.append(todayViewAddTaskButton);
 
@@ -252,12 +256,16 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
         const taskDueDate = new Date(task.dueDate);
         taskDueDate.setHours(0, 0, 0, 0);
-        return taskDueDate.getTime() === today.getTime();
+        return taskDueDate.getTime() === today.getTime() && !task.isCompleted;
     });
     const todayViewWithTasks = contentCreator.createTodayViewWithTasks(todayTasks);
 
     // 8. Tela principal - Em breve
-    const shortlyViewNoTasks = contentCreator.createShortlyViewNoTasks();
+    const shortlyViewNoTasks = contentCreator.createViewWithoutTasks(
+        'Em breve',
+        'Bem vindo(a) à sua visualização Em breve',
+        'Veja o que vem por aí nos próximos dias em todos os seus projetos'
+    );
 
     const shortlyTasks = currentUser.tasks.filter(task => {
         const today = new Date();
@@ -265,20 +273,53 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
         const taskDueDate = new Date(task.dueDate);
         taskDueDate.setHours(0, 0, 0, 0);
-        return taskDueDate.getTime() > today.getTime();
+        return taskDueDate.getTime() > today.getTime() && !task.isCompleted;
     });
     const shortlyViewWithTasks = contentCreator.createShortlyViewWithTasks(shortlyTasks);
 
+    // 9. Tela principal - Histórico
+    const historyViewNoTasks = contentCreator.createViewWithoutTasks(
+        'Histórico',
+        'Bem vindo(a) à sua visualização Histórico',
+        'Veja todas as tarefas e projetos concluídos'
+    );
+
+    const getGroupedHistoryTasks = () => {
+        const completedTasks = currentUser.tasks.filter(task => task.isCompleted);
+        const sortedTasks = completedTasks.sort((a, b) => new Date(b.completedDate) - new Date(a.completedDate));
+
+        const grouped = sortedTasks.reduce((acc, task) => {
+            const dateToUse = task.completedDate ? new Date(task.completedDate) : new Date();
+            let monthYear = dateToUse.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            monthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+
+            if (!acc[monthYear]) {
+                acc[monthYear] = [];
+            }
+            acc[monthYear].push(task);
+            return acc;
+        }, {});
+
+        return Object.entries(grouped).map((item) => {
+            const monthLabel = item[0];
+            const tasksForMonth = item[1];
+
+            return {
+                monthLabel: monthLabel,
+                tasks: tasksForMonth
+            }
+        });
+    };
     // #endregion
 
     const refreshTodayView = () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         const todayTasks = currentUser.tasks.filter(task => {
             const taskDueDate = new Date(task.dueDate);
             taskDueDate.setHours(0, 0, 0, 0);
-            return (taskDueDate.getTime() <= today.getTime()) && !task.completed;
+            return (taskDueDate.getTime() <= today.getTime()) && !task.isCompleted;
         });
         return contentCreator.createTodayViewWithTasks(todayTasks);
     }
@@ -290,7 +331,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         const shortlyTasks = currentUser.tasks.filter(task => {
             const taskDueDate = new Date(task.dueDate);
             taskDueDate.setHours(0, 0, 0, 0);
-            return (taskDueDate.getTime() > today.getTime()) && !task.completed;
+            return (taskDueDate.getTime() > today.getTime()) && !task.isCompleted;
         });
         return contentCreator.createShortlyViewWithTasks(shortlyTasks);
     }
@@ -345,6 +386,31 @@ export function initLayoutBlocks(currentUser, callbacks) {
         return contentCreator.createTaskLateWarning(daysLate);
     }
 
+    const refreshHistoryView = (monthIndex = 0) => {
+        const groupedHistoryTasks = getGroupedHistoryTasks();
+
+        if(groupedHistoryTasks.length === 0){
+            return null;
+        }
+
+        const safeIndex = Math.max(0, Math.min(monthIndex, groupedHistoryTasks.length - 1));
+        const currentMonthGroup = groupedHistoryTasks[safeIndex];
+
+        const disableLeft = safeIndex === 0;
+        const disableRight = safeIndex === (groupedHistoryTasks.length - 1);
+
+        return contentCreator.createHistoryViewWithTasks(
+            currentMonthGroup.tasks,
+            currentMonthGroup.monthLabel,
+            disableLeft,
+            disableRight
+        );
+    }
+
+    const createTaskCompletedWarning = (daysAgoCompleted) => {
+        return contentCreator.createTaskCompletedWarning(daysAgoCompleted);
+    }
+
     return {
         mainContainer,
 
@@ -371,8 +437,14 @@ export function initLayoutBlocks(currentUser, callbacks) {
         addTaskForm,
         dateButtonOverlayAddTask,
         selectProjectButtonOverlay,
+
         shortlyViewNoTasks,
         shortlyViewWithTasks,
-        refreshShortlyView
+        refreshShortlyView,
+
+        historyViewNoTasks,
+        getGroupedHistoryTasks,
+        refreshHistoryView,
+        createTaskCompletedWarning
     };
 }

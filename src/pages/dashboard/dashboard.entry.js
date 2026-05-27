@@ -7,9 +7,6 @@ import { userStorage } from "../../core/storage/userStorage.js";
 import { createUser } from "../../core/domain/user.js";
 import { formatDateForButton } from "../../shared/utils/dateUtils.js";
 
-// Próximos passos:
-// Criar a view do botão 'Histórico', onde serão enviadas as tarefas concluídas. TODO
-
 function initDashboard() {
 
     const currentUser = requireAuthenticatedUser();
@@ -24,7 +21,9 @@ function initDashboard() {
 
     const currentProjectState = {
         project: null,
-    }
+    };
+
+    let historyMonthIndex = 0;
 
     // #region Criação dos callbacks e 'env'.
     const controllerCallbacks = {
@@ -235,8 +234,27 @@ function initDashboard() {
         closeMenuIfMobile()
         env.contentContainer.replaceChildren();
 
-        if (currentUser.tasks.length === 0 ||
-            currentUser.tasks.every(task => new Date(task.dueDate).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0))) {
+        const hasTasksForToday = currentUser.tasks.some(task => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const taskDueDate = new Date(task.dueDate);
+            taskDueDate.setHours(0, 0, 0, 0);
+
+            return taskDueDate.getTime() === today.getTime() && !task.isCompleted;
+        });
+
+        const hasOverdueTasks = currentUser.tasks.some(task => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const taskDueDate = new Date(task.dueDate);
+            taskDueDate.setHours(0, 0, 0, 0);
+
+            return taskDueDate < today && !task.isCompleted;
+        });
+
+        if (!hasTasksForToday && !hasOverdueTasks) {
             env.contentContainer.append(env.todayViewNoTasks);
 
             env.todayViewAddTaskButton.addEventListener('click', (event) => {
@@ -251,6 +269,7 @@ function initDashboard() {
                 document.body.append(env.addTaskForm.element);
 
                 setTimeout(() => {
+                    env.addTaskForm.addTaskButton.classList.add('add-task-button-restrict');
                     env.addTaskForm.element.classList.add('active');
                 }, 10);
             });
@@ -277,11 +296,14 @@ function initDashboard() {
 
                 taskView.checkbox.addEventListener('change', (event) => {
                     if (event.target.checked) {
-                        console.log(`Tarefa "${taskView.taskTitle.textContent}" marcada como concluída.`);
-                        // Restante da lógica para marcar a tarefa como concluída, como atualizar o estado da tarefa, mover para uma seção de tarefas concluídas, etc.
+                        task.toggleStatus(new Date());
                     } else {
-                        console.log(`Tarefa "${taskView.taskTitle.textContent}" desmarcada como concluída.`);
+                        task.toggleStatus(null);
                     }
+
+                    userStorage.saveUser(currentUser);
+
+                    env.todayButton.click();
                 });
 
                 taskView.editButton.addEventListener('click', (event) => {
@@ -359,7 +381,10 @@ function initDashboard() {
                         userStorage.saveUser(currentUser);
                         controllerCallbacks.closeContentOverlays();
 
-                        if (new Date(task.dueDate).setHours(0, 0, 0, 0) === new Date().setHours(0, 0, 0, 0)) {
+                        const taskDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
+                        const todayDate = new Date().setHours(0, 0, 0, 0);
+
+                        if (taskDate <= todayDate) {
                             env.todayButton.click();
                         } else {
                             env.shortlyButton.click();
@@ -440,15 +465,6 @@ function initDashboard() {
             freshViewShortly.taskViewsWithoutProject.forEach(taskView => {
                 let task = currentUser.tasks.find(task => task.id === taskView.taskId);
 
-                taskView.checkbox.addEventListener('change', (event) => {
-                    if (event.target.checked) {
-                        console.log(`Tarefa "${taskView.taskTitle.textContent}" marcada como concluída.`);
-                        // Restante da lógica para marcar a tarefa como concluída, como atualizar o estado da tarefa, mover para uma seção de tarefas concluídas, etc.
-                    } else {
-                        console.log(`Tarefa "${taskView.taskTitle.textContent}" desmarcada como concluída.`);
-                    }
-                });
-
                 taskView.editButton.addEventListener('click', (event) => {
                     event.stopPropagation();
                     controllerCallbacks.closeMenuOverlays();
@@ -524,7 +540,10 @@ function initDashboard() {
                         userStorage.saveUser(currentUser);
                         controllerCallbacks.closeContentOverlays();
 
-                        if (new Date(task.dueDate).setHours(0, 0, 0, 0) === new Date().setHours(0, 0, 0, 0)) {
+                        const taskDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
+                        const todayDate = new Date().setHours(0, 0, 0, 0);
+
+                        if (taskDate <= todayDate) {
                             env.todayButton.click();
                         } else {
                             env.shortlyButton.click();
@@ -563,9 +582,97 @@ function initDashboard() {
 
     env.historyButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
-        closeMenuIfMobile()
+        closeMenuIfMobile();
 
-        env.contentContainer.replaceChildren();
+        historyMonthIndex = 0;
+
+        function renderCurrentHistoryMonth() {
+            env.contentContainer.replaceChildren();
+
+            const groupedTasks = env.getGroupedHistoryTasks();
+
+            if (groupedTasks.length === 0) {
+                env.contentContainer.append(env.historyViewNoTasks);
+                return;
+            }
+
+            const historyView = env.refreshHistoryView(historyMonthIndex);
+            if (historyView === null) {
+                console.log('Erro ao renderizar histórico, favor verificar função refreshHistoryView');
+                env.contentContainer.append(env.historyViewNoTasks);
+                return;
+            }
+
+            historyView.leftArrowButton.addEventListener('click', () => {
+                if (historyMonthIndex > 0) {
+                    historyMonthIndex--;
+                    renderCurrentHistoryMonth();
+                }
+            });
+
+            historyView.rightArrowButton.addEventListener('click', () => {
+                if (historyMonthIndex < groupedTasks.length - 1) {
+                    historyMonthIndex++;
+                    renderCurrentHistoryMonth();
+                }
+            });
+
+            historyView.completedTasksViews.forEach(taskView => {
+                let task = currentUser.tasks.find(task => task.id === taskView.taskId);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const completedDate = new Date(task.completedDate);
+                completedDate.setHours(0, 0, 0, 0);
+
+                const daysAgoCompleted = Math.floor((today - completedDate) / (1000 * 60 * 60 * 24));
+                const warningOverlay = env.createTaskCompletedWarning(daysAgoCompleted);
+                taskView.element.append(warningOverlay);
+
+                taskView.deleteButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    controllerCallbacks.closeMenuOverlays();
+                    controllerCallbacks.closeContentOverlays();
+
+                    const deleteOverlay = env.createDeleteTaskOverlay(taskView.taskTitle.textContent);
+                    document.body.append(deleteOverlay.element);
+
+                    setTimeout(() => {
+                        deleteOverlay.element.classList.add('active');
+                    }, 10);
+
+                    deleteOverlay.cancelButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        controllerCallbacks.closeContentOverlays();
+                    });
+
+                    deleteOverlay.confirmButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentUser.removeTask(taskView.taskId);
+                        userStorage.saveUser(currentUser);
+                        controllerCallbacks.closeContentOverlays();
+
+                        const updatedGroupedTasks = env.getGroupedHistoryTasks();
+                        if (updatedGroupedTasks.length === 0) {
+                            historyMonthIndex = 0; // Segurança
+                            renderCurrentHistoryMonth();
+                            return;
+                        }
+
+                        if (historyMonthIndex >= updatedGroupedTasks.length) {
+                            historyMonthIndex = updatedGroupedTasks.length - 1; // Segurança
+                        }
+
+                        renderCurrentHistoryMonth();
+                    });
+                });
+            });
+
+            env.contentContainer.append(historyView.element);
+        }
+
+        renderCurrentHistoryMonth();
+
         env.historyButton.classList.add('button-clicked');
     });
 
