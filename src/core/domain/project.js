@@ -2,21 +2,27 @@
 export function createProject({
     id = generateId(),
     title,
-    tasks = []
+    tasks = [],
+    isCompleted = false,
+    createdAt = null
 }) {
     let _id = id;
     let _title = title;
+    let _isCompleted = isCompleted;
 
     // Spread operator usado para fazer uma cópia do array sem referências.
     let _tasks = [...tasks];
+    let _createdAt = createdAt || Date.now();
 
     return {
         get id() { return _id; },
         get title() { return _title; },
+        get isCompleted() { return _isCompleted; },
 
         // Retornada uma cópia do array para impedir pushs e pops sem usar os setters.
         // A cópia impede que os elementos dentro sejam alterados diretamente, mas permite adicionar ou remover mais deles, isso vai refletir só na cópia.
         get tasks() { return [..._tasks]; },
+        get createdAt() { return _createdAt; },
 
         updateTitle(newTitle){
             if(!newTitle || newTitle.trim() === ''){
@@ -49,7 +55,9 @@ export function createProject({
             return {
                 id: _id,
                 title: _title,
-                tasks: _tasks.map(t => typeof t.toJSON === 'function' ? t.toJSON() : t)
+                isCompleted: _isCompleted,
+                tasks: _tasks.map(t => typeof t.toJSON === 'function' ? t.toJSON() : t),
+                createdAt: _createdAt,
             };
         },
     }

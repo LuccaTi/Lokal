@@ -49,10 +49,9 @@ export function createTodayViewWithTasks(userTasksToday) {
     headerContainer.classList.add('content-header');
 
     const title = createContentTitle('Hoje');
-    title.classList.add('with-tasks-title');
 
     const taskCountHeader = document.createElement('h2');
-    taskCountHeader.classList.add('content-with-tasks-count-header');
+    taskCountHeader.classList.add('content-count-header');
     taskCountHeader.textContent = `${userTasksToday.length} tarefa(s) para hoje`;
 
     headerContainer.append(title, taskCountHeader);
@@ -79,13 +78,13 @@ export function createTodayViewWithTasks(userTasksToday) {
     viewContainer.append(tasksContainer);
 
     const addTaskButton = document.createElement('button');
-    addTaskButton.classList.add('content-with-tasks-add-button');
+    addTaskButton.classList.add('content-add-button');
     addTaskButton.setAttribute('type', 'button');
 
     const addButtonIcon = document.createElement('img');
     addButtonIcon.src = plusIcon;
     addButtonIcon.alt = 'Plus icon';
-    addButtonIcon.classList.add('content-with-tasks-add-button-icon');
+    addButtonIcon.classList.add('content-add-button-icon');
     addTaskButton.append(addButtonIcon, 'Adicionar tarefa');
 
     viewContainer.append(addTaskButton);
@@ -366,7 +365,7 @@ export function createSelectProjectButtonOverlay(onProjectSelected, userProjects
         projectButtonFirstIcon.src = hashtagSymbol;
         projectButtonFirstIcon.alt = 'Hashtag icon';
 
-        projectButton.append(projectButtonFirstIcon, project.projectName);
+        projectButton.append(projectButtonFirstIcon, project.title);
 
         projectButton.addEventListener('click', () => {
             onProjectSelected(project);
@@ -376,7 +375,7 @@ export function createSelectProjectButtonOverlay(onProjectSelected, userProjects
 
         projectButtonsElements.push({
             htmlElement: projectButton,
-            projectNameText: project.projectName.toLowerCase(),
+            projectTitleText: project.title.toLowerCase(),
         })
     });
 
@@ -407,10 +406,9 @@ export function createShortlyViewWithTasks(userTasksShortly) {
     headerContainer.classList.add('content-header');
 
     const title = createContentTitle('Em breve');
-    title.classList.add('with-tasks-title');
 
     const taskCountHeader = document.createElement('h2');
-    taskCountHeader.classList.add('content-with-tasks-count-header');
+    taskCountHeader.classList.add('content-count-header');
     taskCountHeader.textContent = `${userTasksShortly.length} tarefa(s) posteriores`;
 
     headerContainer.append(title, taskCountHeader);
@@ -476,10 +474,9 @@ export function createHistoryViewWithTasks(tasksForMonth, monthLabel, disableLef
     headerContainer.classList.add('content-header');
 
     const title = createContentTitle('Histórico');
-    title.classList.add('with-tasks-title');
 
     const taskCountHeader = document.createElement('h2');
-    taskCountHeader.classList.add('content-with-tasks-count-header');
+    taskCountHeader.classList.add('content-count-header');
     taskCountHeader.textContent = `${tasksForMonth.length} tarefa(s) concluída(s)`;
 
     const monthHeaderDiv = document.createElement('div');
@@ -543,7 +540,7 @@ export function createHistoryViewWithTasks(tasksForMonth, monthLabel, disableLef
 // #endregion
 
 // #region Task view 
-function createTaskViewWithCheckbox(task, project) {
+function createTaskViewWithCheckbox(task, projectTitle) {
     const taskDiv = document.createElement('div');
     taskDiv.classList.add('task-div');
 
@@ -607,12 +604,12 @@ function createTaskViewWithCheckbox(task, project) {
     const projectIcon = document.createElement('img');
     projectIcon.classList.add('task-div-icon');
 
-    if (project === null) {
+    if (projectTitle === null) {
         projectName.textContent = 'Entrada';
         projectIcon.src = mailBoxIcon;
         projectIcon.alt = 'Mailbox icon';
     } else {
-        projectName.textContent = project.title;
+        projectName.textContent = projectTitle;
         projectIcon.src = hashtagSymbol;
         projectIcon.alt = 'Hashtag icon';
     }
@@ -893,7 +890,7 @@ export function createEditTaskForm(
 
 export function createDeleteTaskOverlay(taskTitle) {
     const overlay = document.createElement('div');
-    overlay.classList.add('overlay-content', 'delete-task-overlay');
+    overlay.classList.add('overlay-content', 'delete-overlay');
 
     const message = document.createElement('p');
     message.classList.add('overlay-message');
@@ -921,6 +918,285 @@ export function createDeleteTaskOverlay(taskTitle) {
         confirmButton: confirmButton
     }
 }
+// #endregion
+
+// #region Project view
+export function createProjectViewWithoutProjects() {
+    const view = document.createElement('div');
+    view.classList.add('content-container');
+
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('content-header');
+
+    const title = createContentTitle('Meus Projetos');
+
+    headerContainer.append(title);
+
+    const p1 = 'Parece que você ainda não tem nenhum projeto criado.';
+    const p2 = 'Clique no botão abaixo para criar seu primeiro projeto e começar a organizar suas tarefas!';
+    const wrapper = createContentWrapper(lokalImage, 'Lokal logo', p1, p2);
+
+
+    const button = createContentWrapperButton(plusIcon, 'Plus icon', 'Adicionar projeto');
+   
+    view.append(headerContainer, wrapper, button);
+
+    return {
+        element: view,
+        addProjectButton: button
+    }
+}
+
+export function createAddProjectForm() {
+    const form = document.createElement('form');
+    form.classList.add('overlay-content');
+
+    const titleInput = document.createElement('input');
+    titleInput.classList.add('overlay-input-title');
+    titleInput.setAttribute('placeholder', 'Título do projeto');
+
+    const divider = createOverlayDivider();
+
+    const div = document.createElement('div');
+    div.classList.add('overlay-button-content-div');
+
+    const cancelButton = document.createElement('button');
+    cancelButton.classList.add('overlay-button-content', 'cancel');
+    cancelButton.setAttribute('type', 'button');
+    cancelButton.textContent = 'Cancelar';
+
+    const addProjectButton = document.createElement('button');
+    addProjectButton.classList.add('overlay-button-content', 'add');
+    addProjectButton.setAttribute('type', 'submit');
+    addProjectButton.textContent = 'Adicionar projeto';
+
+    div.append(cancelButton, addProjectButton);
+
+    form.append(titleInput, divider, div);
+
+    const formComponents = {
+        element: form,
+        titleInput: titleInput,
+        cancelButton: cancelButton,
+        addProjectButton: addProjectButton
+    }
+
+    formComponents.resetForm = () => {
+        form.reset();
+
+        addProjectButton.classList.add('add-task-button-restrict');
+    };
+
+    return formComponents;
+}
+
+export function createProjectViewWithAllProjects(userIncompleteProjects) {
+    const viewContainer = document.createElement('div');
+    viewContainer.classList.add('content-container');
+
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('content-header');
+
+    const title = createContentTitle('Meus Projetos');
+
+    const projectCountHeader = document.createElement('h2');
+    projectCountHeader.classList.add('content-count-header');
+    projectCountHeader.textContent = `${userIncompleteProjects.length} projeto(s)`;
+
+    headerContainer.append(title, projectCountHeader);
+
+    viewContainer.append(headerContainer);
+
+    const projectsCards = userIncompleteProjects
+        .sort((a, b) => a.createdAt - b.createdAt)
+        .map(project => {
+            const projectCard = createProjectCard(project);
+
+            projectCard.projectId = project.id;
+
+            return projectCard;
+        });
+
+    const projectsContainer = document.createElement('div');
+    projectsContainer.classList.add('projects-container');
+
+    projectsCards.forEach(projectCard => {
+        projectsContainer.append(projectCard.element);
+    });
+
+    viewContainer.append(projectsContainer);
+
+    const addProjectButton = document.createElement('button');
+    addProjectButton.classList.add('content-add-button');
+    addProjectButton.setAttribute('type', 'button');
+
+    const addButtonIcon = document.createElement('img');
+    addButtonIcon.src = plusIcon;
+    addButtonIcon.alt = 'Plus icon';
+    addButtonIcon.classList.add('content-add-button-icon');
+    addProjectButton.append(addButtonIcon, 'Adicionar projeto');
+
+    viewContainer.append(addProjectButton);
+
+    return {
+        element: viewContainer,
+        projectsCards: projectsCards,
+        addProjectButton: addProjectButton
+    }
+}
+
+export function createSoloProjectView(project) {
+    const viewContainer = document.createElement('div');
+    viewContainer.classList.add('content-container');
+
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('content-header');
+
+    const title = createContentTitle(project.title);
+
+    const taskCountHeader = document.createElement('h2');
+    taskCountHeader.classList.add('content-count-header');
+    taskCountHeader.textContent = `${project.tasks.length} tarefa(s)`;
+
+    headerContainer.append(title, taskCountHeader);
+
+    viewContainer.append(headerContainer);
+
+    const taskViews = project.tasks
+        .sort((a, b) => a.createdAt - b.createdAt)
+        .map(task => {
+            const taskView = createTaskViewWithCheckbox(task, project.title);
+
+            taskView.taskId = task.id;
+
+            return taskView;
+        });
+
+    const tasksContainer = document.createElement('div');
+    tasksContainer.classList.add('tasks-container');
+
+    taskViews.forEach(taskView => {
+        tasksContainer.append(taskView.element);
+    });
+
+    viewContainer.append(tasksContainer);
+
+    const addTaskButton = document.createElement('button');
+    addTaskButton.classList.add('content-add-button');
+    addTaskButton.setAttribute('type', 'button');
+
+    const addButtonIcon = document.createElement('img');
+    addButtonIcon.src = plusIcon;
+    addButtonIcon.alt = 'Plus icon';
+    addButtonIcon.classList.add('content-add-button-icon');
+    addTaskButton.append(addButtonIcon, 'Adicionar tarefa');
+
+    viewContainer.append(addTaskButton);
+
+    return {
+        element: viewContainer,
+        taskViews: taskViews,
+        addTaskButton: addTaskButton
+    }
+
+}
+
+function createProjectCard(project) {
+    const projectDiv = document.createElement('div');
+    projectDiv.classList.add('project-div');
+
+    const checkboxDiv = document.createElement('div');
+    checkboxDiv.classList.add('checkbox-project-div');
+
+    const checkbox = document.createElement('input');
+    checkbox.setAttribute('type', 'checkbox');
+    checkbox.classList.add('checkbox-project');
+
+    checkboxDiv.append(checkbox);
+
+    const projectInfoDiv = document.createElement('div');
+    projectInfoDiv.classList.add('project-div-info');
+
+    const titleAndDeleteButtonDiv = document.createElement('div');
+    titleAndDeleteButtonDiv.classList.add('project-div-title-delete');
+
+    const projectTitle = document.createElement('h3');
+    projectTitle.classList.add('project-div-title');
+    projectTitle.textContent = project.title;
+
+    const editButton = document.createElement('button');
+    editButton.classList.add('project-div-button');
+    editButton.setAttribute('type', 'button');
+
+    const editButtonIcon = document.createElement('img');
+    editButtonIcon.src = pencilSymbol;
+    editButtonIcon.classList.add('project-div-icon');
+    editButtonIcon.alt = 'Pencil icon';
+    editButton.append(editButtonIcon);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('project-div-button');
+    deleteButton.setAttribute('type', 'button');
+
+    const deleteButtonIcon = document.createElement('img');
+    deleteButtonIcon.src = crossSymbol;
+    deleteButtonIcon.classList.add('project-div-icon');
+    deleteButtonIcon.alt = 'Cross icon';
+    deleteButton.append(deleteButtonIcon);
+
+    const editDeleteDiv = document.createElement('div');
+    editDeleteDiv.classList.add('project-div-edit-delete');
+    editDeleteDiv.append(editButton, deleteButton);
+
+    titleAndDeleteButtonDiv.append(projectTitle, editDeleteDiv);
+
+    projectInfoDiv.append(titleAndDeleteButtonDiv);
+
+    const bottomDivider = createOverlayDivider();
+    bottomDivider.classList.add('project-div-divider');
+
+    projectDiv.append(checkboxDiv, projectInfoDiv, bottomDivider);
+
+    return {
+        element: projectDiv,
+        projectTitle: projectTitle,
+        checkbox: checkbox,
+        editButton: editButton,
+        deleteButton: deleteButton
+    };
+}
+
+export function createDeleteProjectOverlay(projectTitle) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay-content', 'delete-overlay');
+
+    const message = document.createElement('p');
+    message.classList.add('overlay-message');
+    message.textContent = `Tem certeza que deseja deletar o projeto "${projectTitle}"?`;
+
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.classList.add('delete-confirmation-buttons');
+
+    const cancelButton = document.createElement('button');
+    cancelButton.classList.add('overlay-button-content', 'cancel');
+    cancelButton.setAttribute('type', 'button');
+    cancelButton.textContent = 'Cancelar';
+
+    const confirmButton = document.createElement('button');
+    confirmButton.classList.add('overlay-button-content', 'delete');
+    confirmButton.setAttribute('type', 'button');
+    confirmButton.textContent = 'Excluir';
+
+    buttonsDiv.append(cancelButton, confirmButton);
+    overlay.append(message, buttonsDiv);
+
+    return {
+        element: overlay,
+        cancelButton: cancelButton,
+        confirmButton: confirmButton
+    }
+}
+
 // #endregion
 
 // #region Funções auxiliares para criar elementos do conteúdo

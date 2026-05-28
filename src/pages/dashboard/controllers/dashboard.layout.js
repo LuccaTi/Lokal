@@ -77,130 +77,24 @@ export function initLayoutBlocks(currentUser, callbacks) {
     plusButton.addEventListener('mouseleave', () => toggleHover(false));
     const plusButtonOverlay = menuCreator.createPlusButtonOverlay();
 
-    plusButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-
-        callbacks.closeContentOverlays();
-
-        let existingOverlay = document.querySelector('.plus-overlay-portal');
-
-        if (!existingOverlay) {
-            callbacks.closeMenuOverlays();
-            callbacks.disableMenuScroll();
-            const overlay = menuCreator.createPlusButtonOverlay();
-            overlay.classList.add('plus-overlay-portal');
-
-            const addProjectButton = overlay.querySelector('.overlay-button');
-            addProjectButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                overlay.remove();
-                plusButton.classList.remove('plus-button-clicked');
-
-                console.log("Abrir modal de criação de projeto no conteúdo principal!");
-            });
-
-            document.body.append(overlay);
-
-            positionOverlay(plusButton, overlay);
-
-            plusButton.classList.add('plus-button-clicked');
-            callbacks.unclickArrowButton();
-        } else {
-            existingOverlay.remove();
-            plusButton.classList.remove('plus-button-clicked');
-        }
-    });
-
     const arrowButton = menuCreator.createArrowButton();
     arrowButton.addEventListener('mouseenter', () => toggleHover(true));
     arrowButton.addEventListener('mouseleave', () => toggleHover(false));
-    arrowButton.addEventListener('click', (event) => {
-        event.stopPropagation();
 
-        if (currentUser.projects.length >= 0) {
-            let isOpen = arrowOverlay.classList.contains('arrow-overlay-open');
-
-            callbacks.closeMenuOverlays();
-            callbacks.closeContentOverlays();
-
-            if (currentUser.projects.length === 0) {
-                callbacks.unclickArrowButton();
-                return;
-            }
-
-            if (!isOpen) {
-                arrowOverlay.innerHTML = '';
-
-                currentUser.projects.forEach((element) => {
-                    let overlay = menuCreator.createProjectButtonDiv();
-                    let button = menuCreator.createProjectButton(element.projectName);
-                    let ellipsisButton = menuCreator.createEllipsisButton();
-
-                    button.addEventListener('click', () => {
-                        callbacks.closeEllipsisOverlays();
-                        callbacks.closeContentOverlays();
-                    });
-
-                    ellipsisButton.addEventListener('click', () => {
-                        event.stopPropagation();
-
-                        callbacks.closeContentOverlays();
-
-                        const alreadyOpened = ellipsisButton.classList.contains('ellipsis-button-clicked');
-
-                        callbacks.closeEllipsisOverlays();
-
-                        if (!alreadyOpened) {
-                            callbacks.disableMenuScroll();
-                            const overlay = menuCreator.createEllipsisButtonOverlay();
-                            overlay.classList.add('ellipsis-overlay-portal');
-
-                            const overlayButtons = overlay.querySelectorAll('.overlay-button');
-
-                            const editProjectButton = overlayButtons[0];
-                            editProjectButton.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                callbacks.closeContentOverlays();
-                                overlay.remove();
-                                ellipsisButton.classList.remove('ellipsis-button-clicked');
-                                //callbacks.unclickArrowButton();
-                            });
-
-                            const deleteProjectButton = overlayButtons[1];
-                            deleteProjectButton.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                callbacks.closeContentOverlays();
-                                overlay.remove();
-                                ellipsisButton.classList.remove('ellipsis-button-clicked');
-                                //callbacks.unclickArrowButton();
-                            });
-
-                            document.body.append(overlay);
-
-                            positionEllipsisOverlay(ellipsisButton, overlay);
-
-                            ellipsisButton.classList.add('ellipsis-button-clicked');
-                        }
-                    });
-
-                    overlay.append(button, ellipsisButton);
-                    arrowOverlay.append(overlay);
-                });
-
-                arrowOverlay.classList.add('arrow-overlay-open');
-                arrowButton.classList.add('arrow-button-clicked');
-                arrowButton.classList.remove('arrow-button-unclicked');
-            } else {
-                callbacks.unclickArrowButton();
-            }
-        }
-    })
     const arrowOverlay = menuCreator.createArrowButtonOverlay();
 
     buttonContainer.append(myProjectsButton, plusButton, arrowButton);
 
     const menuScroll = menuCreator.createMenuScroll();
     menuScroll.append(todayButton, shortlyButton, historyButton, buttonContainer, arrowOverlay)
+
+    const createProjectButtonDiv = () => {
+        return menuCreator.createProjectButtonDiv();
+    }
+
+    const createProjectButton = (projectTitle) => {
+        return menuCreator.createProjectButton(projectTitle);
+    }
 
     // 4. Junção das duas partes do menu lateral
     menuContainer.append(menuTop, menuScroll);
@@ -310,6 +204,21 @@ export function initLayoutBlocks(currentUser, callbacks) {
             }
         });
     };
+
+    // 10. Tela principal - Meus Projetos
+    const myProjectsViewWithoutProjects = contentCreator.createProjectViewWithoutProjects();
+
+
+    // 11. Tela principal - Formulário para adicionar projeto
+    const addProjectForm = contentCreator.createAddProjectForm();
+
+
+    // 12. Tela principal - Meus Projetos, view com projetos
+    const incompleteProjects = currentUser.projects.filter(project => {
+        return project.isCompleted === false;
+    });
+    const myProjectsViewWithProjects = contentCreator.createProjectViewWithAllProjects(incompleteProjects);
+
     // #endregion
 
     const refreshTodayView = () => {
@@ -389,7 +298,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
     const refreshHistoryView = (monthIndex = 0) => {
         const groupedHistoryTasks = getGroupedHistoryTasks();
 
-        if(groupedHistoryTasks.length === 0){
+        if (groupedHistoryTasks.length === 0) {
             return null;
         }
 
@@ -411,6 +320,21 @@ export function initLayoutBlocks(currentUser, callbacks) {
         return contentCreator.createTaskCompletedWarning(daysAgoCompleted);
     }
 
+    const refreshAllProjectsView = () => {
+        const incompleteProjects = currentUser.projects.filter(project => {
+            return project.isCompleted === false;
+        });
+        return contentCreator.createProjectViewWithAllProjects(incompleteProjects);
+    };
+
+    const createDeleteProjectOverlay = (projectTitle) => {
+        return contentCreator.createDeleteProjectOverlay(projectTitle);
+    }
+
+    const refreshProjectView = (projectId) => {
+        
+    };
+
     return {
         mainContainer,
 
@@ -424,6 +348,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
         myProjectsButton,
         headerButton,
         plusButton,
+        plusButtonOverlay,
+
+        createProjectButtonDiv,
+        createProjectButton,
         arrowButton,
         arrowOverlay,
 
@@ -431,9 +359,11 @@ export function initLayoutBlocks(currentUser, callbacks) {
         todayViewNoTasks,
         todayViewAddTaskButton,
         refreshTodayView,
+
         createEditTaskForm,
         createDeleteTaskOverlay,
         createTaskLateWarning,
+
         addTaskForm,
         dateButtonOverlayAddTask,
         selectProjectButtonOverlay,
@@ -445,6 +375,12 @@ export function initLayoutBlocks(currentUser, callbacks) {
         historyViewNoTasks,
         getGroupedHistoryTasks,
         refreshHistoryView,
-        createTaskCompletedWarning
+        createTaskCompletedWarning,
+
+        myProjectsViewWithoutProjects,
+        addProjectForm,
+        myProjectsViewWithProjects,
+        refreshAllProjectsView,
+        createDeleteProjectOverlay,
     };
 }

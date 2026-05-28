@@ -6,6 +6,8 @@ import { createTask } from "../../core/domain/task.js";
 import { userStorage } from "../../core/storage/userStorage.js";
 import { createUser } from "../../core/domain/user.js";
 import { formatDateForButton } from "../../shared/utils/dateUtils.js";
+import { positionOverlay } from "../../shared/utils/domUtils.js";
+import { createProject } from "../../core/domain/project.js";
 
 function initDashboard() {
 
@@ -69,16 +71,6 @@ function initDashboard() {
             controllerCallbacks.enableMenuScroll();
         },
 
-        closeEllipsisOverlays: () => {
-            const ellipsisOverlays = document.querySelectorAll('.ellipsis-overlay-portal');
-            ellipsisOverlays.forEach((overlay) => overlay.remove());
-
-            const activeEllipsis = document.querySelectorAll('.ellipsis-button-clicked');
-            activeEllipsis.forEach((btn) => btn.classList.remove('ellipsis-button-clicked'));
-
-            controllerCallbacks.enableMenuScroll();
-        },
-
         unclickArrowButton: () => {
             if (env && env.arrowButton) {
                 env.arrowButton.classList.remove('arrow-button-clicked');
@@ -100,7 +92,11 @@ function initDashboard() {
                         overlay.remove();
                         if (overlay === env.addTaskForm.element) {
                             env.addTaskForm.resetForm();
-
+                            currentTaskState.dueDate = new Date();
+                            currentProjectState.project = null;
+                        }
+                        if (overlay === env.addProjectForm.element) {
+                            env.addProjectForm.resetForm();
                             currentTaskState.dueDate = new Date();
                             currentProjectState.project = null;
                         }
@@ -158,14 +154,14 @@ function initDashboard() {
 
         // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
         setTimeout(() => {
-            env.addTaskForm.addTaskButton.classList.add('add-task-button-restrict');
+            env.addTaskForm.addTaskButton.classList.add('add-button-restrict');
             env.addTaskForm.element.classList.add('active');
         }, 10);
     });
 
     env.addTaskForm.titleInput.addEventListener('input', () => {
         const hasTitle = env.addTaskForm.titleInput.value.trim() !== '';
-        env.addTaskForm.addTaskButton.classList.toggle('add-task-button-restrict', !hasTitle);
+        env.addTaskForm.addTaskButton.classList.toggle('add-button-restrict', !hasTitle);
     });
 
     env.addTaskForm.dateButton.addEventListener('click', (event) => {
@@ -269,7 +265,7 @@ function initDashboard() {
                 document.body.append(env.addTaskForm.element);
 
                 setTimeout(() => {
-                    env.addTaskForm.addTaskButton.classList.add('add-task-button-restrict');
+                    env.addTaskForm.addTaskButton.classList.add('add-button-restrict');
                     env.addTaskForm.element.classList.add('active');
                 }, 10);
             });
@@ -433,7 +429,7 @@ function initDashboard() {
 
                 // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
                 setTimeout(() => {
-                    env.addTaskForm.addTaskButton.classList.add('add-task-button-restrict');
+                    env.addTaskForm.addTaskButton.classList.add('add-button-restrict');
                     env.addTaskForm.element.classList.add('active');
                 }, 10);
             });
@@ -676,12 +672,205 @@ function initDashboard() {
         env.historyButton.classList.add('button-clicked');
     });
 
+    const addProjectButton = env.plusButtonOverlay.querySelector('.overlay-button');
+    addProjectButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        env.plusButtonOverlay.remove();
+        env.plusButton.classList.remove('plus-button-clicked');
+
+        controllerCallbacks.closeMenuOverlays();
+        controllerCallbacks.closeContentOverlays();
+        controllerCallbacks.unclickArrowButton();
+
+        controllerCallbacks.updateTaskState(new Date());
+        controllerCallbacks.updateProjectState(null);
+
+        document.body.append(env.addProjectForm.element);
+
+        // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
+        setTimeout(() => {
+            env.addProjectForm.addProjectButton.classList.add('add-button-restrict');
+            env.addProjectForm.element.classList.add('active');
+        }, 10);
+    });
+
+    env.addProjectForm.titleInput.addEventListener('input', () => {
+        const hasTitle = env.addProjectForm.titleInput.value.trim() !== '';
+        env.addProjectForm.addProjectButton.classList.toggle('add-button-restrict', !hasTitle);
+    });
+
+    env.addProjectForm.cancelButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        controllerCallbacks.closeContentOverlays();
+    });
+
+    env.addProjectForm.element.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const titleText = env.addProjectForm.titleInput.value.trim();
+
+        const newProject = createProject({
+            title: titleText
+        })
+
+        currentProjectState.project = newProject;
+
+        currentUser.addProject(newProject);
+
+        userStorage.saveUser(currentUser);
+
+        controllerCallbacks.closeContentOverlays();
+
+        env.myProjectsButton.click();
+        closeMenuIfMobile()
+    });
+
+    env.plusButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        controllerCallbacks.closeContentOverlays();
+
+        let existingOverlay = document.querySelector('.plus-overlay-portal');
+
+        if (!existingOverlay) {
+            controllerCallbacks.closeMenuOverlays();
+            controllerCallbacks.disableMenuScroll();
+
+            env.plusButtonOverlay.classList.add('plus-overlay-portal');
+
+            document.body.append(env.plusButtonOverlay);
+
+            positionOverlay(env.plusButton, env.plusButtonOverlay);
+
+            env.plusButton.classList.add('plus-button-clicked');
+            controllerCallbacks.unclickArrowButton();
+        } else {
+            existingOverlay.remove();
+            env.plusButton.classList.remove('plus-button-clicked');
+        }
+    });
+
+    env.arrowButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        if (currentUser.projects.length >= 0) {
+            let isOpen = env.arrowOverlay.classList.contains('arrow-overlay-open');
+
+            controllerCallbacks.closeMenuOverlays();
+            controllerCallbacks.closeContentOverlays();
+
+            if (currentUser.projects.length === 0) {
+                controllerCallbacks.unclickArrowButton();
+                return;
+            }
+
+            if (!isOpen) {
+                env.arrowOverlay.innerHTML = '';
+
+                currentUser.projects.forEach((element) => {
+                    let overlay = env.createProjectButtonDiv();
+                    let button = env.createProjectButton(element.title);
+
+                    button.addEventListener('click', () => {
+                        controllerCallbacks.closeContentOverlays();
+                    });
+
+                    overlay.append(button);
+                    env.arrowOverlay.append(overlay);
+                });
+
+                env.arrowOverlay.classList.add('arrow-overlay-open');
+                env.arrowButton.classList.add('arrow-button-clicked');
+                env.arrowButton.classList.remove('arrow-button-unclicked');
+            } else {
+                controllerCallbacks.unclickArrowButton();
+            }
+        }
+    })
+
     env.myProjectsButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
         closeMenuIfMobile()
 
         env.contentContainer.replaceChildren();
         env.myProjectsButton.classList.add('button-clicked');
+
+        const hasAnyProjects = currentUser.projects.length > 0;
+
+        if (!hasAnyProjects) {
+            env.contentContainer.append(env.myProjectsViewWithoutProjects.element);
+            env.myProjectsViewWithoutProjects.addProjectButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                controllerCallbacks.closeMenuOverlays();
+                controllerCallbacks.closeContentOverlays();
+                controllerCallbacks.unclickArrowButton();
+
+                controllerCallbacks.updateTaskState(new Date());
+                controllerCallbacks.updateProjectState(null);
+
+                document.body.append(env.addProjectForm.element);
+
+                // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
+                setTimeout(() => {
+                    env.addProjectForm.addProjectButton.classList.add('add-button-restrict');
+                    env.addProjectForm.element.classList.add('active');
+                }, 10);
+            });
+        } else {
+            const freshProjectView = env.refreshAllProjectsView();
+
+            env.contentContainer.append(freshProjectView.element);
+            freshProjectView.projectsCards.forEach(projectCard => {
+                const project = currentUser.projects.find(p => p.id === projectCard.projectId);
+
+                projectCard.deleteButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    controllerCallbacks.closeMenuOverlays();
+                    controllerCallbacks.closeContentOverlays();
+
+                    const deleteOverlay = env.createDeleteProjectOverlay(projectCard.projectTitle.textContent);
+                    document.body.append(deleteOverlay.element);
+
+                    setTimeout(() => {
+                        deleteOverlay.element.classList.add('active');
+                    }, 10);
+
+                    deleteOverlay.cancelButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        controllerCallbacks.closeContentOverlays();
+                    });
+
+                    deleteOverlay.confirmButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentUser.removeProject(projectCard.projectId);
+                        userStorage.saveUser(currentUser);
+                        controllerCallbacks.closeContentOverlays();
+                        env.myProjectsButton.click();
+                    });
+                });
+            });
+
+            freshProjectView.addProjectButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                env.plusButtonOverlay.remove();
+                env.plusButton.classList.remove('plus-button-clicked');
+
+                controllerCallbacks.closeMenuOverlays();
+                controllerCallbacks.closeContentOverlays();
+                controllerCallbacks.unclickArrowButton();
+
+                controllerCallbacks.updateTaskState(new Date());
+                controllerCallbacks.updateProjectState(null);
+
+                document.body.append(env.addProjectForm.element);
+
+                // Um atraso minúsculo para forçar o navegador a renderizar o estado original, caso contrário ele já renderiza a versão final.
+                setTimeout(() => {
+                    env.addProjectForm.addProjectButton.classList.add('add-button-restrict');
+                    env.addProjectForm.element.classList.add('active');
+                }, 10);
+            });
+        }
     });
     // #endregion
 
