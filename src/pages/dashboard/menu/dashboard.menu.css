@@ -107,6 +107,10 @@ header {
   width: 100%;
 }
 
+.overlay-button.plus-button-overlay {
+  width: 90%;
+}
+
 .overlay-button:active {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.05);

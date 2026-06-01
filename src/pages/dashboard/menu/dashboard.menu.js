@@ -193,7 +193,7 @@ const menuCreator = {
 
         const button = document.createElement('button');
         button.setAttribute('type', 'button');
-        button.classList.add('overlay-button');
+        button.classList.add('overlay-button', 'plus-button-overlay');
 
         const dividerBottom = document.createElement('div');
         dividerBottom.classList.add('overlay-divider');

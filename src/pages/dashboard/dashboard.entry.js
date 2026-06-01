@@ -820,8 +820,52 @@ function initDashboard() {
             const freshProjectView = env.refreshAllProjectsView();
 
             env.contentContainer.append(freshProjectView.element);
+
             freshProjectView.projectsCards.forEach(projectCard => {
                 const project = currentUser.projects.find(p => p.id === projectCard.projectId);
+
+                projectCard.editButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    controllerCallbacks.closeMenuOverlays();
+                    controllerCallbacks.closeContentOverlays();
+
+                    if (!projectCard) return;
+
+                    controllerCallbacks.updateTaskState(new Date());
+                    controllerCallbacks.updateProjectState(project);
+
+                    const editOverlay = env.createEditProjectForm(project.id);
+
+                    document.body.append(editOverlay.element);
+
+                    setTimeout(() => {
+                        editOverlay.element.classList.add('active');
+                    }, 10);
+
+                    editOverlay.cancelButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        controllerCallbacks.closeContentOverlays();
+                    });
+
+                    editOverlay.element.addEventListener('submit', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        let updatedTitle = editOverlay.titleInput.value.trim();
+
+                        if (updatedTitle === '') {
+                            updatedTitle = project.title;
+                        }
+
+                        project.updateTitle(updatedTitle);
+                        
+
+                        userStorage.saveUser(currentUser);
+                        controllerCallbacks.closeContentOverlays();
+
+                        env.myProjectsButton.click();
+                    });
+                });
 
                 projectCard.deleteButton.addEventListener('click', (event) => {
                     event.stopPropagation();

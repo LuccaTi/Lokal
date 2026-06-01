@@ -4,6 +4,7 @@ export function createProject({
     title,
     tasks = [],
     isCompleted = false,
+    completedDate = null,
     createdAt = null
 }) {
     let _id = id;
@@ -12,6 +13,7 @@ export function createProject({
 
     // Spread operator usado para fazer uma cópia do array sem referências.
     let _tasks = [...tasks];
+    let _completedDate = completedDate;
     let _createdAt = createdAt || Date.now();
 
     return {
@@ -22,10 +24,11 @@ export function createProject({
         // Retornada uma cópia do array para impedir pushs e pops sem usar os setters.
         // A cópia impede que os elementos dentro sejam alterados diretamente, mas permite adicionar ou remover mais deles, isso vai refletir só na cópia.
         get tasks() { return [..._tasks]; },
+        get completedDate() { return _completedDate; },
         get createdAt() { return _createdAt; },
 
-        updateTitle(newTitle){
-            if(!newTitle || newTitle.trim() === ''){
+        updateTitle(newTitle) {
+            if (!newTitle || newTitle.trim() === '') {
                 throw new Error("O título do projeto não pode ser vazio.");
             }
 
@@ -33,22 +36,27 @@ export function createProject({
         },
 
         // Comportamento de composição, o projeto sabe gerenciar tarefas:
-        addTask(taskObject){
+        addTask(taskObject) {
 
             // Validação estrutural.
-            if (!taskObject || !taskObject.id){
+            if (!taskObject || !taskObject.id) {
                 throw new Error("Tarefa inválida.");
             }
 
             // Validação de repetição.
             const exists = _tasks.some(t => t.id === taskObject.id);
-            if(!exists){
+            if (!exists) {
                 _tasks.push(taskObject);
             }
         },
 
-        removeTask(taskId){
+        removeTask(taskId) {
             _tasks = _tasks.filter(t => t.id !== taskId);
+        },
+
+        toggleStatus(completionDate) {
+            _isCompleted = !_isCompleted;
+            _completedDate = completedDate;
         },
 
         toJSON() {
@@ -57,6 +65,7 @@ export function createProject({
                 title: _title,
                 isCompleted: _isCompleted,
                 tasks: _tasks.map(t => typeof t.toJSON === 'function' ? t.toJSON() : t),
+                completedDate: _completedDate,
                 createdAt: _createdAt,
             };
         },

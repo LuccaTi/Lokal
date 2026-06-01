@@ -180,7 +180,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
     const getGroupedHistoryTasks = () => {
         const completedTasks = currentUser.tasks.filter(task => task.isCompleted);
-        const sortedTasks = completedTasks.sort((a, b) => new Date(b.completedDate) - new Date(a.completedDate));
+        const sortedTasks = completedTasks.sort((a, b) => new Date(a.completedDate) - new Date(b.completedDate));
 
         const grouped = sortedTasks.reduce((acc, task) => {
             const dateToUse = task.completedDate ? new Date(task.completedDate) : new Date();
@@ -335,6 +335,19 @@ export function initLayoutBlocks(currentUser, callbacks) {
         
     };
 
+    const createEditProjectForm = (projectId) => {
+        const project = currentUser.projects.find(p => p.id === projectId);
+        const form = contentCreator.createEditProjectForm(
+            project.title
+        );
+
+        return form;
+    }
+
+    const createProjectCompletedWarning = (daysAgoCompleted) => {
+        return contentCreator.createProjectCompletedWarning(daysAgoCompleted);
+    }
+
     return {
         mainContainer,
 
@@ -382,5 +395,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         myProjectsViewWithProjects,
         refreshAllProjectsView,
         createDeleteProjectOverlay,
+        createEditProjectForm,
+        createProjectCompletedWarning,
     };
 }

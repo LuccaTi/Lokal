@@ -781,7 +781,7 @@ function createCompletedTaskView(task, project) {
 
 export function createTaskCompletedWarning(daysAgoCompleted) {
     const warningDiv = document.createElement('div');
-    warningDiv.classList.add('task-completed-warning');
+    warningDiv.classList.add('completed-warning');
 
     const today = new Date().setHours(0, 0, 0, 0);
     const completedDate = new Date(today - (daysAgoCompleted * 24 * 60 * 60 * 1000));
@@ -792,7 +792,7 @@ export function createTaskCompletedWarning(daysAgoCompleted) {
     warningIcon.classList.add('task-icon');
 
     const warningText = document.createElement('p');
-    warningText.classList.add('task-completed-warning-text');
+    warningText.classList.add('completed-warning-text');
     warningText.textContent = `Completa há ${daysAgoCompleted} dia(s) - Finalizada dia: ${completedDate.toLocaleDateString()}`;
 
     warningDiv.append(warningIcon, warningText);
@@ -949,7 +949,7 @@ export function createProjectViewWithoutProjects() {
 
 export function createAddProjectForm() {
     const form = document.createElement('form');
-    form.classList.add('overlay-content');
+    form.classList.add('overlay-content', 'project-form');
 
     const titleInput = document.createElement('input');
     titleInput.classList.add('overlay-input-title');
@@ -1195,6 +1195,113 @@ export function createDeleteProjectOverlay(projectTitle) {
         cancelButton: cancelButton,
         confirmButton: confirmButton
     }
+}
+
+export function createEditProjectForm(projectTitle) {
+    const form = document.createElement('form');
+    form.classList.add('overlay-content', 'project-form');
+
+    const titleInput = document.createElement('input');
+    titleInput.classList.add('overlay-input-title', 'edit');
+    titleInput.setAttribute('placeholder', projectTitle);
+
+    const divider = createOverlayDivider();
+
+    const div = document.createElement('div');
+    div.classList.add('overlay-button-content-div');
+
+    const cancelButton = document.createElement('button');
+    cancelButton.classList.add('overlay-button-content', 'cancel');
+    cancelButton.setAttribute('type', 'button');
+    cancelButton.textContent = 'Cancelar';
+
+    const saveButton = document.createElement('button');
+    saveButton.classList.add('overlay-button-content', 'add');
+    saveButton.setAttribute('type', 'submit');
+    saveButton.textContent = 'Salvar alterações';
+
+    div.append(cancelButton, saveButton);
+
+    form.append(titleInput, divider, div);
+
+    const formComponents = {
+        element: form,
+        titleInput: titleInput,
+        cancelButton: cancelButton,
+        saveButton: saveButton
+    }
+
+    return formComponents;
+}
+
+function createCompletedProjectCard(project) {
+    const projectDiv = document.createElement('div');
+    projectDiv.classList.add('task-div');
+
+    const projectInfoDiv = document.createElement('div');
+    projectInfoDiv.classList.add('project-div-info', 'no-checkbox');
+
+    const titleAndDeleteButtonDiv = document.createElement('div');
+    titleAndDeleteButtonDiv.classList.add('project-div-title-delete');
+
+    const projectTitle = document.createElement('h3');
+    projectTitle.classList.add('project-div-title');
+    projectTitle.textContent = project.title;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('project-div-button');
+    deleteButton.setAttribute('type', 'button');
+
+    const deleteButtonIcon = document.createElement('img');
+    deleteButtonIcon.src = crossSymbol;
+    deleteButtonIcon.classList.add('project-div-icon');
+    deleteButtonIcon.alt = 'Cross icon';
+    deleteButton.append(deleteButtonIcon);
+
+    titleAndDeleteButtonDiv.append(projectTitle, deleteButton);
+
+    projectInfoDiv.append(titleAndDeleteButtonDiv);
+
+    const tasksCountHeader = document.createElement('p');
+    tasksCountHeader.classList.add('project-div-tasks-count');
+    tasksCountHeader.textContent = `${project.tasks.length} tarefa(s) concluídas`;
+
+    const bottomDivider = createOverlayDivider();
+    bottomDivider.classList.add('task-div-divider');
+
+    projectDiv.append(projectInfoDiv, tasksCountHeader, bottomDivider);
+
+    return {
+        element: projectDiv,
+        projectId: project.id,
+        projectTitle: projectTitle,
+        deleteButton: deleteButton
+    };
+}
+
+export function createProjectCompletedWarning(daysAgoCompleted) {
+    const warningDiv = document.createElement('div');
+    warningDiv.classList.add('completed-warning');
+
+    const today = new Date().setHours(0, 0, 0, 0);
+    const completedDate = new Date(today - (daysAgoCompleted * 24 * 60 * 60 * 1000));
+
+    const warningIcon = document.createElement('img');
+    warningIcon.src = calendarCheckSymbol;
+    warningIcon.alt = 'Calendar check icon';
+    warningIcon.classList.add('project-icon');
+
+    const warningText = document.createElement('p');
+    warningText.classList.add('completed-warning-text');
+    warningText.textContent = `Completo há ${daysAgoCompleted} dia(s) - Finalizado dia: ${completedDate.toLocaleDateString()}`;
+
+    warningDiv.append(warningIcon, warningText);
+
+    return warningDiv;
+}
+
+export function createPendingTasksWarningOverlay() {
+
 }
 
 // #endregion
