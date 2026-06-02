@@ -56,7 +56,7 @@ export function createProject({
 
         toggleStatus(completionDate) {
             _isCompleted = !_isCompleted;
-            _completedDate = completedDate;
+            _completedDate = _isCompleted? completionDate : null;
         },
 
         toJSON() {

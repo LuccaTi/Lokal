@@ -53,7 +53,7 @@ export function createTask(
 
         toggleStatus(completedDate){
             _isCompleted = !_isCompleted;
-            _completedDate = completedDate;
+            _completedDate = _isCompleted? completedDate : null;
         },
 
         toJSON() {

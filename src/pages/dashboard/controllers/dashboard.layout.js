@@ -205,6 +205,48 @@ export function initLayoutBlocks(currentUser, callbacks) {
         });
     };
 
+    const getGroupedHistoryItems = () => {
+        const completedTasks = currentUser.tasks
+            .filter(task => task.isCompleted && task.completedDate)
+            .map(task => ({
+                type: 'task',
+                completedDate: new Date(task.completedDate),
+                task: task
+            }));
+
+        const completedProjects = currentUser.projects
+            .filter(project => project.isCompleted && project.completedDate)
+            .map(project => ({
+                type: 'project',
+                completedDate: new Date(project.completedDate),
+                project: project
+            }));
+
+        const merged = [...completedTasks, ...completedProjects]
+            .sort((a, b) => a.completedDate - b.completedDate);
+
+        const grouped = merged.reduce((acc, item) => {
+            let monthYear = item.completedDate.toLocaleDateString('pt-BR', {
+                month: 'long',
+                year: 'numeric'
+            });
+
+            monthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+
+            if (!acc[monthYear]) {
+                acc[monthYear] = [];
+            }
+
+            acc[monthYear].push(item);
+            return acc;
+        }, {});
+
+        return Object.entries(grouped).map(([monthLabel, items]) => ({
+            monthLabel,
+            items
+        }));
+    };
+
     // 10. Tela principal - Meus Projetos
     const myProjectsViewWithoutProjects = contentCreator.createProjectViewWithoutProjects();
 
@@ -218,7 +260,6 @@ export function initLayoutBlocks(currentUser, callbacks) {
         return project.isCompleted === false;
     });
     const myProjectsViewWithProjects = contentCreator.createProjectViewWithAllProjects(incompleteProjects);
-
     // #endregion
 
     const refreshTodayView = () => {
@@ -245,8 +286,51 @@ export function initLayoutBlocks(currentUser, callbacks) {
         return contentCreator.createShortlyViewWithTasks(shortlyTasks);
     }
 
-    const createEditTaskForm = (taskId) => {
+    const createEditTaskFormTasks = (taskId) => {
         const task = currentUser.tasks.find(t => t.id === taskId);
+        const form = contentCreator.createEditTaskForm(
+            task.title,
+            task.description,
+            task.dueDate,
+            null
+        );
+
+        form.dateButtonOverlayEditTask = contentCreator.createDateButtonOverlay((selectedDate) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            const icon = form.dateButton.querySelector('img');
+
+            if (selectedDate.getTime() === today.getTime()) {
+                form.dateButton.replaceChildren(icon, ' Hoje');
+            } else {
+                const optionsFormat = { day: 'numeric', month: 'short', year: 'numeric' };
+                const formatedText = selectedDate.toLocaleDateString('pt-BR', optionsFormat);
+                form.dateButton.replaceChildren(icon, ` ${formatedText}`);
+            }
+
+            callbacks.updateTaskState(selectedDate);
+
+            form.dateButtonOverlayEditTask.remove();
+        });
+
+        form.selectProjectButtonOverlayEditTask = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
+
+            form.selectProjectButton.updateSelection(selectedProject);
+
+            callbacks.updateProjectState(selectedProject);
+
+            form.selectProjectButtonOverlayEditTask.remove();
+        },
+            currentUser.projects);
+
+        return form;
+    }
+
+    const createEditTaskFormProjects = (taskId, projectId) => {
+        const project = currentUser.projects.find(p => p.id === projectId);
+        const task = project.tasks.find(t => t.id === taskId);
         const form = contentCreator.createEditTaskForm(
             task.title,
             task.description,
@@ -296,20 +380,20 @@ export function initLayoutBlocks(currentUser, callbacks) {
     }
 
     const refreshHistoryView = (monthIndex = 0) => {
-        const groupedHistoryTasks = getGroupedHistoryTasks();
+        const groupedHistoryItems = getGroupedHistoryItems();
 
-        if (groupedHistoryTasks.length === 0) {
+        if (groupedHistoryItems.length === 0) {
             return null;
         }
 
-        const safeIndex = Math.max(0, Math.min(monthIndex, groupedHistoryTasks.length - 1));
-        const currentMonthGroup = groupedHistoryTasks[safeIndex];
+        const safeIndex = Math.max(0, Math.min(monthIndex, groupedHistoryItems.length - 1));
+        const currentMonthGroup = groupedHistoryItems[safeIndex];
 
         const disableLeft = safeIndex === 0;
-        const disableRight = safeIndex === (groupedHistoryTasks.length - 1);
+        const disableRight = safeIndex === (groupedHistoryItems.length - 1);
 
-        return contentCreator.createHistoryViewWithTasks(
-            currentMonthGroup.tasks,
+        return contentCreator.createHistoryViewWithItems(
+            currentMonthGroup.items,
             currentMonthGroup.monthLabel,
             disableLeft,
             disableRight
@@ -332,7 +416,13 @@ export function initLayoutBlocks(currentUser, callbacks) {
     }
 
     const refreshProjectView = (projectId) => {
-        
+        const project = currentUser.projects.find((p) => p.id === projectId);
+
+        if (!project) {
+            return null;
+        }
+
+        return contentCreator.createSoloProjectView(project);
     };
 
     const createEditProjectForm = (projectId) => {
@@ -347,6 +437,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
     const createProjectCompletedWarning = (daysAgoCompleted) => {
         return contentCreator.createProjectCompletedWarning(daysAgoCompleted);
     }
+
+    const createDeleteProjectPendingOverlay = (projectTitle, pendingTasksCount) => {
+        return contentCreator.createDeleteProjectPendingOverlay(projectTitle, pendingTasksCount);
+    };
 
     return {
         mainContainer,
@@ -373,7 +467,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         todayViewAddTaskButton,
         refreshTodayView,
 
-        createEditTaskForm,
+        createEditTaskFormTasks,
         createDeleteTaskOverlay,
         createTaskLateWarning,
 
@@ -386,7 +480,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         refreshShortlyView,
 
         historyViewNoTasks,
-        getGroupedHistoryTasks,
+        getGroupedHistoryItems,
         refreshHistoryView,
         createTaskCompletedWarning,
 
@@ -397,5 +491,8 @@ export function initLayoutBlocks(currentUser, callbacks) {
         createDeleteProjectOverlay,
         createEditProjectForm,
         createProjectCompletedWarning,
+        refreshProjectView,
+        createDeleteProjectPendingOverlay,
+        createEditTaskFormProjects
     };
 }

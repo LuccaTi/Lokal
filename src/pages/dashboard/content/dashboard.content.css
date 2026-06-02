@@ -661,6 +661,16 @@ input:focus {
   width: 100%;
 }
 
+.project-div-info.no-checkbox.project-history-info{
+  grid-column: 1/-1;
+}
+
+.project-history-icon-title-div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .project-div-title {
   font-size: 1rem;
   font-weight: bold;
@@ -704,6 +714,80 @@ input:focus {
   color: rgb(148, 148, 148);
 }
 
+.project-history-card {
+  width: 100%;
+}
+
+.project-history-info {
+  gap: 0.5rem;
+}
+
+.project-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.project-history-toggle {
+  border: none;
+  background: transparent;
+  color: #26a97d;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+}
+
+.project-history-tasks {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  grid-column: 1 / -1;
+  padding: 0.5rem 0 0.25rem 0.5rem;
+}
+
+.project-history-tasks.is-open {
+  display: flex;
+}
+
+.project-history-task-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.55);
+}
+
+.project-history-task-row-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.project-history-task-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.project-history-task-meta {
+  font-size: 0.8rem;
+  color: rgb(113, 112, 112);
+  padding-left: 1.35rem;
+}
+
+.project-history-empty {
+  font-size: 0.85rem;
+  color: rgb(113, 112, 112);
+  padding-left: 0.25rem;
+}
+
+.project-card-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
 .tasks-projects-container {
   display: flex;
   flex-direction: column;
@@ -734,6 +818,10 @@ input:focus {
   .task-div-button:hover,
   .project-div-button:hover {
     background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .project-history-toggle:hover {
+    text-decoration: underline;
   }
 
   .overlay-button-content.delete:hover {
@@ -818,7 +906,7 @@ input:focus {
   .overlay-content.delete-overlay {
     top: 40%;
     left: 48%;
-    width: 400px;
+    width: 500px;
   }
 
   .calendar-overlay {

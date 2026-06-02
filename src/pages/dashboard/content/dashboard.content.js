@@ -313,7 +313,7 @@ function createSelectProjectButton() {
             selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ' Entrada ', selectProjectButtonSecondIcon);
         } else {
             selectProjectButtonFirstIcon.src = hashtagSymbol;
-            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ` ${project.projectName} `, selectProjectButtonSecondIcon);
+            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ` ${project.title} `, selectProjectButtonSecondIcon);
         }
     };
 
@@ -385,7 +385,7 @@ export function createSelectProjectButtonOverlay(onProjectSelected, userProjects
         const searchTerm = e.target.value.toLowerCase();
 
         projectButtonsElements.forEach(item => {
-            if (item.projectNameText.includes(searchTerm)) {
+            if (item.projectTitleText.includes(searchTerm)) {
                 item.htmlElement.style.display = '';
             } else {
                 item.htmlElement.style.display = 'none';
@@ -485,7 +485,7 @@ export function createHistoryViewWithTasks(tasksForMonth, monthLabel, disableLef
     const leftArrowButton = document.createElement('button');
     leftArrowButton.classList.add('history-nav-button');
     leftArrowButton.setAttribute('type', 'button');
-    if(disableLeft) leftArrowButton.classList.add('history-nav-disabled');
+    if (disableLeft) leftArrowButton.classList.add('history-nav-disabled');
 
     const leftArrowIcon = document.createElement('img');
     leftArrowIcon.classList.add('history-nav-icon');
@@ -496,7 +496,7 @@ export function createHistoryViewWithTasks(tasksForMonth, monthLabel, disableLef
     const rightArrowButton = document.createElement('button');
     rightArrowButton.classList.add('history-nav-button');
     rightArrowButton.setAttribute('type', 'button');
-    if(disableRight) rightArrowButton.classList.add('history-nav-disabled');
+    if (disableRight) rightArrowButton.classList.add('history-nav-disabled');
 
     const rightArrowIcon = document.createElement('img');
     rightArrowIcon.classList.add('history-nav-icon');
@@ -537,6 +537,95 @@ export function createHistoryViewWithTasks(tasksForMonth, monthLabel, disableLef
         rightArrowButton: rightArrowButton
     };
 }
+
+export function createHistoryViewWithItems(itemsForMonth, monthLabel, disableLeft, disableRight) {
+    const viewContainer = document.createElement('div');
+    viewContainer.classList.add('content-container');
+
+    const headerContainer = document.createElement('div');
+    headerContainer.classList.add('content-header');
+
+    const title = createContentTitle('Histórico');
+
+    const itemCountHeader = document.createElement('h2');
+    itemCountHeader.classList.add('content-count-header');
+    itemCountHeader.textContent = `${itemsForMonth.length} item(s) concluido(s)`;
+
+    const monthHeaderDiv = document.createElement('div');
+    monthHeaderDiv.classList.add('history-month-header-div');
+
+    const leftArrowButton = document.createElement('button');
+    leftArrowButton.classList.add('history-nav-button');
+    leftArrowButton.setAttribute('type', 'button');
+    if (disableLeft) leftArrowButton.classList.add('history-nav-disabled');
+
+    const leftArrowIcon = document.createElement('img');
+    leftArrowIcon.classList.add('history-nav-icon');
+    leftArrowIcon.src = arrowLeftIcon;
+    leftArrowIcon.alt = 'Left arrow icon';
+    leftArrowButton.append(leftArrowIcon);
+
+    const rightArrowButton = document.createElement('button');
+    rightArrowButton.classList.add('history-nav-button');
+    rightArrowButton.setAttribute('type', 'button');
+    if (disableRight) rightArrowButton.classList.add('history-nav-disabled');
+
+    const rightArrowIcon = document.createElement('img');
+    rightArrowIcon.classList.add('history-nav-icon');
+    rightArrowIcon.src = arrowRightIcon;
+    rightArrowIcon.alt = 'Right arrow icon';
+    rightArrowButton.append(rightArrowIcon);
+
+    const monthNavDiv = document.createElement('div');
+    monthNavDiv.classList.add('history-month-nav');
+
+    const monthHeader = document.createElement('h3');
+    monthHeader.classList.add('history-month-header');
+    monthHeader.textContent = monthLabel;
+    monthNavDiv.append(monthHeader);
+
+    monthHeaderDiv.append(leftArrowButton, monthNavDiv, rightArrowButton);
+
+    headerContainer.append(title, itemCountHeader, monthHeaderDiv);
+    viewContainer.append(headerContainer);
+
+    const itemsContainer = document.createElement('div');
+    itemsContainer.classList.add('tasks-projects-container');
+
+    const completedItemViews = [];
+
+    itemsForMonth.forEach(item => {
+        if (item.type === 'task') {
+            const taskView = createCompletedTaskView(item.task, null);
+            itemsContainer.append(taskView.element);
+            completedItemViews.push({
+                type: 'task',
+                taskId: item.task.id,
+                view: taskView
+            });
+        }
+
+        if (item.type === 'project') {
+            const projectView = createCompletedProjectCard(item.project);
+            itemsContainer.append(projectView.element);
+            completedItemViews.push({
+                type: 'project',
+                projectId: item.project.id,
+                view: projectView
+            });
+        }
+    });
+
+    viewContainer.append(itemsContainer);
+
+    return {
+        element: viewContainer,
+        completedItemViews: completedItemViews,
+        leftArrowButton: leftArrowButton,
+        rightArrowButton: rightArrowButton
+    };
+}
+
 // #endregion
 
 // #region Task view 
@@ -938,7 +1027,7 @@ export function createProjectViewWithoutProjects() {
 
 
     const button = createContentWrapperButton(plusIcon, 'Plus icon', 'Adicionar projeto');
-   
+
     view.append(headerContainer, wrapper, button);
 
     return {
@@ -1236,17 +1325,34 @@ export function createEditProjectForm(projectTitle) {
 
 function createCompletedProjectCard(project) {
     const projectDiv = document.createElement('div');
-    projectDiv.classList.add('task-div');
+    projectDiv.classList.add('project-div', 'project-history-card');
 
     const projectInfoDiv = document.createElement('div');
-    projectInfoDiv.classList.add('project-div-info', 'no-checkbox');
+    projectInfoDiv.classList.add('project-div-info', 'no-checkbox', 'project-history-info');
 
     const titleAndDeleteButtonDiv = document.createElement('div');
     titleAndDeleteButtonDiv.classList.add('project-div-title-delete');
 
+    const hashTagIcon = document.createElement('img');
+    hashTagIcon.classList.add('project-card-icon');
+    hashTagIcon.src = hashtagSymbol;
+    hashTagIcon.alt = 'Hashtag icon';
+
     const projectTitle = document.createElement('h3');
     projectTitle.classList.add('project-div-title');
     projectTitle.textContent = project.title;
+
+    const iconTitleDiv = document.createElement('div');
+    iconTitleDiv.classList.add('project-history-icon-title-div');
+    iconTitleDiv.append(hashTagIcon, projectTitle);
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.classList.add('project-history-actions');
+
+    const toggleTasksButton = document.createElement('button');
+    toggleTasksButton.classList.add('project-history-toggle');
+    toggleTasksButton.setAttribute('type', 'button');
+    toggleTasksButton.textContent = 'Mostrar tarefas';
 
     const deleteButton = document.createElement('button');
     deleteButton.classList.add('project-div-button');
@@ -1258,18 +1364,68 @@ function createCompletedProjectCard(project) {
     deleteButtonIcon.alt = 'Cross icon';
     deleteButton.append(deleteButtonIcon);
 
-    titleAndDeleteButtonDiv.append(projectTitle, deleteButton);
-
-    projectInfoDiv.append(titleAndDeleteButtonDiv);
+    actionsDiv.append(toggleTasksButton, deleteButton);
 
     const tasksCountHeader = document.createElement('p');
     tasksCountHeader.classList.add('project-div-tasks-count');
     tasksCountHeader.textContent = `${project.tasks.length} tarefa(s) concluídas`;
 
+    titleAndDeleteButtonDiv.append(iconTitleDiv, tasksCountHeader, actionsDiv);
+
+    projectInfoDiv.append(titleAndDeleteButtonDiv);
+
+    const tasksContainer = document.createElement('div');
+    tasksContainer.classList.add('project-history-tasks');
+
+    const sortedTasks = [...project.tasks].sort((a, b) => {
+        const dateA = new Date(a.completedDate || a.createdAt || 0);
+        const dateB = new Date(b.completedDate || b.createdAt || 0);
+        return dateA - dateB;
+    });
+
+    if (sortedTasks.length === 0) {
+        const emptyText = document.createElement('p');
+        emptyText.classList.add('project-history-empty');
+        emptyText.textContent = 'Este projeto não possui tarefas concluídas registradas.';
+        tasksContainer.append(emptyText);
+    } else {
+        sortedTasks.forEach(task => {
+            const taskRow = document.createElement('div');
+            taskRow.classList.add('project-history-task-row');
+
+            const taskRowHeader = document.createElement('div');
+            taskRowHeader.classList.add('project-history-task-row-header');
+
+            const taskIcon = document.createElement('img');
+            taskIcon.classList.add('task-icon');
+            taskIcon.src = calendarCheckSymbol;
+            taskIcon.alt = 'Calendar check icon';
+
+            const taskTitle = document.createElement('p');
+            taskTitle.classList.add('project-history-task-title');
+            taskTitle.textContent = task.title;
+
+            taskRowHeader.append(taskIcon, taskTitle);
+
+            const taskMeta = document.createElement('p');
+            taskMeta.classList.add('project-history-task-meta');
+            const completedDate = task.completedDate ? new Date(task.completedDate).toLocaleDateString('pt-BR') : 'sem data';
+            taskMeta.textContent = `Finalizada em ${completedDate}`;
+
+            taskRow.append(taskRowHeader, taskMeta);
+            tasksContainer.append(taskRow);
+        });
+    }
+
+    toggleTasksButton.addEventListener('click', () => {
+        const isOpen = tasksContainer.classList.toggle('is-open');
+        toggleTasksButton.textContent = isOpen ? 'Ocultar tarefas' : 'Mostrar tarefas';
+    });
+
     const bottomDivider = createOverlayDivider();
     bottomDivider.classList.add('task-div-divider');
 
-    projectDiv.append(projectInfoDiv, tasksCountHeader, bottomDivider);
+    projectDiv.append(projectInfoDiv, tasksContainer, bottomDivider);
 
     return {
         element: projectDiv,
@@ -1300,8 +1456,59 @@ export function createProjectCompletedWarning(daysAgoCompleted) {
     return warningDiv;
 }
 
-export function createPendingTasksWarningOverlay() {
+export function createPendingTasksWarningOverlay(projectTitle, pendingTasksCount) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay-content', 'delete-overlay', 'pending-tasks-warning-overlay');
 
+    const message = document.createElement('p');
+    message.classList.add('overlay-message');
+
+    if (pendingTasksCount === 1) {
+        message.textContent = `O projeto "${projectTitle}" não pode ser concluído porque existe 1 tarefa pendente.`;
+    } else {
+        message.textContent = `O projeto "${projectTitle}" não pode ser concluído porque existem ${pendingTasksCount} tarefas pendentes.`;
+    }
+
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.classList.add('delete-confirmation-buttons');
+
+    const cancelButton = document.createElement('button');
+    cancelButton.classList.add('overlay-button-content', 'cancel');
+    cancelButton.setAttribute('type', 'button');
+    cancelButton.textContent = 'Entendi';
+
+    buttonsDiv.append(cancelButton);
+    overlay.append(message, buttonsDiv);
+
+    return {
+        element: overlay,
+        cancelButton,
+    };
+}
+
+export function createDeleteProjectPendingOverlay(projectTitle, pendingTasksCount) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay-content', 'delete-overlay', 'delete-project-pending-overlay');
+
+    const message = document.createElement('p');
+    message.classList.add('overlay-message');
+    message.innerHTML = `O projeto "<strong>${projectTitle}</strong>" possui <strong>${pendingTasksCount}</strong> tarefa(s) pendente(s). Não é possível excluir o projeto enquanto houver tarefas pendentes. Finalize ou exclua as tarefas antes de remover o projeto.`;
+
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.classList.add('delete-confirmation-buttons');
+
+    const closeButton = document.createElement('button');
+    closeButton.classList.add('overlay-button-content', 'cancel');
+    closeButton.setAttribute('type', 'button');
+    closeButton.textContent = 'Fechar';
+
+    buttonsDiv.append(closeButton);
+    overlay.append(message, buttonsDiv);
+
+    return {
+        element: overlay,
+        cancelButton: closeButton
+    };
 }
 
 // #endregion
