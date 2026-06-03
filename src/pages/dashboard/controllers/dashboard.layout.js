@@ -133,15 +133,23 @@ export function initLayoutBlocks(currentUser, callbacks) {
         dateButtonOverlayAddTask.remove();
     });
 
-    const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
+    const incompleteProjects = currentUser.projects.filter(project => project.isCompleted === false);
+    
+    const refreshSelectProjectButtonOverlay = () => {
+        const incompleteProjects = currentUser.projects.filter(project => project.isCompleted === false);
+        const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
 
-        addTaskForm.selectProjectButton.updateSelection(selectedProject);
+            addTaskForm.selectProjectButton.updateSelection(selectedProject);
 
-        callbacks.updateProjectState(selectedProject);
+            callbacks.updateProjectState(selectedProject);
 
-        selectProjectButtonOverlay.remove();
-    },
-        currentUser.projects);
+            selectProjectButtonOverlay.remove();
+        },
+            incompleteProjects);
+
+        return selectProjectButtonOverlay;
+    };
+    const selectProjectButtonOverlay = refreshSelectProjectButtonOverlay();
 
     // 7. Tela principal - Hoje, view com tarefas
     const todayTasks = currentUser.tasks.filter(task => {
@@ -256,9 +264,6 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
 
     // 12. Tela principal - Meus Projetos, view com projetos
-    const incompleteProjects = currentUser.projects.filter(project => {
-        return project.isCompleted === false;
-    });
     const myProjectsViewWithProjects = contentCreator.createProjectViewWithAllProjects(incompleteProjects);
     // #endregion
 
@@ -323,19 +328,23 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
             form.selectProjectButtonOverlayEditTask.remove();
         },
-            currentUser.projects);
+            incompleteProjects);
 
         return form;
     }
 
     const createEditTaskFormProjects = (taskId, projectId) => {
         const project = currentUser.projects.find(p => p.id === projectId);
+        if (!project) return null;
+
         const task = project.tasks.find(t => t.id === taskId);
+        if (!task) return null;
+
         const form = contentCreator.createEditTaskForm(
             task.title,
             task.description,
             task.dueDate,
-            null
+            project
         );
 
         form.dateButtonOverlayEditTask = contentCreator.createDateButtonOverlay((selectedDate) => {
@@ -359,14 +368,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
         });
 
         form.selectProjectButtonOverlayEditTask = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
-
             form.selectProjectButton.updateSelection(selectedProject);
-
             callbacks.updateProjectState(selectedProject);
-
             form.selectProjectButtonOverlayEditTask.remove();
-        },
-            currentUser.projects);
+        }, incompleteProjects);
 
         return form;
     }
@@ -442,6 +447,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
         return contentCreator.createDeleteProjectPendingOverlay(projectTitle, pendingTasksCount);
     };
 
+    const createPendingTasksWarningOverlay = (projectTitle, pendingTasksCount) => {
+        return contentCreator.createPendingTasksWarningOverlay(projectTitle, pendingTasksCount);
+    }
+
     return {
         mainContainer,
 
@@ -474,6 +483,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         addTaskForm,
         dateButtonOverlayAddTask,
         selectProjectButtonOverlay,
+        refreshSelectProjectButtonOverlay,
 
         shortlyViewNoTasks,
         shortlyViewWithTasks,
@@ -493,6 +503,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         createProjectCompletedWarning,
         refreshProjectView,
         createDeleteProjectPendingOverlay,
-        createEditTaskFormProjects
+        createEditTaskFormProjects,
+        createPendingTasksWarningOverlay
     };
 }

@@ -138,9 +138,9 @@ export function createAddTaskForm() {
     addTaskButton.setAttribute('type', 'submit');
     addTaskButton.textContent = 'Adicionar tarefa';
 
-    div.append(selectProjectButton, cancelButton, addTaskButton);
+    div.append(cancelButton, addTaskButton);
 
-    form.append(titleInput, descriptionInput, dateButton, divider, div);
+    form.append(titleInput, descriptionInput, dateButton, divider, selectProjectButton, div);
 
     const formComponents = {
         element: form,
@@ -304,23 +304,29 @@ function createSelectProjectButton() {
     selectProjectButtonSecondIcon.src = arrowDownIcon;
     selectProjectButtonSecondIcon.alt = 'Arrow down icon';
 
-    selectProjectButton.append(selectProjectButtonFirstIcon, ' Entrada ', selectProjectButtonSecondIcon);
+    const buttonText = document.createElement('span');
+    buttonText.classList.add('overlay-button-content-text', 'select-project');
+    buttonText.textContent = ' Entrada ';
+
+    selectProjectButton.append(selectProjectButtonFirstIcon, buttonText, selectProjectButtonSecondIcon);
 
     // Método customizado para o botão recriar a si mesmo sem perder a referência das imagens importadas
     selectProjectButton.updateSelection = (project) => {
         if (project === null) {
             selectProjectButtonFirstIcon.src = mailBoxIcon;
-            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ' Entrada ', selectProjectButtonSecondIcon);
+            buttonText.textContent = ' Entrada ';
+            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, buttonText, selectProjectButtonSecondIcon);
         } else {
             selectProjectButtonFirstIcon.src = hashtagSymbol;
-            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ` ${project.title} `, selectProjectButtonSecondIcon);
+            buttonText.textContent = ` ${project.title} `;
+            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, buttonText, selectProjectButtonSecondIcon);
         }
     };
 
     return selectProjectButton;
 }
 
-export function createSelectProjectButtonOverlay(onProjectSelected, userProjects) {
+export function createSelectProjectButtonOverlay(onProjectSelected, userIncompleteProjects) {
     const overlay = document.createElement('div')
     overlay.classList.add('overlay-content', 'select-project-overlay');
 
@@ -355,7 +361,7 @@ export function createSelectProjectButtonOverlay(onProjectSelected, userProjects
     const projectsList = document.createElement('div');
     projectsList.classList.add('overlay-projects-list');
 
-    userProjects.forEach(project => {
+    userIncompleteProjects.forEach(project => {
         const projectButton = document.createElement('button');
         projectButton.classList.add('overlay-button-content', 'select-project');
         projectButton.setAttribute('type', 'button');
@@ -365,7 +371,11 @@ export function createSelectProjectButtonOverlay(onProjectSelected, userProjects
         projectButtonFirstIcon.src = hashtagSymbol;
         projectButtonFirstIcon.alt = 'Hashtag icon';
 
-        projectButton.append(projectButtonFirstIcon, project.title);
+        const buttonText = document.createElement('span');
+        buttonText.classList.add('overlay-button-content-text', 'select-project');
+        buttonText.append(project.title);
+
+        projectButton.append(projectButtonFirstIcon, buttonText);
 
         projectButton.addEventListener('click', () => {
             onProjectSelected(project);
@@ -693,6 +703,16 @@ function createTaskViewWithCheckbox(task, projectTitle) {
     const projectIcon = document.createElement('img');
     projectIcon.classList.add('task-div-icon');
 
+    const projectIconNameDiv = document.createElement('div');
+    projectIconNameDiv.classList.add('project-name-icon-div');
+    projectIconNameDiv.append(projectIcon, projectName);
+
+    const dueDateWarning = document.createElement('p');
+    dueDateWarning.classList.add('task-div-due-date-warning');
+
+    const formatedDate = new Date(task.dueDate).toLocaleDateString('pt-br');
+    dueDateWarning.textContent = `Fazer até: ${formatedDate}`;
+
     if (projectTitle === null) {
         projectName.textContent = 'Entrada';
         projectIcon.src = mailBoxIcon;
@@ -703,7 +723,7 @@ function createTaskViewWithCheckbox(task, projectTitle) {
         projectIcon.alt = 'Hashtag icon';
     }
 
-    projectInfoDiv.append(projectIcon, projectName);
+    projectInfoDiv.append(dueDateWarning, projectIconNameDiv);
 
     const bottomDivider = createOverlayDivider();
     bottomDivider.classList.add('task-div-divider');
@@ -767,13 +787,23 @@ function createTaskViewWithoutCheckbox(task, project) {
     taskInfoDiv.append(titleAndDeleteButtonDiv, taskDescription);
 
     const projectInfoDiv = document.createElement('div');
-    projectInfoDiv.classList.add('task-div-project');
+    projectInfoDiv.classList.add('task-div-project', 'shortly');
 
     const projectName = document.createElement('p');
     projectName.classList.add('task-div-project-name');
 
     const projectIcon = document.createElement('img');
     projectIcon.classList.add('task-div-icon');
+
+    const projectIconNameDiv = document.createElement('div');
+    projectIconNameDiv.classList.add('project-name-icon-div');
+    projectIconNameDiv.append(projectIcon, projectName);
+
+    const dueDateWarning = document.createElement('p');
+    dueDateWarning.classList.add('task-div-due-date-warning');
+
+    const formatedDate = new Date(task.dueDate).toLocaleDateString('pt-br');
+    dueDateWarning.textContent = `Fazer até: ${formatedDate}`;
 
     if (project === null) {
         projectName.textContent = 'Entrada';
@@ -785,7 +815,7 @@ function createTaskViewWithoutCheckbox(task, project) {
         projectIcon.alt = 'Hashtag icon';
     }
 
-    projectInfoDiv.append(projectIcon, projectName);
+    projectInfoDiv.append(dueDateWarning, projectIconNameDiv);
 
     const bottomDivider = createOverlayDivider();
     bottomDivider.classList.add('task-div-divider');
@@ -834,13 +864,23 @@ function createCompletedTaskView(task, project) {
     taskInfoDiv.append(titleAndDeleteButtonDiv, taskDescription);
 
     const projectInfoDiv = document.createElement('div');
-    projectInfoDiv.classList.add('task-div-project');
+    projectInfoDiv.classList.add('task-div-project', 'shortly');
 
     const projectName = document.createElement('p');
     projectName.classList.add('task-div-project-name');
 
     const projectIcon = document.createElement('img');
     projectIcon.classList.add('task-div-icon');
+
+    const projectIconNameDiv = document.createElement('div');
+    projectIconNameDiv.classList.add('project-name-icon-div');
+    projectIconNameDiv.append(projectIcon, projectName);
+
+    const dueDateWarning = document.createElement('p');
+    dueDateWarning.classList.add('task-div-due-date-warning');
+
+    const formatedDate = new Date(task.dueDate).toLocaleDateString('pt-br');
+    dueDateWarning.textContent = `Fazer até: ${formatedDate}`;
 
     if (project === null) {
         projectName.textContent = 'Entrada';
@@ -852,7 +892,7 @@ function createCompletedTaskView(task, project) {
         projectIcon.alt = 'Hashtag icon';
     }
 
-    projectInfoDiv.append(projectIcon, projectName);
+    projectInfoDiv.append(dueDateWarning, projectIconNameDiv);
 
     const bottomDivider = createOverlayDivider();
     bottomDivider.classList.add('task-div-divider');
@@ -960,9 +1000,9 @@ export function createEditTaskForm(
     saveButton.setAttribute('type', 'submit');
     saveButton.textContent = 'Salvar alterações';
 
-    div.append(selectProjectButton, cancelButton, saveButton);
+    div.append(cancelButton, saveButton);
 
-    form.append(titleInput, descriptionInput, dateButton, divider, div);
+    form.append(titleInput, descriptionInput, dateButton, divider, selectProjectButton, div);
 
     const formComponents = {
         element: form,
@@ -1147,7 +1187,11 @@ export function createSoloProjectView(project) {
     taskCountHeader.classList.add('content-count-header');
     taskCountHeader.textContent = `${project.tasks.length} tarefa(s)`;
 
-    headerContainer.append(title, taskCountHeader);
+    const addTaskWarning = document.createElement('p');
+    addTaskWarning.classList.add('content-header-task-warning');
+    addTaskWarning.textContent = `Para adicionar uma tarefa utilize o menu lateral e selecione o projeto "${project.title}" na lista`;
+
+    headerContainer.append(title, taskCountHeader, addTaskWarning);
 
     viewContainer.append(headerContainer);
 
@@ -1170,24 +1214,10 @@ export function createSoloProjectView(project) {
 
     viewContainer.append(tasksContainer);
 
-    const addTaskButton = document.createElement('button');
-    addTaskButton.classList.add('content-add-button');
-    addTaskButton.setAttribute('type', 'button');
-
-    const addButtonIcon = document.createElement('img');
-    addButtonIcon.src = plusIcon;
-    addButtonIcon.alt = 'Plus icon';
-    addButtonIcon.classList.add('content-add-button-icon');
-    addTaskButton.append(addButtonIcon, 'Adicionar tarefa');
-
-    viewContainer.append(addTaskButton);
-
     return {
         element: viewContainer,
-        taskViews: taskViews,
-        addTaskButton: addTaskButton
+        taskViews: taskViews
     }
-
 }
 
 function createProjectCard(project) {
@@ -1464,9 +1494,9 @@ export function createPendingTasksWarningOverlay(projectTitle, pendingTasksCount
     message.classList.add('overlay-message');
 
     if (pendingTasksCount === 1) {
-        message.textContent = `O projeto "${projectTitle}" não pode ser concluído porque existe 1 tarefa pendente.`;
+        message.innerHTML = `O projeto "<strong>${projectTitle}</strong>" não pode ser concluído porque existe 1 tarefa pendente.`;
     } else {
-        message.textContent = `O projeto "${projectTitle}" não pode ser concluído porque existem ${pendingTasksCount} tarefas pendentes.`;
+        message.innerHTML = `O projeto "<strong>${projectTitle}</strong>" não pode ser concluído porque existem ${pendingTasksCount} tarefas pendentes.`;
     }
 
     const buttonsDiv = document.createElement('div');
@@ -1492,7 +1522,7 @@ export function createDeleteProjectPendingOverlay(projectTitle, pendingTasksCoun
 
     const message = document.createElement('p');
     message.classList.add('overlay-message');
-    message.innerHTML = `O projeto "<strong>${projectTitle}</strong>" possui <strong>${pendingTasksCount}</strong> tarefa(s) pendente(s). Não é possível excluir o projeto enquanto houver tarefas pendentes. Finalize ou exclua as tarefas antes de remover o projeto.`;
+    message.innerHTML = `O projeto "<strong>${projectTitle}</strong>" possui <strong>${pendingTasksCount}</strong> tarefa(s) pendente(s).<br>Não é possível excluir o projeto enquanto houver tarefas pendentes. Finalize ou exclua as tarefas antes de remover o projeto.`;
 
     const buttonsDiv = document.createElement('div');
     buttonsDiv.classList.add('delete-confirmation-buttons');
@@ -1509,6 +1539,37 @@ export function createDeleteProjectPendingOverlay(projectTitle, pendingTasksCoun
         element: overlay,
         cancelButton: closeButton
     };
+}
+
+function createSelectProjectButtonProjectView(projectTitle) {
+    const selectProjectButton = document.createElement('button');
+    selectProjectButton.classList.add('overlay-button-content');
+    selectProjectButton.setAttribute('type', 'button');
+
+    const selectProjectButtonFirstIcon = document.createElement('img');
+    selectProjectButtonFirstIcon.classList.add('overlay-button-content-icon');
+    selectProjectButtonFirstIcon.src = hashtagSymbol;
+    selectProjectButtonFirstIcon.alt = 'Hashtag icon';
+
+    const selectProjectButtonSecondIcon = document.createElement('img');
+    selectProjectButtonSecondIcon.classList.add('overlay-button-content-icon');
+    selectProjectButtonSecondIcon.src = arrowDownIcon;
+    selectProjectButtonSecondIcon.alt = 'Arrow down icon';
+
+    selectProjectButton.append(selectProjectButtonFirstIcon, ` ${projectTitle} `, selectProjectButtonSecondIcon);
+
+    // Método customizado para o botão recriar a si mesmo sem perder a referência das imagens importadas
+    selectProjectButton.updateSelection = (project) => {
+        if (project === null) {
+            selectProjectButtonFirstIcon.src = mailBoxIcon;
+            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ' Entrada ', selectProjectButtonSecondIcon);
+        } else {
+            selectProjectButtonFirstIcon.src = hashtagSymbol;
+            selectProjectButton.replaceChildren(selectProjectButtonFirstIcon, ` ${project.title} `, selectProjectButtonSecondIcon);
+        }
+    };
+
+    return selectProjectButton;
 }
 
 // #endregion

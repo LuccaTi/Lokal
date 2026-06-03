@@ -10,6 +10,14 @@ import { positionOverlay } from "../../shared/utils/domUtils.js";
 import { createProject } from "../../core/domain/project.js";
 
 // ETAPA ATUAL: Fase de testes e ajustes
+/**
+ * eu ACHO que faltam só as coisas abaixo:
+ * - Colocar um aviso de tarefa atrasada nas tarefas de cada project view. - Falta testar, testar amanhã
+ * - Criar a lógica que troca esses avisos a cada clique do checkbox. - Falta testar, testar amanhã
+ * - Adaptar a lógica para abrir a view do projeto específico ao qual a tarefa foi alocada.
+ * - Fazer as tarefas de projeto com data atual ou posterior aparecerem também nas views Hoje e Em Breve.
+ * - Testar se o local storage está refletindo tudo que a tela está mostrando e vice-versa.
+ */
 
 function initDashboard() {
 
@@ -161,81 +169,16 @@ function initDashboard() {
         }, 10);
     });
 
-    env.addTaskForm.titleInput.addEventListener('input', () => {
-        const hasTitle = env.addTaskForm.titleInput.value.trim() !== '';
-        env.addTaskForm.addTaskButton.classList.toggle('add-button-restrict', !hasTitle);
-    });
+    addListenersToAddTaskForms(
+        env.addTaskForm.titleInput,
+        env.addTaskForm.descriptionInput,
+        env.addTaskForm.dateButton,
+        env.addTaskForm.selectProjectButton,
+        env.addTaskForm.cancelButton,
+        env.addTaskForm.element,
+        env.addTaskForm.addTaskButton
+    );
 
-    env.addTaskForm.dateButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        controllerCallbacks.closeSelectProjectOverlay();
-
-        const existingOverlay = document.querySelector('.calendar-overlay');
-        if (existingOverlay) {
-            existingOverlay.remove();
-            return;
-        }
-
-        env.dateButtonOverlayAddTask.resetCalendar();
-        document.body.append(env.dateButtonOverlayAddTask);
-    });
-
-    env.addTaskForm.selectProjectButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        controllerCallbacks.closeCalendarOverlay();
-
-        const existingOverlay = document.querySelector('.select-project-overlay');
-        if (existingOverlay) {
-            existingOverlay.remove();
-            return;
-        }
-
-        document.body.append(env.selectProjectButtonOverlay);
-    });
-
-    env.addTaskForm.cancelButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        controllerCallbacks.closeContentOverlays();
-    });
-
-    env.addTaskForm.element.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const titleText = env.addTaskForm.titleInput.value.trim();
-        const descriptionText = env.addTaskForm.descriptionInput.value.trim();
-        const selectedProject = currentProjectState.project;
-
-        const newTask = createTask({
-            title: titleText,
-            description: descriptionText,
-            dueDate: currentTaskState.dueDate,
-        })
-
-        if (selectedProject) {
-            selectedProject.addTask(newTask);
-        } else {
-            currentUser.addTask(newTask);
-        }
-
-        // Faltou enviar a tarefa para o projeto em user.projects e depois salvar
-        userStorage.saveUser(currentUser);
-
-        controllerCallbacks.closeContentOverlays();
-
-        if (selectedProject) {
-            env.myProjectsButton.click();
-        } else {
-            const taskDate = new Date(newTask.dueDate).setHours(0, 0, 0, 0);
-            const today = new Date().setHours(0, 0, 0, 0);
-            if (taskDate === today) {
-                env.todayButton.click();
-            } else {
-                env.shortlyButton.click();
-            }
-        }
-
-        closeMenuIfMobile()
-    });
 
     env.todayButton.addEventListener('click', () => {
         removeAllOtherButtonsClicked();
@@ -857,11 +800,12 @@ function initDashboard() {
 
                             const renderCurrentProjectView = () => {
                                 const freshProjectView = env.refreshProjectView(project.id);
-                                if (!freshProjectView) return;
+                                const freshProject = currentUser.projects.find(p => p.id === project.id);
+                                if (!freshProjectView || !freshProject) return;
 
                                 env.contentContainer.replaceChildren(freshProjectView.element);
 
-                                attachProjectViewListeners(freshProjectView, project);
+                                attachProjectViewListeners(freshProjectView, freshProject, project.id);
                             };
 
                             const attachProjectViewListeners = (view, projectItem, projectId) => {
@@ -870,14 +814,78 @@ function initDashboard() {
                                     if (!task) return;
 
                                     if (task.isCompleted) {
+                                        const existingLateWarning = taskView.element.querySelector('.task-warning-overlay-late');
+                                        if (existingLateWarning) {
+                                            existingLateWarning.remove();
+                                        }
+
                                         taskView.checkbox.checked = true;
+                                        const today = new Date();
+                                        today.setHours(0, 0, 0, 0);
+
+                                        const completedDate = new Date(task.completedDate);
+                                        completedDate.setHours(0, 0, 0, 0);
+
+                                        const daysAgoCompleted = Math.floor((today - completedDate) / (1000 * 60 * 60 * 24));
+                                        const warningOverlay = env.createTaskCompletedWarning(daysAgoCompleted);
+                                        warningOverlay.classList.add('task-warning-overlay-complete');
+                                        taskView.element.append(warningOverlay);
+                                    } else {
+                                        const existingCompletedWarning = taskView.element.querySelector('.task-warning-overlay-complete');
+                                        if (existingCompletedWarning) {
+                                            existingCompletedWarning.remove();
+                                        }
+
+                                        if (isTaskOverdue(task)) {
+                                            const today = new Date();
+                                            today.setHours(0, 0, 0, 0);
+
+                                            const dueDate = new Date(task.dueDate);
+                                            dueDate.setHours(0, 0, 0, 0);
+
+                                            const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                                            const warningOverlay = env.createTaskLateWarning(daysLate);
+                                            warningOverlay.classList.add('task-warning-overlay-late');
+                                            taskView.element.append(warningOverlay);
+                                        }
                                     }
 
                                     taskView.checkbox.addEventListener('change', (event) => {
                                         if (event.target.checked) {
                                             task.toggleStatus(new Date());
+
+                                            const existingLateWarning = taskView.element.querySelector('.task-warning-overlay-late');
+                                            if (existingLateWarning) existingLateWarning.remove();
+
+                                            const today = new Date();
+                                            today.setHours(0, 0, 0, 0);
+
+                                            const completedDate = new Date(task.completedDate);
+                                            completedDate.setHours(0, 0, 0, 0);
+
+                                            const daysAgoCompleted = Math.floor((today - completedDate) / (1000 * 60 * 60 * 24));
+                                            const warningOverlay = env.createTaskCompletedWarning(daysAgoCompleted);
+                                            warningOverlay.classList.add('task-warning-overlay-complete');
+
+                                            taskView.element.append(warningOverlay);
                                         } else {
                                             task.toggleStatus(null);
+
+                                            const existingCompletedWarning = taskView.element.querySelector('.task-warning-overlay-complete');
+                                            if (existingCompletedWarning) existingCompletedWarning.remove();
+
+                                            if (isTaskOverdue(task)) {
+                                                const today = new Date();
+                                                today.setHours(0, 0, 0, 0);
+
+                                                const dueDate = new Date(task.dueDate);
+                                                dueDate.setHours(0, 0, 0, 0);
+
+                                                const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                                                const warningOverlay = env.createTaskLateWarning(daysLate);
+                                                warningOverlay.classList.add('task-warning-overlay-late');
+                                                taskView.element.append(warningOverlay);
+                                            }
                                         }
 
                                         userStorage.saveUser(currentUser);
@@ -893,6 +901,7 @@ function initDashboard() {
                                         controllerCallbacks.updateProjectState(projectItem);
 
                                         const editOverlay = env.createEditTaskFormProjects(task.id, projectId);
+                                        if (!editOverlay) return;
 
                                         document.body.append(editOverlay.element);
 
@@ -989,24 +998,6 @@ function initDashboard() {
 
                             env.contentContainer.replaceChildren(projectView.element);
                             attachProjectViewListeners(projectView, project, project.id);
-
-                            projectView.addTaskButton.addEventListener('click', (e) => {
-                                e.stopPropagation();
-
-                                controllerCallbacks.closeMenuOverlays();
-                                controllerCallbacks.closeContentOverlays();
-                                controllerCallbacks.unclickArrowButton();
-
-                                controllerCallbacks.updateTaskState(new Date());
-                                controllerCallbacks.updateProjectState(project);
-
-                                document.body.append(env.addTaskForm.element);
-
-                                setTimeout(() => {
-                                    env.addTaskForm.addTaskButton.classList.add('add-button-restrict');
-                                    env.addTaskForm.element.classList.add('active');
-                                }, 10);
-                            });
                         });
 
                         overlay.append(button);
@@ -1036,6 +1027,9 @@ function initDashboard() {
             env.contentContainer.append(env.myProjectsViewWithoutProjects.element);
             env.myProjectsViewWithoutProjects.addProjectButton.addEventListener('click', (e) => {
                 e.stopPropagation();
+                env.plusButtonOverlay.remove();
+                env.plusButton.classList.remove('plus-button-clicked');
+
                 controllerCallbacks.closeMenuOverlays();
                 controllerCallbacks.closeContentOverlays();
                 controllerCallbacks.unclickArrowButton();
@@ -1075,11 +1069,12 @@ function initDashboard() {
 
                     const renderCurrentProjectView = () => {
                         const freshProjectView = env.refreshProjectView(projectCard.projectId);
-                        if (!freshProjectView) return;
+                        const freshProject = currentUser.projects.find(p => p.id === projectCard.projectId);
+                        if (!freshProjectView || !freshProject) return;
 
                         env.contentContainer.replaceChildren(freshProjectView.element);
 
-                        attachProjectViewListeners(freshProjectView, project);
+                        attachProjectViewListeners(freshProjectView, freshProject, projectCard.projectId);
                     };
 
                     const attachProjectViewListeners = (view, projectItem, projectId) => {
@@ -1089,14 +1084,78 @@ function initDashboard() {
                             if (!task) return;
 
                             if (task.isCompleted) {
+                                const existingLateWarning = taskView.element.querySelector('.task-warning-overlay-late');
+                                if (existingLateWarning) {
+                                    existingLateWarning.remove();
+                                }
+
                                 taskView.checkbox.checked = true;
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+
+                                const completedDate = new Date(task.completedDate);
+                                completedDate.setHours(0, 0, 0, 0);
+
+                                const daysAgoCompleted = Math.floor((today - completedDate) / (1000 * 60 * 60 * 24));
+                                const warningOverlay = env.createTaskCompletedWarning(daysAgoCompleted);
+                                warningOverlay.classList.add('task-warning-overlay-complete');
+                                taskView.element.append(warningOverlay);
+                            } else {
+                                const existingCompletedWarning = taskView.element.querySelector('.task-warning-overlay-complete');
+                                if (existingCompletedWarning) {
+                                    existingCompletedWarning.remove();
+                                }
+
+                                if (isTaskOverdue(task)) {
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+
+                                    const dueDate = new Date(task.dueDate);
+                                    dueDate.setHours(0, 0, 0, 0);
+
+                                    const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                                    const warningOverlay = env.createTaskLateWarning(daysLate);
+                                    warningOverlay.classList.add('task-warning-overlay-late');
+                                    taskView.element.append(warningOverlay);
+                                }
                             }
 
                             taskView.checkbox.addEventListener('change', (event) => {
                                 if (event.target.checked) {
                                     task.toggleStatus(new Date());
+
+                                    const existingLateWarning = taskView.element.querySelector('.task-warning-overlay-late');
+                                    if (existingLateWarning) existingLateWarning.remove();
+
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+
+                                    const completedDate = new Date(task.completedDate);
+                                    completedDate.setHours(0, 0, 0, 0);
+
+                                    const daysAgoCompleted = Math.floor((today - completedDate) / (1000 * 60 * 60 * 24));
+                                    const warningOverlay = env.createTaskCompletedWarning(daysAgoCompleted);
+                                    warningOverlay.classList.add('task-warning-overlay-complete');
+
+                                    taskView.element.append(warningOverlay);
                                 } else {
                                     task.toggleStatus(null);
+
+                                    const existingCompletedWarning = taskView.element.querySelector('.task-warning-overlay-complete');
+                                    if (existingCompletedWarning) existingCompletedWarning.remove();
+
+                                    if (isTaskOverdue(task)) {
+                                        const today = new Date();
+                                        today.setHours(0, 0, 0, 0);
+
+                                        const dueDate = new Date(task.dueDate);
+                                        dueDate.setHours(0, 0, 0, 0);
+
+                                        const daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                                        const warningOverlay = env.createTaskLateWarning(daysLate);
+                                        warningOverlay.classList.add('task-warning-overlay-late');
+                                        taskView.element.append(warningOverlay);
+                                    }
                                 }
 
                                 userStorage.saveUser(currentUser);
@@ -1112,6 +1171,7 @@ function initDashboard() {
                                 controllerCallbacks.updateProjectState(projectItem);
 
                                 const editOverlay = env.createEditTaskFormProjects(task.id, projectId);
+                                if (!editOverlay) return;
 
                                 document.body.append(editOverlay.element);
 
@@ -1208,24 +1268,6 @@ function initDashboard() {
 
                     env.contentContainer.replaceChildren(projectView.element);
                     attachProjectViewListeners(projectView, project, projectCard.projectId);
-
-                    projectView.addTaskButton.addEventListener('click', (e) => {
-                        e.stopPropagation();
-
-                        controllerCallbacks.closeMenuOverlays();
-                        controllerCallbacks.closeContentOverlays();
-                        controllerCallbacks.unclickArrowButton();
-
-                        controllerCallbacks.updateTaskState(new Date());
-                        controllerCallbacks.updateProjectState(project);
-
-                        document.body.append(env.addTaskForm.element);
-
-                        setTimeout(() => {
-                            env.addTaskForm.addTaskButton.classList.add('add-button-restrict');
-                            env.addTaskForm.element.classList.add('active');
-                        }, 10);
-                    });
                 });
 
                 projectCard.checkbox.addEventListener('change', (event) => {
@@ -1371,6 +1413,92 @@ function initDashboard() {
     // #endregion
 
     // #region Funções auxiliares
+    function addListenersToAddTaskForms(
+        titleInputElement,
+        descriptionInputElement,
+        dateButtonElement,
+        selectProjectButtonElement,
+        cancelButtonElement,
+        addTaskFormElement,
+        addTaskButtonElement
+    ) {
+        titleInputElement.addEventListener('input', () => {
+            const hasTitle = titleInputElement.value.trim() !== '';
+            addTaskButtonElement.classList.toggle('add-button-restrict', !hasTitle);
+        });
+
+        dateButtonElement.addEventListener('click', (event) => {
+            event.stopPropagation();
+            controllerCallbacks.closeSelectProjectOverlay();
+
+            const existingOverlay = document.querySelector('.calendar-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+                return;
+            }
+
+            env.dateButtonOverlayAddTask.resetCalendar();
+            document.body.append(env.dateButtonOverlayAddTask);
+        });
+
+        selectProjectButtonElement.addEventListener('click', (event) => {
+            event.stopPropagation();
+            controllerCallbacks.closeCalendarOverlay();
+
+            const existingOverlay = document.querySelector('.select-project-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+                return;
+            }
+
+            document.body.append(env.refreshSelectProjectButtonOverlay());
+        });
+
+        cancelButtonElement.addEventListener('click', (event) => {
+            event.stopPropagation();
+            controllerCallbacks.closeContentOverlays();
+        });
+
+        addTaskFormElement.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const titleText = titleInputElement.value.trim();
+            const descriptionText = descriptionInputElement.value.trim();
+            const selectedProject = currentProjectState.project;
+
+            const newTask = createTask({
+                title: titleText,
+                description: descriptionText,
+                dueDate: currentTaskState.dueDate,
+            })
+
+            if (selectedProject) {
+                selectedProject.addTask(newTask);
+            } else {
+                currentUser.addTask(newTask);
+            }
+
+            // Faltou enviar a tarefa para o projeto em user.projects e depois salvar
+            userStorage.saveUser(currentUser);
+
+            controllerCallbacks.closeContentOverlays();
+
+            if (selectedProject) {
+                env.myProjectsButton.click();
+            } else {
+                const taskDate = new Date(newTask.dueDate).setHours(0, 0, 0, 0);
+                const today = new Date().setHours(0, 0, 0, 0);
+                if (taskDate === today) {
+                    env.todayButton.click();
+                } else {
+                    env.shortlyButton.click();
+                }
+            }
+
+            closeMenuIfMobile()
+        });
+    }
+
     function moveTaskToSelectedProject(task) {
         const selectedProject = currentProjectState.project;
         const oldProject = currentUser.projects.find(p => p.tasks.some(t => t.id === task.id));

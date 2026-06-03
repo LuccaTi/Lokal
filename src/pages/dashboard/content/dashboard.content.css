@@ -114,6 +114,7 @@
   top: 20%;
   left: 5%;
   padding: 0.5rem;
+  gap: 0.5rem;
 
   /*Efeito de transição*/
   opacity: 0;
@@ -153,7 +154,10 @@ input:focus {
   background-color: white;
   color: rgb(129, 128, 128);
   border: solid 1px rgb(202, 202, 202);
-  width: 8rem;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .overlay-button-content:active {
@@ -175,7 +179,7 @@ input:focus {
   width: 100%;
   height: 1px;
   background-color: rgb(148, 148, 148);
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }
 
 .overlay-button-content-div {
@@ -338,7 +342,7 @@ input:focus {
   font-size: 0.8rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   border-radius: 0.5rem;
 }
 
@@ -353,6 +357,12 @@ input:focus {
   gap: 0.2rem;
   max-height: 100px;
   overflow-y: auto;
+}
+
+.overlay-button-content-text.select-project {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Tasks Container */
@@ -449,8 +459,13 @@ input:focus {
   grid-row: 2 / 3;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 0.3rem;
+}
+
+.task-div-project.shortly {
+  grid-column: 1 / -1;
+  padding-left: 0.5rem;
 }
 
 .task-div-project-name {
@@ -474,10 +489,7 @@ input:focus {
 }
 
 .overlay-message {
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: left;
   margin-bottom: 0.5rem;
   max-width: 100%;
 }
@@ -795,6 +807,13 @@ input:focus {
   max-height: 400px;
   overflow-y: auto;
   width: 100%;
+}
+
+.project-name-icon-div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
 }
 
 @media (hover: hover) {
