@@ -134,7 +134,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
     });
 
     const incompleteProjects = currentUser.projects.filter(project => project.isCompleted === false);
-    
+
     const refreshSelectProjectButtonOverlay = () => {
         const incompleteProjects = currentUser.projects.filter(project => project.isCompleted === false);
         const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
@@ -337,6 +337,8 @@ export function initLayoutBlocks(currentUser, callbacks) {
         const project = currentUser.projects.find(p => p.id === projectId);
         if (!project) return null;
 
+        callbacks.updateProjectState(project);
+
         const task = project.tasks.find(t => t.id === taskId);
         if (!task) return null;
 
@@ -369,9 +371,13 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
         form.selectProjectButtonOverlayEditTask = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
             form.selectProjectButton.updateSelection(selectedProject);
+
             callbacks.updateProjectState(selectedProject);
+
             form.selectProjectButtonOverlayEditTask.remove();
-        }, incompleteProjects);
+
+        },
+            incompleteProjects);
 
         return form;
     }
