@@ -41,7 +41,7 @@ export function createTodayViewNoTasksAddTaskButton() {
     return button;
 }
 
-export function createTodayViewWithTasks(userTasksToday) {
+export function createTodayViewWithTasks(tasksWithoutProjects, tasksFromProjects) {
     const viewContainer = document.createElement('div');
     viewContainer.classList.add('content-container');
 
@@ -52,26 +52,44 @@ export function createTodayViewWithTasks(userTasksToday) {
 
     const taskCountHeader = document.createElement('h2');
     taskCountHeader.classList.add('content-count-header');
-    taskCountHeader.textContent = `${userTasksToday.length} tarefa(s) para hoje`;
+    const taskCount = tasksWithoutProjects.length + tasksFromProjects.length
+    taskCountHeader.textContent = `${taskCount} tarefa(s) para hoje`;
 
     headerContainer.append(title, taskCountHeader);
 
     viewContainer.append(headerContainer);
 
-    const taskViewsWithoutProject = userTasksToday
+    const allTasksViewsWithoutProjects = tasksWithoutProjects
         .sort((a, b) => a.createdAt - b.createdAt)
         .map(task => {
-            const taskView = createTaskViewWithCheckbox(task, null); // Sem projeto, então passa null
+            const taskView = createTaskViewWithCheckbox(task, null);
+            // Sem projeto, então passa null
 
+            taskView.fromProject = false;
             taskView.taskId = task.id;
 
             return taskView;
         });
 
+    const allTasksViewsFromProjects = tasksFromProjects
+        .sort((a, b) => a.createdAt - b.createdAt)
+        .map(task => {
+            const taskView = createTaskViewWithCheckbox(task, task.projectTitle);
+            // Com projeto, passamos o título dele.
+
+            taskView.fromProject = true;
+            taskView.taskId = task.id;
+
+            return taskView;
+        })
+
+    const allTasksViews = [...allTasksViewsWithoutProjects, ...allTasksViewsFromProjects]
+        .sort((a, b) => a.createdAt - b.createdAt);
+
     const tasksContainer = document.createElement('div');
     tasksContainer.classList.add('tasks-container');
 
-    taskViewsWithoutProject.forEach(taskView => {
+    allTasksViews.forEach(taskView => {
         tasksContainer.append(taskView.element);
     });
 
@@ -91,7 +109,7 @@ export function createTodayViewWithTasks(userTasksToday) {
 
     return {
         element: viewContainer,
-        taskViewsWithoutProject: taskViewsWithoutProject,
+        allTasksViews: allTasksViews,
         addTaskButton: addTaskButton
     }
 }
@@ -101,6 +119,7 @@ export function createTodayViewWithTasks(userTasksToday) {
 export function createAddTaskForm() {
     const form = document.createElement('form');
     form.classList.add('overlay-content');
+    form.setAttribute('data-js', 'add-task-form');
 
     const titleInput = document.createElement('input');
     titleInput.classList.add('overlay-input-title');
@@ -408,7 +427,7 @@ export function createSelectProjectButtonOverlay(onProjectSelected, userIncomple
 // #endregion
 
 // #region Shortly view
-export function createShortlyViewWithTasks(userTasksShortly) {
+export function createShortlyViewWithTasks(tasksWithoutProjects, tasksFromProjects) {
     const viewContainer = document.createElement('div');
     viewContainer.classList.add('content-container');
 
@@ -419,49 +438,58 @@ export function createShortlyViewWithTasks(userTasksShortly) {
 
     const taskCountHeader = document.createElement('h2');
     taskCountHeader.classList.add('content-count-header');
-    taskCountHeader.textContent = `${userTasksShortly.length} tarefa(s) posteriores`;
+    const taskCount = tasksWithoutProjects.length + tasksFromProjects.length
+    taskCountHeader.textContent = `${taskCount} tarefa(s) posteriores`;
 
     headerContainer.append(title, taskCountHeader);
 
     viewContainer.append(headerContainer);
 
-    const taskViewsWithoutProject = userTasksShortly
+    const allTasksViewsWithoutProjects = tasksWithoutProjects
         .sort((a, b) => {
             const dateA = new Date(a.dueDate);
             const dateB = new Date(b.dueDate);
             return dateA - dateB;
         })
         .map(task => {
-            const taskView = createTaskViewWithoutCheckbox(task, null); // Sem projeto, então passa null
+            const taskView = createTaskViewWithCheckbox(task, null);
+            // Sem projeto, então passa null
 
+            taskView.fromProject = false;
             taskView.taskId = task.id;
             taskView.dueDate = task.dueDate;
 
             return taskView;
+        })
+
+    const allTasksViewsFromProjects = tasksFromProjects
+        .sort((a, b) => {
+            const dateA = new Date(a.dueDate);
+            const dateB = new Date(b.dueDate);
+            return dateA - dateB;
+        })
+        .map(task => {
+            const taskView = createTaskViewWithCheckbox(task, task.projectTitle);
+            // Com projeto, passamos o título dele.
+
+            taskView.fromProject = true;
+            taskView.taskId = task.id;
+            taskView.dueDate = task.dueDate;
+
+            return taskView;
+        })
+
+    const allTasksViews = [...allTasksViewsWithoutProjects, ...allTasksViewsFromProjects]
+        .sort((a, b) => {
+            const dateA = new Date(a.dueDate);
+            const dateB = new Date(b.dueDate);
+            return dateA - dateB;
         });
 
     const tasksContainer = document.createElement('div');
     tasksContainer.classList.add('tasks-container');
 
-    taskViewsWithoutProject.forEach(taskView => {
-        const taskDueDate = new Date(taskView.dueDate);
-
-        const dueDateDiv = document.createElement('div');
-        dueDateDiv.classList.add('task-div-due-date');
-
-        const dueDateIcon = document.createElement('img');
-        dueDateIcon.src = calendarSymbol;
-        dueDateIcon.alt = 'Calendar icon';
-        dueDateIcon.classList.add('task-icon');
-
-        const dueDateText = document.createElement('p');
-        dueDateText.classList.add('task-text');
-        dueDateText.textContent = `Vence em ${taskDueDate.toLocaleDateString()}`;
-
-        dueDateDiv.append(dueDateIcon, dueDateText);
-
-        taskView.element.append(dueDateDiv);
-
+    allTasksViews.forEach(taskView => {
         tasksContainer.append(taskView.element);
     });
 
@@ -469,7 +497,7 @@ export function createShortlyViewWithTasks(userTasksShortly) {
 
     return {
         element: viewContainer,
-        taskViewsWithoutProject: taskViewsWithoutProject,
+        allTasksViews: allTasksViews,
     }
 }
 
@@ -713,14 +741,18 @@ function createTaskViewWithCheckbox(task, projectTitle) {
     const formatedDate = new Date(task.dueDate).toLocaleDateString('pt-br');
     dueDateWarning.textContent = `Fazer até: ${formatedDate}`;
 
+    let taskViewProjectTitle = '';
+
     if (projectTitle === null) {
         projectName.textContent = 'Entrada';
         projectIcon.src = mailBoxIcon;
         projectIcon.alt = 'Mailbox icon';
+        taskViewProjectTitle = '';
     } else {
         projectName.textContent = projectTitle;
         projectIcon.src = hashtagSymbol;
         projectIcon.alt = 'Hashtag icon';
+        taskViewProjectTitle = projectTitle;
     }
 
     projectInfoDiv.append(dueDateWarning, projectIconNameDiv);
@@ -736,7 +768,8 @@ function createTaskViewWithCheckbox(task, projectTitle) {
         taskDescription: taskDescription,
         checkbox: checkbox,
         editButton: editButton,
-        deleteButton: deleteButton
+        deleteButton: deleteButton,
+        taskViewProjectTitle: taskViewProjectTitle
     };
 }
 

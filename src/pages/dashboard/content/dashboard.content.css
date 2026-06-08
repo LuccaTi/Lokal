@@ -816,6 +816,10 @@ input:focus {
   gap: 0.3rem;
 }
 
+.edit-button-restrict {
+  pointer-events: none;
+}
+
 @media (hover: hover) {
   /*Media query para efeito de hover apenas no PC*/
   .content-wrapper-button:hover {
@@ -869,6 +873,8 @@ input:focus {
 .history-nav-button:active {
   background-color: transparent;
 }
+
+
 
 @media (min-width: 768px) {
   .content-main {

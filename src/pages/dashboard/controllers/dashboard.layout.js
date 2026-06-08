@@ -152,34 +152,47 @@ export function initLayoutBlocks(currentUser, callbacks) {
     const selectProjectButtonOverlay = refreshSelectProjectButtonOverlay();
 
     // 7. Tela principal - Hoje, view com tarefas
-    const todayTasks = currentUser.tasks.filter(task => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+    const todayTasksWithoutProjects = currentUser.tasks.filter(isTaskForToday);
 
-        const taskDueDate = new Date(task.dueDate);
-        taskDueDate.setHours(0, 0, 0, 0);
-        return taskDueDate.getTime() === today.getTime() && !task.isCompleted;
-    });
-    const todayViewWithTasks = contentCreator.createTodayViewWithTasks(todayTasks);
+    const todayTasksFromProjects = currentUser.projects
+        .flatMap(project =>
+            project.tasks.map(task => ({
+                ...task,
+                projectTitle: project.title
+            }))
+        )
+        .filter(isTaskForToday);
 
-    // 8. Tela principal - Em breve
+    const todayViewWithTasks = contentCreator.createTodayViewWithTasks(
+        todayTasksWithoutProjects,
+        todayTasksFromProjects
+    );
+
+    // 8. Tela principal - Em breve, view sem tarefas
     const shortlyViewNoTasks = contentCreator.createViewWithoutTasks(
         'Em breve',
         'Bem vindo(a) à sua visualização Em breve',
         'Veja o que vem por aí nos próximos dias em todos os seus projetos'
     );
 
-    const shortlyTasks = currentUser.tasks.filter(task => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+    // 9. Tela principal - Em breve, view com tarefas
+    const shortlyTasksWithoutProjects = currentUser.tasks.filter(isTaskForFuture);
 
-        const taskDueDate = new Date(task.dueDate);
-        taskDueDate.setHours(0, 0, 0, 0);
-        return taskDueDate.getTime() > today.getTime() && !task.isCompleted;
-    });
-    const shortlyViewWithTasks = contentCreator.createShortlyViewWithTasks(shortlyTasks);
+    const shortlyTasksFromProjects = currentUser.projects
+        .flatMap(project =>
+            project.tasks.map(task => ({
+                ...task,
+                projectTitle: project.title
+            }))
+        )
+        .filter(isTaskForFuture);
 
-    // 9. Tela principal - Histórico
+    const shortlyViewWithTasks = contentCreator.createShortlyViewWithTasks(
+        shortlyTasksWithoutProjects,
+        shortlyTasksFromProjects
+    );
+
+    // 10. Tela principal - Histórico
     const historyViewNoTasks = contentCreator.createViewWithoutTasks(
         'Histórico',
         'Bem vindo(a) à sua visualização Histórico',
@@ -255,40 +268,65 @@ export function initLayoutBlocks(currentUser, callbacks) {
         }));
     };
 
-    // 10. Tela principal - Meus Projetos
+    // 11. Tela principal - Meus Projetos
     const myProjectsViewWithoutProjects = contentCreator.createProjectViewWithoutProjects();
 
 
-    // 11. Tela principal - Formulário para adicionar projeto
+    // 12. Tela principal - Formulário para adicionar projeto
     const addProjectForm = contentCreator.createAddProjectForm();
 
 
-    // 12. Tela principal - Meus Projetos, view com projetos
+    // 13. Tela principal - Meus Projetos, view com projetos
     const myProjectsViewWithProjects = contentCreator.createProjectViewWithAllProjects(incompleteProjects);
     // #endregion
 
+    // #region Funções auxiliares
     const refreshTodayView = () => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const todayTasksWithoutProjects = currentUser.tasks.filter(isTaskForToday);
 
-        const todayTasks = currentUser.tasks.filter(task => {
-            const taskDueDate = new Date(task.dueDate);
-            taskDueDate.setHours(0, 0, 0, 0);
-            return (taskDueDate.getTime() <= today.getTime()) && !task.isCompleted;
-        });
-        return contentCreator.createTodayViewWithTasks(todayTasks);
+        const todayTasksFromProjects = currentUser.projects
+            .flatMap(project =>
+                project.tasks.map(task => ({
+                    ...task,
+                    projectTitle: project.title
+                }))
+            )
+            .filter(isTaskForToday);
+
+        return contentCreator.createTodayViewWithTasks(
+            todayTasksWithoutProjects,
+            todayTasksFromProjects
+        );
+    }
+
+    function isTaskForToday(task) {
+        const today = new Date().setHours(0, 0, 0, 0);
+        const taskDueDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
+        return taskDueDate === today && !task.isCompleted;
+    }
+
+    function isTaskForFuture(task) {
+        const today = new Date().setHours(0, 0, 0, 0);
+        const taskDueDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
+        return taskDueDate > today && !task.isCompleted;
     }
 
     const refreshShortlyView = () => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const shortlyTasksWithoutProjects = currentUser.tasks.filter(isTaskForFuture);
 
-        const shortlyTasks = currentUser.tasks.filter(task => {
-            const taskDueDate = new Date(task.dueDate);
-            taskDueDate.setHours(0, 0, 0, 0);
-            return (taskDueDate.getTime() > today.getTime()) && !task.isCompleted;
-        });
-        return contentCreator.createShortlyViewWithTasks(shortlyTasks);
+        const shortlyTasksFromProjects = currentUser.projects
+            .flatMap(project =>
+                project.tasks.map(task => ({
+                    ...task,
+                    projectTitle: project.title
+                }))
+            )
+            .filter(isTaskForFuture);
+
+        return contentCreator.createShortlyViewWithTasks(
+            shortlyTasksWithoutProjects,
+            shortlyTasksFromProjects
+        );
     }
 
     const createEditTaskFormTasks = (taskId) => {
@@ -456,6 +494,8 @@ export function initLayoutBlocks(currentUser, callbacks) {
     const createPendingTasksWarningOverlay = (projectTitle, pendingTasksCount) => {
         return contentCreator.createPendingTasksWarningOverlay(projectTitle, pendingTasksCount);
     }
+
+    // #endregion
 
     return {
         mainContainer,
