@@ -133,8 +133,6 @@ export function initLayoutBlocks(currentUser, callbacks) {
         dateButtonOverlayAddTask.remove();
     });
 
-    const incompleteProjects = currentUser.projects.filter(project => project.isCompleted === false);
-
     const refreshSelectProjectButtonOverlay = () => {
         const incompleteProjects = currentUser.projects.filter(project => project.isCompleted === false);
         const selectProjectButtonOverlay = contentCreator.createSelectProjectButtonOverlay((selectedProject) => {
@@ -277,7 +275,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
 
     // 13. Tela principal - Meus Projetos, view com projetos
-    const myProjectsViewWithProjects = contentCreator.createProjectViewWithAllProjects(incompleteProjects);
+    const myProjectsViewWithProjects = contentCreator.createProjectViewWithAllProjects(refreshIncompleteProjects());
     // #endregion
 
     // #region Funções auxiliares
@@ -366,7 +364,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
             form.selectProjectButtonOverlayEditTask.remove();
         },
-            incompleteProjects);
+            refreshIncompleteProjects());
 
         return form;
     }
@@ -415,7 +413,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
             form.selectProjectButtonOverlayEditTask.remove();
 
         },
-            incompleteProjects);
+            refreshIncompleteProjects());
 
         return form;
     }
@@ -493,7 +491,12 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
     const createPendingTasksWarningOverlay = (projectTitle, pendingTasksCount) => {
         return contentCreator.createPendingTasksWarningOverlay(projectTitle, pendingTasksCount);
-    }
+    };
+
+    function refreshIncompleteProjects() {
+        const projects = currentUser.projects.filter(project => project.isCompleted === false);
+        return projects;
+    };
 
     // #endregion
 
