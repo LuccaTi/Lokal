@@ -755,7 +755,7 @@ function createTaskViewWithCheckbox(task, projectTitle) {
         taskViewProjectTitle = projectTitle;
     }
 
-    projectInfoDiv.append(dueDateWarning, projectIconNameDiv);
+    projectInfoDiv.append(projectIconNameDiv, dueDateWarning);
 
     const bottomDivider = createOverlayDivider();
     bottomDivider.classList.add('task-div-divider');
@@ -1116,6 +1116,7 @@ export function createAddProjectForm() {
     const titleInput = document.createElement('input');
     titleInput.classList.add('overlay-input-title');
     titleInput.setAttribute('placeholder', 'Título do projeto');
+    titleInput.setAttribute('maxlength', '40');
 
     const divider = createOverlayDivider();
 
@@ -1224,7 +1225,11 @@ export function createSoloProjectView(project) {
     addTaskWarning.classList.add('content-header-task-warning');
     addTaskWarning.textContent = `Para adicionar uma tarefa utilize o menu lateral e selecione o projeto "${project.title}" na lista`;
 
-    headerContainer.append(title, taskCountHeader, addTaskWarning);
+    const addTaskWarningContainer = document.createElement('div');
+    addTaskWarningContainer.classList.add('content-header-task-warning-container');
+    addTaskWarningContainer.append(addTaskWarning);
+
+    headerContainer.append(title, taskCountHeader, addTaskWarningContainer);
 
     viewContainer.append(headerContainer);
 

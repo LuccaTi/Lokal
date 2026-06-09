@@ -107,6 +107,13 @@ header {
   width: 100%;
 }
 
+.span-button-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
 .overlay-button.plus-button-overlay {
   width: 90%;
 }
@@ -180,7 +187,7 @@ header {
   }
 
   #plus-button:hover,
-  #arrow-button:hover, 
+  #arrow-button:hover,
   .ellipsis-button:hover {
     cursor: pointer;
     background-color: #bab8b8;

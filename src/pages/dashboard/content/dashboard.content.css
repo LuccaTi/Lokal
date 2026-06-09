@@ -34,6 +34,11 @@
 
 .content-title {
   font-size: 2rem;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .content-header {
@@ -193,9 +198,10 @@ input:focus {
 }
 
 .overlay-button-content.cancel {
-  background-color: rgb(148, 148, 148);
+  background-color: rgb(167, 165, 165);
   color: black;
   border: none;
+  width: 100%;
 }
 
 .overlay-button-content.cancel:active {
@@ -461,6 +467,7 @@ input:focus {
   align-items: center;
   justify-content: space-between;
   gap: 0.3rem;
+  width: 100%;
 }
 
 .task-div-project.shortly {
@@ -471,6 +478,9 @@ input:focus {
 .task-div-project-name {
   font-size: 0.8rem;
   color: rgb(148, 148, 148);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-div-icon {
@@ -673,7 +683,7 @@ input:focus {
   width: 100%;
 }
 
-.project-div-info.no-checkbox.project-history-info{
+.project-div-info.no-checkbox.project-history-info {
   grid-column: 1/-1;
 }
 
@@ -690,7 +700,9 @@ input:focus {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
+  min-width: 0;
+  width: 35rem;
+  text-align: left;
 }
 
 .project-div-button {
@@ -809,15 +821,24 @@ input:focus {
   width: 100%;
 }
 
-.project-name-icon-div{
+.project-name-icon-div {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.3rem;
+  width: 25rem;
 }
 
 .edit-button-restrict {
   pointer-events: none;
+}
+
+.content-header-task-warning {
+  text-align: left;
+}
+
+.content-header-task-warning-container {
+  height: 30px;
 }
 
 @media (hover: hover) {
@@ -863,6 +884,10 @@ input:focus {
   .history-nav-button:hover {
     background-color: #bab8b8;
   }
+
+  .overlay-button-content.cancel:hover{
+    background-color: (148, 148, 148)
+  }
 }
 
 .task-div-button:active,
@@ -873,8 +898,6 @@ input:focus {
 .history-nav-button:active {
   background-color: transparent;
 }
-
-
 
 @media (min-width: 768px) {
   .content-main {
@@ -931,7 +954,8 @@ input:focus {
   .overlay-content.delete-overlay {
     top: 40%;
     left: 48%;
-    width: 500px;
+    width: 350px;
+    padding: 1rem;
   }
 
   .calendar-overlay {

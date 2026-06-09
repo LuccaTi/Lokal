@@ -9,6 +9,20 @@ import { formatDateForButton } from "../../shared/utils/dateUtils.js";
 import { positionOverlay } from "../../shared/utils/domUtils.js";
 import { createProject } from "../../core/domain/project.js";
 
+// ETAPA ATUAL: Fase de testes e ajustes
+/**
+ * eu ACHO que faltam só as coisas abaixo:
+ * - Fazer as tarefas de projeto com data atual ou posterior aparecerem também nas views Hoje e Em Breve. As tarefas de projeto serão enviadas para as views de seu projeto ao serem concluídas nas views Hoje e Em Breve. Só vão aparecer no histórico quando o projeto estiver concluído.
+ * Comecei a implementar, por enquanto preciso ver o CSS de onde fica o nome do projeto e também corrigir o erro 'Cannot read properties of undefined (reading 'toggleStatus')' ao clicar no checkbox do card de task de projeto na view Em breve.
+ * ALGUNS LISTENERS NÃO ESTÃO SENDO CORRETAMENTE ADICIONADOS, INVESTIGAR.
+ * TESTAR EXTENSAMENTE A TENTATIVA DE IMPLEMENTAÇÃO ACIMA E IR CORRIGINDO OS ERROS E COMPORTAMENTOS ESTRANHOS.
+ * 
+ * - Preciso alterar o CSS em vários nomes de projeto para lidar com possíveis nomes muito grandes.
+ * - Preciso ver como projetos sem tarefas concluídos e projetos com muitas tarefas concluídos ficam no histórico.
+ * - Interessante fazer o overlay de adicionar tarefa ou título do projeto aumentar de altura a medida que o texto passa da área disponível, senão o texto continua a direita sem o começo e isso atrapalha a visualização do contexto todo. Vou jogar na IA pra ver o que acha, pensando em UI / UX. Também vou ver como isso pode influenciar nos títulos e descrições de tarefas, por enquanto não há regra de negócio que delimita o tamanho de cada um e como conteúdos extensos se comportam.
+ * - Ah e falta ver como fica no histórico um projeto completo com várias tarefas.
+ * - Testar se o local storage está refletindo tudo que a tela está mostrando e vice-versa.
+ */
 
 function initDashboard() {
 
@@ -193,27 +207,37 @@ function initDashboard() {
         closeMenuIfMobile()
         env.contentContainer.replaceChildren();
 
-        const hasTasksForToday = currentUser.tasks.some(task => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+        const today = new Date().setHours(0, 0, 0, 0);
 
-            const taskDueDate = new Date(task.dueDate);
-            taskDueDate.setHours(0, 0, 0, 0);
+        const hasTasksForTodayWithoutProjects = currentUser.tasks.some(task => {
+            const taskDueDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
 
-            return taskDueDate.getTime() === today.getTime() && !task.isCompleted;
+            return taskDueDate === today && !task.isCompleted;
         });
 
-        const hasOverdueTasks = currentUser.tasks.some(task => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            const taskDueDate = new Date(task.dueDate);
-            taskDueDate.setHours(0, 0, 0, 0);
+        const hasOverdueTasksWithoutProjects = currentUser.tasks.some(task => {
+            const taskDueDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
 
             return taskDueDate < today && !task.isCompleted;
         });
 
-        if (!hasTasksForToday && !hasOverdueTasks) {
+        const hasTasksForTodayFromProjects = currentUser.projects
+            .flatMap(project => project.tasks)
+            .some(task => {
+                const taskDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
+                return taskDate === today && !task.isCompleted;
+            });
+
+        const hasOverdueTasksFromProjects = currentUser.projects
+            .flatMap(project => project.tasks)
+            .some(task => {
+                const taskDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
+                return taskDate < today && !task.isCompleted;
+            });
+
+        let renderTodayViewNoTasks = !hasTasksForTodayWithoutProjects && !hasOverdueTasksWithoutProjects && !hasTasksForTodayFromProjects && !hasOverdueTasksFromProjects
+
+        if (renderTodayViewNoTasks) {
             env.contentContainer.append(env.todayViewNoTasks);
 
             env.todayViewAddTaskButton.addEventListener('click', (event) => {
@@ -288,18 +312,29 @@ function initDashboard() {
                     controllerCallbacks.closeMenuOverlays();
                     controllerCallbacks.closeContentOverlays();
                     controllerCallbacks.unclickArrowButton();
-                    removeAllOtherButtonsClicked();
                     closeMenuIfMobile();
 
                     if (!task) return;
 
                     controllerCallbacks.updateTaskState(task.dueDate);
-                    controllerCallbacks.updateProjectState(null);
+
+                    if (taskView.fromProject) {
+                        const foundProject = currentUser.projects.find(project =>
+                            project.tasks.some(t => t.id === taskView.taskId)
+                        );
+                        controllerCallbacks.updateProjectState(foundProject);
+                    } else {
+                        controllerCallbacks.updateProjectState(null);
+                    }
 
                     const date = formatDateForButton(task.dueDate);
 
-                    const currentTaskId = currentUser.tasks.find(t => t.id === taskView.taskId).id;
-                    const editOverlay = env.createEditTaskFormTasks(currentTaskId);
+                    let editOverlay = null;
+                    if (taskView.fromProject) {
+                        editOverlay = env.createEditTaskFormProjects(task.id, currentProjectState.projectId);
+                    } else {
+                        editOverlay = env.createEditTaskFormTasks(task.id);
+                    }
 
                     document.body.append(editOverlay.element);
 
@@ -385,6 +420,8 @@ function initDashboard() {
                 });
 
                 taskView.deleteButton.addEventListener('click', (event) => {
+                    // A exclusão funciona para tarefas isoladas, mas não para tarefas de projeto.
+                    // Ela funciona na view da tarefa no projeto.
                     event.stopPropagation();
                     controllerCallbacks.closeMenuOverlays();
                     controllerCallbacks.closeContentOverlays();

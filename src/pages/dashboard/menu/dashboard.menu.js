@@ -242,7 +242,11 @@ const menuCreator = {
         hashtag.src = hashtagSymbol;
         hashtag.alt = 'Hashtag icon';
 
-        button.append(hashtag, projectName);
+        const buttonText = document.createElement('span');
+        buttonText.classList.add('span-button-text');
+        buttonText.textContent = projectName;
+
+        button.append(hashtag, buttonText);
         return button;
     },
 
