@@ -60,11 +60,12 @@ export function createTodayViewWithTasks(tasksWithoutProjects, tasksFromProjects
     viewContainer.append(headerContainer);
 
     const allTasksViewsWithoutProjects = tasksWithoutProjects
-        .sort((a, b) => a.createdAt - b.createdAt)
         .map(task => {
             const taskView = createTaskViewWithCheckbox(task, null);
             // Sem projeto, então passa null
 
+            taskView.dueDate = new Date(task.dueDate);
+            taskView.createdAt = Number(task.createdAt);
             taskView.fromProject = false;
             taskView.taskId = task.id;
 
@@ -72,11 +73,12 @@ export function createTodayViewWithTasks(tasksWithoutProjects, tasksFromProjects
         });
 
     const allTasksViewsFromProjects = tasksFromProjects
-        .sort((a, b) => a.createdAt - b.createdAt)
         .map(task => {
             const taskView = createTaskViewWithCheckbox(task, task.projectTitle);
             // Com projeto, passamos o título dele.
 
+            taskView.dueDate = new Date(task.dueDate);
+            taskView.createdAt = Number(task.createdAt);
             taskView.fromProject = true;
             taskView.taskId = task.id;
 
@@ -84,7 +86,16 @@ export function createTodayViewWithTasks(tasksWithoutProjects, tasksFromProjects
         })
 
     const allTasksViews = [...allTasksViewsWithoutProjects, ...allTasksViewsFromProjects]
-        .sort((a, b) => a.createdAt - b.createdAt);
+        .sort((a, b) => {
+            const dayA = a.dueDate.toLocaleDateString('pt-BR');
+            const dayB = b.dueDate.toLocaleDateString('pt-BR');
+
+            if (dayA === dayB) {
+                return a.createdAt - b.createdAt;
+            }
+
+            return a.dueDate - b.dueDate;
+        });
 
     const tasksContainer = document.createElement('div');
     tasksContainer.classList.add('tasks-container');
@@ -446,44 +457,41 @@ export function createShortlyViewWithTasks(tasksWithoutProjects, tasksFromProjec
     viewContainer.append(headerContainer);
 
     const allTasksViewsWithoutProjects = tasksWithoutProjects
-        .sort((a, b) => {
-            const dateA = new Date(a.dueDate);
-            const dateB = new Date(b.dueDate);
-            return dateA - dateB;
-        })
         .map(task => {
             const taskView = createTaskViewWithCheckbox(task, null);
             // Sem projeto, então passa null
 
+            taskView.dueDate = new Date(task.dueDate);
+            taskView.createdAt = Number(task.createdAt);
             taskView.fromProject = false;
             taskView.taskId = task.id;
-            taskView.dueDate = task.dueDate;
 
             return taskView;
         })
 
     const allTasksViewsFromProjects = tasksFromProjects
-        .sort((a, b) => {
-            const dateA = new Date(a.dueDate);
-            const dateB = new Date(b.dueDate);
-            return dateA - dateB;
-        })
         .map(task => {
             const taskView = createTaskViewWithCheckbox(task, task.projectTitle);
             // Com projeto, passamos o título dele.
 
+            taskView.dueDate = new Date(task.dueDate);
+            taskView.createdAt = Number(task.createdAt);
             taskView.fromProject = true;
             taskView.taskId = task.id;
-            taskView.dueDate = task.dueDate;
 
             return taskView;
         })
 
     const allTasksViews = [...allTasksViewsWithoutProjects, ...allTasksViewsFromProjects]
         .sort((a, b) => {
-            const dateA = new Date(a.dueDate);
-            const dateB = new Date(b.dueDate);
-            return dateA - dateB;
+            const dayA = a.dueDate.toLocaleDateString('pt-BR');
+            const dayB = b.dueDate.toLocaleDateString('pt-BR');
+
+            if (dayA === dayB) {
+                return a.createdAt - b.createdAt;
+            }
+
+            return a.dueDate - b.dueDate;
         });
 
     const tasksContainer = document.createElement('div');
@@ -994,11 +1002,16 @@ export function createEditTaskForm(
 
     const titleInput = document.createElement('input');
     titleInput.classList.add('overlay-input-title', 'edit');
-    titleInput.setAttribute('placeholder', taskTitle);
+    titleInput.value = taskTitle;
 
     const descriptionInput = document.createElement('input');
     descriptionInput.classList.add('overlay-input-description', 'edit');
-    descriptionInput.setAttribute('placeholder', taskDescription);
+    if (taskDescription === '' || taskDescription === null) {
+        descriptionInput.setAttribute('placeholder', 'Descrição');
+    } else {
+        descriptionInput.value = taskDescription;
+    }
+
 
     const dateButton = document.createElement('button');
     dateButton.classList.add('overlay-button-content', 'date');
@@ -1112,6 +1125,7 @@ export function createProjectViewWithoutProjects() {
 export function createAddProjectForm() {
     const form = document.createElement('form');
     form.classList.add('overlay-content', 'project-form');
+    form.setAttribute('data-js', 'add-project-form');
 
     const titleInput = document.createElement('input');
     titleInput.classList.add('overlay-input-title');
@@ -1234,7 +1248,21 @@ export function createSoloProjectView(project) {
     viewContainer.append(headerContainer);
 
     const taskViews = project.tasks
-        .sort((a, b) => a.createdAt - b.createdAt)
+        .sort((a, b) => {
+            const dateA = new Date(a.dueDate);
+            const dateB = new Date(b.dueDate);
+
+            const dayA = dateA.toLocaleDateString('pt-BR');
+            const dayB = dateB.toLocaleDateString('pt-BR');
+
+            if (dayA === dayB) {
+                const numberA = Number(a.createdAt);
+                const numberB = Number(b.createdAt);
+                return numberA - numberB;
+            }
+
+            return dateA - dateB;
+        })
         .map(task => {
             const taskView = createTaskViewWithCheckbox(task, project.title);
 

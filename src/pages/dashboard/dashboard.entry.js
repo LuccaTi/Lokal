@@ -10,15 +10,6 @@ import { positionOverlay } from "../../shared/utils/domUtils.js";
 import { createProject } from "../../core/domain/project.js";
 
 // ETAPA ATUAL: Fase de testes e ajustes
-/**
- * eu ACHO que faltam só as coisas abaixo:
- * - Ainda tem um probleminha, em algum caso tem card de tarefa sendo criado sem adicionar corretamente os listeners.
- * - Preciso ver como projetos sem tarefas concluídos e projetos com muitas tarefas concluídos ficam no histórico.
- * - Interessante fazer o overlay de adicionar tarefa ou título do projeto aumentar de altura a medida que o texto passa da área disponível, senão o texto continua a direita sem o começo e isso atrapalha a visualização do contexto todo. Vou jogar na IA pra ver o que acha, pensando em UI / UX. Também vou ver como isso pode influenciar nos títulos e descrições de tarefas, por enquanto não há regra de negócio que delimita o tamanho de cada um e como conteúdos extensos se comportam.
- * - Ah e falta ver como fica no histórico um projeto completo com várias tarefas.
- * - Passar um pente fino em como tudo funciona no mobile, zoom alto e zoom baixo.
- * - Testar se o local storage está refletindo tudo que a tela está mostrando e vice-versa.
- */
 
 function initDashboard() {
 
@@ -381,10 +372,6 @@ function initDashboard() {
                             updatedTitle = task.title;
                         }
 
-                        if (updatedDescription === '') {
-                            updatedDescription = task.description;
-                        }
-
                         task.updateTitle(updatedTitle);
                         task.updateDescription(updatedDescription);
                         task.updateDueDate(currentTaskState.dueDate);
@@ -598,10 +585,6 @@ function initDashboard() {
 
                         if (updatedTitle === '') {
                             updatedTitle = task.title;
-                        }
-
-                        if (updatedDescription === '') {
-                            updatedDescription = task.description;
                         }
 
                         task.updateTitle(updatedTitle);
@@ -900,7 +883,9 @@ function initDashboard() {
     env.arrowButton.addEventListener('click', (event) => {
         event.stopPropagation();
 
-        if (currentUser.projects.length >= 0) {
+        const hasIncompleteProjects = currentUser.projects.some(p => !p.isCompleted);
+
+        if (hasIncompleteProjects) {
             let isOpen = env.arrowOverlay.classList.contains('arrow-overlay-open');
 
             controllerCallbacks.closeMenuOverlays();
@@ -969,6 +954,9 @@ function initDashboard() {
                 e.stopPropagation();
                 env.plusButtonOverlay.remove();
                 env.plusButton.classList.remove('plus-button-clicked');
+
+                const form = document.querySelector('[data-js="add-project-form"]');
+                if (form) return;
 
                 controllerCallbacks.closeMenuOverlays();
                 controllerCallbacks.closeContentOverlays();
@@ -1395,10 +1383,6 @@ function initDashboard() {
 
                     if (updatedTitle === '') {
                         updatedTitle = task.title;
-                    }
-
-                    if (updatedDescription === '') {
-                        updatedDescription = task.description;
                     }
 
                     task.updateTitle(updatedTitle);

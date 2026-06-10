@@ -150,7 +150,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
     const selectProjectButtonOverlay = refreshSelectProjectButtonOverlay();
 
     // 7. Tela principal - Hoje, view com tarefas
-    const todayTasksWithoutProjects = currentUser.tasks.filter(isTaskForToday);
+    const todayTasksWithoutProjects = currentUser.tasks.filter(isTaskTodayOrOverdue);
 
     const todayTasksFromProjects = currentUser.projects
         .flatMap(project =>
@@ -159,7 +159,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
                 projectTitle: project.title
             }))
         )
-        .filter(isTaskForToday);
+        .filter(isTaskTodayOrOverdue);
 
     const todayViewWithTasks = contentCreator.createTodayViewWithTasks(
         todayTasksWithoutProjects,
@@ -280,7 +280,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
 
     // #region Funções auxiliares
     const refreshTodayView = () => {
-        const todayTasksWithoutProjects = currentUser.tasks.filter(isTaskForToday);
+        const todayTasksWithoutProjects = currentUser.tasks.filter(isTaskTodayOrOverdue);
 
         const todayTasksFromProjects = currentUser.projects
             .flatMap(project =>
@@ -289,7 +289,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
                     projectTitle: project.title
                 }))
             )
-            .filter(isTaskForToday);
+            .filter(isTaskTodayOrOverdue);
 
         return contentCreator.createTodayViewWithTasks(
             todayTasksWithoutProjects,
@@ -297,10 +297,10 @@ export function initLayoutBlocks(currentUser, callbacks) {
         );
     }
 
-    function isTaskForToday(task) {
-        const today = new Date().setHours(0, 0, 0, 0);
-        const taskDueDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
-        return taskDueDate === today && !task.isCompleted;
+    function isTaskTodayOrOverdue(task){
+        const today = new Date().setHours(0,0,0,0);
+        const taskDueDate = new Date(task.dueDate).setHours(0,0,0,0);
+        return taskDueDate <= today && !task.isCompleted;
     }
 
     function isTaskForFuture(task) {
