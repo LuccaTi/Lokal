@@ -11,6 +11,7 @@ import { createProject } from "../../core/domain/project.js";
 
 // ETAPA ATUAL: Fase de testes e ajustes
 
+
 function initDashboard() {
 
     const currentUser = requireAuthenticatedUser();
@@ -85,7 +86,7 @@ function initDashboard() {
             }
         },
 
-        closeContentOverlays() {
+        closeContentOverlays(fromProject = false) {
             const overlays = document.querySelectorAll('.overlay-content');
             overlays.forEach((overlay) => {
 
@@ -96,14 +97,18 @@ function initDashboard() {
                         if (overlay === env.addTaskForm.element) {
                             env.addTaskForm.resetForm();
                             currentTaskState.dueDate = new Date();
-                            currentProjectState.project = null;
-                            currentProjectState.projectId = '';
+                            if (!fromProject) {
+                                currentProjectState.project = null;
+                                currentProjectState.projectId = '';
+                            }
                         }
                         if (overlay === env.addProjectForm.element) {
                             env.addProjectForm.resetForm();
                             currentTaskState.dueDate = new Date();
-                            currentProjectState.project = null;
-                            currentProjectState.projectId = '';
+                            if (!fromProject) {
+                                currentProjectState.project = null;
+                                currentProjectState.projectId = '';
+                            }
                         }
                     }, 300);
                 } else {
@@ -261,8 +266,6 @@ function initDashboard() {
                         if (foundTask) {
                             task = foundTask;
                             break;
-                        } else {
-                            console.error(`A tarefa com id ${taskView.taskId} não foi encontrada em projeto algum!`);
                         }
                     }
                 } else {
@@ -1212,8 +1215,7 @@ function initDashboard() {
 
             userStorage.saveUser(currentUser);
 
-            controllerCallbacks.closeContentOverlays();
-
+            let fromProject = false;
             if (selectedProject) {
                 removeAllOtherButtonsClicked();
                 closeMenuIfMobile()
@@ -1221,6 +1223,9 @@ function initDashboard() {
                 env.contentContainer.replaceChildren();
                 env.myProjectsButton.classList.add('button-clicked');
                 renderCurrentProjectView();
+
+                fromProject = true;
+                controllerCallbacks.closeContentOverlays(fromProject);
             } else {
                 const taskDate = new Date(newTask.dueDate).setHours(0, 0, 0, 0);
                 const today = new Date().setHours(0, 0, 0, 0);
@@ -1229,6 +1234,9 @@ function initDashboard() {
                 } else {
                     env.shortlyButton.click();
                 }
+
+                fromProject = false;
+                controllerCallbacks.closeContentOverlays(fromProject);
             }
 
             closeMenuIfMobile()
@@ -1413,6 +1421,9 @@ function initDashboard() {
                 controllerCallbacks.closeMenuOverlays();
                 controllerCallbacks.closeContentOverlays();
 
+                controllerCallbacks.updateTaskState(task.dueDate);
+                controllerCallbacks.updateProjectState(projectItem);
+
                 const deleteOverlay = env.createDeleteTaskOverlay(taskView.taskTitle.textContent);
                 document.body.append(deleteOverlay.element);
 
@@ -1429,7 +1440,11 @@ function initDashboard() {
                     confirmEvent.stopPropagation();
                     projectItem.removeTask(taskView.taskId);
                     userStorage.saveUser(currentUser);
-                    controllerCallbacks.closeContentOverlays();
+                    if (projectItem.tasks.length === 0) {
+                        controllerCallbacks.closeContentOverlays(false);
+                    } else {
+                        controllerCallbacks.closeContentOverlays(true);
+                    }
                     renderCurrentProjectView();
                 });
             });

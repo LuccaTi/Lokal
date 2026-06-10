@@ -466,6 +466,7 @@ export function initLayoutBlocks(currentUser, callbacks) {
         const project = currentUser.projects.find((p) => p.id === projectId);
 
         if (!project) {
+            console.error(`Não foi possível encontrar um projeto com id: ${projectId}`);
             return null;
         }
 

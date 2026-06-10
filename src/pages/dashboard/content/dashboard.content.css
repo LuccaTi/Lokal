@@ -841,6 +841,12 @@ input:focus {
   height: 30px;
 }
 
+.text-size-warning {
+  font-size: 0.8rem;
+  padding-left: 0.5rem;
+  color:#b1b1b1;
+}
+
 @media (hover: hover) {
   /*Media query para efeito de hover apenas no PC*/
   .content-wrapper-button:hover {

@@ -135,10 +135,22 @@ export function createAddTaskForm() {
     const titleInput = document.createElement('input');
     titleInput.classList.add('overlay-input-title');
     titleInput.setAttribute('placeholder', 'Título da tarefa');
+    titleInput.setAttribute('maxlength', '50');
+
+    const titleSizeWarning = document.createElement('p');
+    titleSizeWarning.classList.add('text-size-warning');
+    titleSizeWarning.textContent = 'Max: 50 caracteres';
+
+    const titleDivider = createOverlayDivider();
 
     const descriptionInput = document.createElement('input');
     descriptionInput.classList.add('overlay-input-description');
     descriptionInput.setAttribute('placeholder', 'Descrição');
+    descriptionInput.setAttribute('maxlength', '100');
+
+    const descriptionSizeWarning = document.createElement('p');
+    descriptionSizeWarning.classList.add('text-size-warning');
+    descriptionSizeWarning.textContent = 'Max: 100 caracteres';
 
     const dateButton = document.createElement('button');
     dateButton.classList.add('overlay-button-content', 'date');
@@ -170,7 +182,7 @@ export function createAddTaskForm() {
 
     div.append(cancelButton, addTaskButton);
 
-    form.append(titleInput, descriptionInput, dateButton, divider, selectProjectButton, div);
+    form.append(titleInput, titleSizeWarning, titleDivider, descriptionInput, descriptionSizeWarning, dateButton, divider, selectProjectButton, div);
 
     const formComponents = {
         element: form,
@@ -1003,6 +1015,13 @@ export function createEditTaskForm(
     const titleInput = document.createElement('input');
     titleInput.classList.add('overlay-input-title', 'edit');
     titleInput.value = taskTitle;
+    titleInput.setAttribute('maxlength', '50');
+
+    const titleSizeWarning = document.createElement('p');
+    titleSizeWarning.classList.add('text-size-warning');
+    titleSizeWarning.textContent = 'Max: 50 caracteres';
+
+    const titleDivider = createOverlayDivider();
 
     const descriptionInput = document.createElement('input');
     descriptionInput.classList.add('overlay-input-description', 'edit');
@@ -1011,7 +1030,11 @@ export function createEditTaskForm(
     } else {
         descriptionInput.value = taskDescription;
     }
+    descriptionInput.setAttribute('maxlength', '100');
 
+    const descriptionSizeWarning = document.createElement('p');
+    descriptionSizeWarning.classList.add('text-size-warning');
+    descriptionSizeWarning.textContent = 'Max: 100 caracteres';
 
     const dateButton = document.createElement('button');
     dateButton.classList.add('overlay-button-content', 'date');
@@ -1048,7 +1071,7 @@ export function createEditTaskForm(
 
     div.append(cancelButton, saveButton);
 
-    form.append(titleInput, descriptionInput, dateButton, divider, selectProjectButton, div);
+    form.append(titleInput, titleSizeWarning, titleDivider, descriptionInput, descriptionSizeWarning, dateButton, divider, selectProjectButton, div);
 
     const formComponents = {
         element: form,
