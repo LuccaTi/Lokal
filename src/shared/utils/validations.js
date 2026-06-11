@@ -10,31 +10,26 @@ const passwordRules = [
     { key: "special", regex: /[!@#$%^&*()_+= -]/, message: "A senha deve conter pelo menos um caractere especial." }
 ]
 
-const validator = {
 
-    validateEmail(value) {
-        const email = value.trim();
-        const failedRule = emailRules.find(rule => !rule.regex.test(email));
-        return failedRule ? failedRule.message : null;
-    },
-
-    validatePassword(value) {
-        const password = value.trim();
-        const failedRule = passwordRules.find(rule => !rule.regex.test(password));
-        return failedRule ? failedRule.message : null;
-    },
-
-    getPasswordStatus(value) {
-        const password = value.trim();
-        const status = {};
-
-        passwordRules.forEach(rule => {
-            status[rule.key] = rule.regex.test(password);
-        });
-
-        return status;
-    }
+export function validateEmail(value) {
+    const email = value.trim();
+    const failedRule = emailRules.find(rule => !rule.regex.test(email));
+    return failedRule ? failedRule.message : null;
 }
 
+export function validatePassword(value) {
+    const password = value.trim();
+    const failedRule = passwordRules.find(rule => !rule.regex.test(password));
+    return failedRule ? failedRule.message : null;
+}
 
-export { validator };
+export function getPasswordStatus(value) {
+    const password = value.trim();
+    const status = {};
+
+    passwordRules.forEach(rule => {
+        status[rule.key] = rule.regex.test(password);
+    });
+
+    return status;
+}

@@ -1,0 +1,1077 @@
+.content-main {
+  background-color: white;
+  color: #333;
+  padding: 1rem;
+  min-height: 100vh;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.menu-button.side.content {
+  width: max-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 85vw;
+  margin-bottom: 16rem;
+  gap: 1rem;
+  height: 100%;
+}
+
+.content-title {
+  font-size: 2rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.content-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 10;
+  padding: 2rem 0 1rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.content-wrapper {
+  width: 80vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 5rem;
+}
+
+.content-wrapper img {
+  width: 100%;
+  height: 10rem;
+}
+
+.content-wrapper .content-wrapper-p-bold {
+  font-weight: bold;
+  color: rgb(67, 67, 67);
+}
+
+.content-wrapper p {
+  font-size: 1rem;
+  color: rgb(148, 148, 148);
+}
+
+.content-wrapper-button-img {
+  width: 1rem;
+  height: 1rem;
+  filter: invert(100%) brightness(200%);
+}
+
+.content-wrapper-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: center;
+  align-self: center;
+  padding: 0.8rem;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 1rem;
+  background-color: #26a97d;
+  color: white;
+  width: 10rem;
+}
+
+.content-wrapper-button:active {
+  background-color: #2bc18f;
+}
+
+.overlay-content {
+  width: 90vw;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: fixed;
+  z-index: 1000;
+  top: 10%;
+  left: 5%;
+  padding: 0.5rem;
+  gap: 0.5rem;
+
+  /*Efeito de transição*/
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-20px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.overlay-input-title {
+  padding: 0.5rem;
+  border: none;
+  width: 100%;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.overlay-input-description {
+  padding: 0.5rem;
+  border: none;
+  width: 100%;
+}
+
+input:focus {
+  outline: none;
+}
+
+.overlay-button-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 1rem;
+  background-color: white;
+  color: rgb(129, 128, 128);
+  border: solid 1px rgb(202, 202, 202);
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.overlay-button-content:active {
+  background-color: rgb(211, 210, 210);
+}
+
+.overlay-button-content.date {
+  width: auto;
+  align-self: flex-start;
+  justify-content: flex-start;
+}
+
+.overlay-button-content-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.overlay-divider-content {
+  width: 100%;
+  height: 1px;
+  background-color: rgb(148, 148, 148);
+  margin: 0.5rem 0;
+}
+
+.overlay-button-content-div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.overlay-button-content-div .overlay-button-content {
+  flex: 1;
+}
+
+.overlay-button-content.cancel {
+  background-color: rgb(167, 165, 165);
+  color: black;
+  border: none;
+  width: 100%;
+}
+
+.overlay-button-content.cancel:active {
+  background-color: rgb(129, 128, 128);
+}
+
+.overlay-button-content.add {
+  background-color: #26a97d;
+  color: white;
+  border: none;
+}
+
+.overlay-button-content.add:active {
+  background-color: #2dbf8e;
+}
+
+.overlay-content.delete-overlay {
+  top: 35%;
+  left: 6%;
+  width: 350px;
+  padding: 1rem;
+}
+
+/* Calendário Overlay*/
+.calendar-overlay {
+  width: 280px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: white;
+  position: absolute;
+  z-index: 1005;
+  padding: 1rem;
+  top: 36%;
+  left: 20%;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 1rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.calendar-day-name {
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-cell {
+  padding: 0.4rem;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #333;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: center;
+}
+
+.calendar-cell:hover:not(.empty) {
+  background-color: #b1b1b1;
+}
+
+.calendar-cell.empty {
+  cursor: default;
+}
+
+.calendar-cell.past-day {
+  color: #bbb;
+  pointer-events: none;
+}
+
+.calendar-cell.today-highlight {
+  background-color: #26a97d;
+  color: white;
+  font-weight: bold;
+}
+
+/* Selecionar Projeto Overlay */
+.overlay-content.select-project-overlay {
+  width: 250px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: fixed;
+  z-index: 1005;
+  top: 50%;
+  left: 8%;
+  padding: 1rem;
+  gap: 0.2rem;
+
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0px);
+  transition:
+    opacity 0,
+    transform 0;
+}
+
+.input-search-project {
+  padding: 0.5rem;
+  border: solid 1px rgb(202, 202, 202);
+  border-radius: 0.5rem;
+}
+
+input:focus {
+  outline: none;
+}
+
+.overlay-select-project-header {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  margin-top: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.overlay-button-content.select-project {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 0.5rem;
+}
+
+.overlay-button-content-icon.select-project {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.overlay-projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.overlay-button-content-text.select-project {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Tasks Container */
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.content-count-header {
+  font-size: 1rem;
+  color: rgb(148, 148, 148);
+}
+
+.task-div {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  grid-template-rows: repeat(3, auto);
+  background-color: rgb(231, 229, 229);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+.checkbox-task-div {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.checkbox-task {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.task-div-info {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.task-div-info.no-checkbox {
+  grid-column: 1 / 3;
+  padding-left: 0.5rem;
+}
+
+.task-div-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.task-div-title-delete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.task-div-button {
+  border-radius: 0.5rem;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.task-div-description {
+  font-size: 0.9rem;
+  color: rgb(148, 148, 148);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5rem;
+  max-width: 100%;
+}
+
+.task-div-project {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.task-div-project.shortly {
+  grid-column: 1 / -1;
+  padding-left: 0.5rem;
+}
+
+.task-div-project-name {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: rgb(148, 148, 148);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-div-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.task-div-divider {
+  grid-column: 1/-1;
+  margin: 0.2rem 0;
+}
+
+.task-div-edit-delete {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.overlay-message {
+  text-align: left;
+  margin-bottom: 0.5rem;
+  max-width: 100%;
+}
+
+.delete-confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.overlay-button-content.delete {
+  background-color: rgb(199, 42, 42);
+  color: white;
+  border: none;
+}
+
+.content-add-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #26a97d;
+  color: white;
+  width: max-content;
+  align-self: center;
+}
+
+.content-add-button-icon {
+  width: 1rem;
+  height: 1rem;
+  filter: invert(100%) brightness(200%);
+}
+
+.task-late-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgb(255, 200, 200);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  grid-column: 1 / -1;
+}
+
+.task-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.task-late-warning-text {
+  font-size: 0.7rem;
+  color: rgb(150, 50, 50);
+}
+
+.task-div-due-date {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+.task-text {
+  font-size: 0.9rem;
+  color: rgb(113, 112, 112);
+  font-weight: bold;
+}
+
+.completed-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgb(200, 255, 200);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  grid-column: 1 / -1;
+}
+
+.completed-warning-text {
+  font-size: 0.7rem;
+  color: rgb(50, 150, 50);
+}
+
+.history-month-header-div {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgb(231, 229, 229);
+}
+
+.history-month-header {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  padding-bottom: 0.5rem;
+}
+
+.history-nav-button {
+  background: none;
+  border: none;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  color: #888;
+  font-size: 0.9rem;
+  padding: 0.2rem 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.history-nav-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.history-nav-disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Projects Container */
+.overlay-content.project-form {
+  width: 90vw;
+  top: 25%;
+}
+
+.projects-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.project-div {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  grid-template-rows: repeat(3, auto);
+  background-color: rgb(231, 229, 229);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+.checkbox-project-div {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.checkbox-project {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.project-div-info {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.project-div-title-delete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.project-div-info.no-checkbox.project-history-info {
+  grid-column: 1/-1;
+}
+
+.project-history-icon-title-div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.project-div-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.project-div-button {
+  border-radius: 0.5rem;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.project-div-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.project-div-edit-delete {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.project-div-divider {
+  grid-column: 1/-1;
+  margin: 0.2rem 0;
+}
+
+.project-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.project-div-tasks-count {
+  font-size: 0.8rem;
+  color: rgb(148, 148, 148);
+}
+
+.project-history-card {
+  width: 100%;
+}
+
+.project-history-info {
+  gap: 0.5rem;
+}
+
+.project-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 1.5rem;
+}
+
+.project-history-toggle {
+  border: none;
+  background: transparent;
+  color: #26a97d;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+}
+
+.project-history-tasks {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  grid-column: 1 / -1;
+  padding: 0.5rem 0 0.25rem 0.5rem;
+}
+
+.project-history-tasks.is-open {
+  display: flex;
+}
+
+.project-history-task-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.55);
+}
+
+.project-history-task-row-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.project-history-task-icon-title-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.project-history-task-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.project-history-task-description {
+  font-size: 0.9rem;
+  font-weight: none;
+  color: #333;
+  margin-bottom: 0.3rem;
+}
+
+.project-history-task-meta {
+  font-size: 0.8rem;
+  color: rgb(113, 112, 112);
+  padding-left: 1.35rem;
+}
+
+.project-history-empty {
+  font-size: 0.85rem;
+  color: rgb(113, 112, 112);
+  padding-left: 0.25rem;
+}
+
+.project-card-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.tasks-projects-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.project-name-icon-div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.3rem;
+  width: 100%;
+}
+
+.task-div-due-date-warning {
+  font-size: 0.8rem;
+  padding-right: 0.3rem;
+}
+
+.edit-button-restrict {
+  pointer-events: none;
+}
+
+.content-header-task-warning {
+  text-align: left;
+}
+
+.content-header-task-warning-container {
+  height: 30px;
+  margin-bottom: 1rem;
+}
+
+.text-size-warning {
+  font-size: 0.8rem;
+  padding-left: 0.5rem;
+  color: #b1b1b1;
+}
+
+@media (hover: hover) {
+  /*Media query para efeito de hover apenas no PC*/
+  .content-wrapper-button:hover {
+    cursor: pointer;
+    background-color: #2bc18f;
+  }
+
+  .overlay-button-content:hover {
+    cursor: pointer;
+    background-color: rgb(202, 201, 201);
+  }
+
+  .calendar-nav-btn:hover {
+    color: #333;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+  }
+
+  .task-div-button:hover,
+  .project-div-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .project-history-toggle:hover {
+    text-decoration: underline;
+  }
+
+  .overlay-button-content.delete:hover {
+    background-color: rgb(205, 205, 205);
+  }
+
+  .overlay-button-content.add:hover {
+    background-color: #2dbf8e;
+  }
+
+  .content-add-button:hover {
+    background-color: #2dbf8e;
+    cursor: pointer;
+  }
+
+  .history-nav-button:hover {
+    background-color: #bab8b8;
+  }
+
+  .overlay-button-content.cancel:hover {
+    background-color: (148, 148, 148);
+  }
+}
+
+.task-div-button:active,
+.project-div-button:active {
+  background-color: transparent;
+}
+
+.history-nav-button:active {
+  background-color: transparent;
+}
+
+@media (min-width: 768px) {
+  .content-main {
+    background-color: white;
+    color: #333;
+    padding: 1rem;
+    min-height: 100vh;
+    flex: 1;
+    min-width: 0;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .menu-button.side.content {
+    transform: translateX(-4rem);
+  }
+
+  .container.menu-collapsed .menu-button.side.content {
+    transform: translateX(0);
+  }
+
+  .content-container {
+    width: 80%;
+    margin-bottom: 0rem;
+  }
+
+  .content-header {
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 0rem;
+  }
+
+  .content-title {
+    text-align: left;
+    margin-top: 0rem;
+  }
+
+  .content-wrapper {
+    width: 360px;
+  }
+
+  .content-wrapper-button {
+    width: 150px;
+  }
+
+  .content-wrapper-button:active {
+    background-color: #26a97d;
+  }
+
+  .overlay-content {
+    width: 500px;
+    top: 18%;
+    left: 29%;
+  }
+
+  .overlay-content.project-form {
+    width: 350px;
+  }
+
+  .overlay-content.delete-overlay {
+    top: 40%;
+    left: 48%;
+    width: 350px;
+    padding: 1rem;
+  }
+
+  .calendar-overlay {
+    width: 280px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: white;
+    position: absolute; /* Vai ficar posicionado solto na tela */
+    z-index: 1005; /* Tem que ser maior que o do form de tarefas (1000) */
+    padding: 1rem;
+    top: 2%; /* Ajuste a posição inicial, se necessário */
+    left: 36%;
+  }
+
+  .overlay-content.select-project-overlay {
+    top: 50%;
+    left: 25%;
+  }
+
+  .task-div {
+    gap: 0;
+  }
+
+  .tasks-container {
+    max-height: 350px;
+  }
+
+  .projects-container {
+    max-height: 350px;
+  }
+
+  .tasks-projects-container {
+    max-height: 350px;
+  }
+
+  .content-with-tasks-add-button {
+    align-self: flex-start;
+  }
+
+  .task-div-project {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.3rem;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .task-div-project-name {
+    font-size: 1rem;
+  }
+
+  .project-name-icon-div {
+    width: 70%;
+  }
+
+  .task-div-due-date-warning {
+    font-size: 0.9rem;
+  }
+
+  .task-late-warning-text {
+    font-size: 0.9rem;
+  }
+
+  .completed-warning-text {
+    font-size: 0.9rem;
+  }
+
+  .content-header-task-warning-container {
+    margin-bottom: 0;
+  }
+
+}

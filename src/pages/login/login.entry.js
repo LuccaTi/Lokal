@@ -1,9 +1,22 @@
 import "../../shared/styles/global.css"
 import "./login.css";
-import { validator } from '../../shared/utils/validations.js';
+import { validateEmail } from '../../shared/utils/validations.js';
+import { setCurrentUser } from "../../shared/utils/authSession.js";
 import bcrypt from "bcryptjs";
+import { userStorage } from "../../core/storage/userStorage.js";
 
 const form = document.getElementById('login-form');
+
+// Mensagem de erros em casos extremos, como usuário excluído manualmente durante uma sessão.
+const errorMessage = sessionStorage.getItem('lokal.errorMessage');
+if(errorMessage){
+    const warning = document.createElement('p');
+    warning.textContent = errorMessage;
+    warning.classList.add('warning');
+    form.prepend(warning);
+    sessionStorage.removeItem('lokal.errorMessage');
+}
+
 const email = document.getElementById('email');
 const password = document.getElementById('password');
 email.addEventListener('input', clearWarning);
@@ -11,14 +24,13 @@ password.addEventListener('input', clearWarning);
 
 async function logIn(email, password) {
 
-    const registeredUser = localStorage.getItem(email);
+    const user = userStorage.getUser(email);
 
-    if (!registeredUser) {
+    if (!user) {
         console.log(`User with email: ${email} is not registered!`);
         return false;
     }
 
-    const user = JSON.parse(registeredUser);
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (validPassword) {
@@ -39,7 +51,7 @@ form.addEventListener('submit', async (event) => {
         existingWarning.remove();
     }
 
-    const errorMessage = validator.validateEmail(email.value);
+    const errorMessage = validateEmail(email.value);
     if(errorMessage){
         const warning = document.createElement('p');
         warning.textContent = errorMessage;
@@ -50,6 +62,7 @@ form.addEventListener('submit', async (event) => {
 
     const success = await logIn(email.value.trim(), password.value);
     if (success) {
+        setCurrentUser(email.value);
         window.location.replace("dashboard.html");
     } else {
         const warning = document.createElement('p');

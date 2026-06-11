@@ -1,7 +1,9 @@
 import "../../shared/styles/global.css"
 import "./signup.css";
-import { validator } from '../../shared/utils/validations.js';
+import { validateEmail, validatePassword, getPasswordStatus } from "../../shared/utils/validations.js";
 import bcrypt from "bcryptjs";
+import { createUser } from "../../core/domain/user.js";
+import { userStorage } from "../../core/storage/userStorage.js";
 
 const form = document.getElementById('signup-form');
 const email = document.getElementById('email');
@@ -19,7 +21,7 @@ password.addEventListener('input', (event) => {
 // Validação em tempo real
 password.addEventListener('input', () => {
     const passwordValue = password.value;
-    const status = validator.getPasswordStatus(passwordValue);
+    const status = getPasswordStatus(passwordValue);
     updateChecklistUI(status);
 })
 
@@ -46,8 +48,7 @@ async function register(email, password) {
         error: '',
     }
 
-    const userExists = localStorage.getItem(email);
-    if (userExists) {
+    if (userStorage.userExists(email)) {
         registration.registered = false;
         registration.error = 'Usuário já registrado!';
         return registration;
@@ -57,13 +58,13 @@ async function register(email, password) {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const newUser = {
+        // Será dividido na camada de domínio: Domain/user.js, Domain/task.js, Domain/project.js.
+        const newUser = createUser({
             email: email,
-            password: hashedPassword,
-        }
+            password: hashedPassword
+        });
 
-        const json = JSON.stringify(newUser);
-        localStorage.setItem(email, json);
+        userStorage.saveUser(newUser);
 
         registration.registered = true;
         registration.error = '';
@@ -86,7 +87,7 @@ form.addEventListener('submit', async (event) => {
         existingWarning.remove();
     }
 
-    const emailError = validator.validateEmail(email.value);
+    const emailError = validateEmail(email.value);
     if (emailError) {
         const warning = document.createElement('p');
         warning.textContent = emailError;
@@ -96,7 +97,7 @@ form.addEventListener('submit', async (event) => {
     }
 
     // Validação final antes de enviar
-    const passwordError = validator.validatePassword(password.value);
+    const passwordError = validatePassword(password.value);
 
     if (passwordError) {
         console.log("Validação falhou com erro:", passwordError);

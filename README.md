@@ -1,38 +1,45 @@
 # Lokal - Todo App
 
-Aplicação web MPA (Multi Page Application) focada em construir um gerenciador de tarefas com JavaScript puro, localStorage e estrutura multi-página com Webpack.
+Aplicação web MPA (Multi Page Application) para gerenciamento de tarefas, construída com JavaScript puro, Webpack e persistência local no navegador (localStorage).
 
-## Descrição:
+## Visão geral
 
-Este projeto ainda está em desenvolvimento e nao está completo.
+O Lokal é um app de organização pessoal com autenticação, dashboard responsivo e fluxo completo de tarefas e projetos. A interface foi pensada para funcionar bem em desktop e mobile, com foco em navegação clara, overlays e estados vazios bem definidos.
 
-## Funcionalidades implementadas:
+## Funcionalidades
 
-- Home: implementada e refinada visualmente (header, main, seção de citações e rodapé).
-- Login: estrutura inicial criada (template, entry, css e módulo de página).
-- Dashboard: scaffold básico presente, ainda pendente de implementação de funcionalidades.
-- Funcionalidades principais de tarefas/projetos (CRUD): ainda nao finalizadas.
+- Home com hero, seções de destaque e navegação para o fluxo principal.
+- Login e signup com validação, sessão do usuário e armazenamento local.
+- Dashboard com views de Hoje, Em breve, Histórico e Projetos.
+- Criação, edição, exclusão e conclusão de tarefas.
+- Criação e gerenciamento de projetos.
+- Overlays para calendário, seleção de projeto e ações de confirmação.
+- Interface responsiva com comportamento adaptado para desktop e mobile.
 
-## Tecnologias e Conceitos
+## Tecnologias
 
 - JavaScript (ES Modules)
+- HTML e CSS
 - Webpack 5
-- HTML + CSS
-- Arquitetura MPA com entradas separadas para Home, Login e Dashboard.
-- Módulos de renderização no lado do cliente por página.
-- Camada de persistência planejada com localStorage.
+- localStorage para persistência de dados
+- sessionStorage para sessão autenticada
+- bcryptjs para hash de senha
 
 ## Estrutura do projeto
 
-(Todo)
+- `src/pages/home`: página inicial da aplicação.
+- `src/pages/login`: fluxo de login.
+- `src/pages/signup`: fluxo de cadastro.
+- `src/pages/dashboard`: interface principal do app.
+- `src/core`: domínio, estado e camada de storage.
+- `src/shared`: utilitários e componentes reutilizáveis.
 
 ## Build Setup
 
+- `npm run build`: gera a build de produção na pasta `dist`.
 - `npm run start`: inicia o servidor de desenvolvimento com Webpack.
-- `npm run build`: gera build de produção na pasta `dist`.
-- `npm run deploy`: publica o subtree de `dist` na branch `gh-pages`.
 
-## Como Executar
+## Como executar
 
 1. Instale as dependências:
 
@@ -40,21 +47,22 @@ Este projeto ainda está em desenvolvimento e nao está completo.
 npm install
 ```
 
-2. Inicie o servidor de desenvolvimento:
-
-```bash
-npm run start
-```
-
-3. Gere a build de produção:
+2. Gere a build de produção:
 
 ```bash
 npm run build
 ```
 
-  ## Próximos Passos
+3. Inicie o servidor de desenvolvimento:
 
-  - Conectar os botões de CTA da Home ao fluxo da página de Login.
-  - Implementar a lógica de Login (formulário + validação + ponto de entrada de persistência).
-  - Iniciar o conjunto de funcionalidades do Dashboard para gestão de projetos e tarefas.
-  - Integrar as paginas de UI com os módulos de domínio/estado/storage em `core`.
+```bash
+npm run start
+```
+
+## Créditos
+
+Todos os ícones utilizados no projeto foram obtidos em https://www.svgrepo.com/.
+
+## Status do projeto
+
+O app está concluído nesta branch principal.
