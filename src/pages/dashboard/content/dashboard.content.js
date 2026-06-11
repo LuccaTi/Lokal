@@ -1483,15 +1483,13 @@ function createCompletedProjectCard(project) {
     deleteButtonIcon.alt = 'Cross icon';
     deleteButton.append(deleteButtonIcon);
 
-    actionsDiv.append(toggleTasksButton, deleteButton);
-
     const tasksCountHeader = document.createElement('p');
     tasksCountHeader.classList.add('project-div-tasks-count');
     tasksCountHeader.textContent = `${project.tasks.length} tarefa(s) concluídas`;
 
-    titleAndDeleteButtonDiv.append(iconTitleDiv, tasksCountHeader, actionsDiv);
-
-    projectInfoDiv.append(titleAndDeleteButtonDiv);
+    titleAndDeleteButtonDiv.append(iconTitleDiv, deleteButton);
+    actionsDiv.append(tasksCountHeader, toggleTasksButton);
+    projectInfoDiv.append(titleAndDeleteButtonDiv, actionsDiv);
 
     const tasksContainer = document.createElement('div');
     tasksContainer.classList.add('project-history-tasks');
@@ -1524,7 +1522,15 @@ function createCompletedProjectCard(project) {
             taskTitle.classList.add('project-history-task-title');
             taskTitle.textContent = task.title;
 
-            taskRowHeader.append(taskIcon, taskTitle);
+            const taskIconTitleDiv = document.createElement('div');
+            taskIconTitleDiv.classList.add('project-history-task-icon-title-div');
+            taskIconTitleDiv.append(taskIcon, taskTitle);
+
+            const taskDescription = document.createElement('p');
+            taskDescription.classList.add('project-history-task-description');
+            taskDescription.textContent = task.description;
+
+            taskRowHeader.append(taskIconTitleDiv, taskDescription);
 
             const taskMeta = document.createElement('p');
             taskMeta.classList.add('project-history-task-meta');

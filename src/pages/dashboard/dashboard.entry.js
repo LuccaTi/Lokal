@@ -9,9 +9,6 @@ import { formatDateForButton } from "../../shared/utils/dateUtils.js";
 import { positionOverlay } from "../../shared/utils/domUtils.js";
 import { createProject } from "../../core/domain/project.js";
 
-// ETAPA ATUAL: Fase de testes e ajustes
-
-
 function initDashboard() {
 
     const currentUser = requireAuthenticatedUser();
