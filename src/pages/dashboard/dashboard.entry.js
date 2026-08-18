@@ -1541,7 +1541,29 @@ function initDashboard() {
         controllerCallbacks.unclickArrowButton();
     });
 
+    let lastViewportWidth = window.innerWidth;
+    let lastViewportHeight = window.innerHeight;
+
     window.addEventListener('resize', () => {
+        const currentWidth = window.innerWidth;
+        const currentHeight = window.innerHeight;
+
+        const widthChanged = currentWidth !== lastViewportWidth;
+        const heightDelta = Math.abs(currentHeight - lastViewportHeight);
+
+        const activeElement = document.activeElement;
+        const isTypingElement = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA' || activeElement?.isContentEditable;
+        const hasOpenContentOverlay = Boolean(document.querySelector('.overlay-content'));
+
+        const isVirtualKeyboardResize = !widthChanged && heightDelta > 120 && isTypingElement && hasOpenContentOverlay;
+
+        lastViewportWidth = currentWidth;
+        lastViewportHeight = currentHeight;
+
+        if (isVirtualKeyboardResize) {
+            return;
+        }
+
         controllerCallbacks.closeMenuOverlays();
         controllerCallbacks.closeContentOverlays();
         controllerCallbacks.unclickArrowButton();
